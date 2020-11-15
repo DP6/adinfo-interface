@@ -2,6 +2,9 @@
   <div id="app">
     <menu-lateral :routes="routes">
     </menu-lateral>
+    <div class="area-principal">
+      <router-view></router-view>
+    </div>
   </div>
 </template>
 
@@ -21,5 +24,14 @@ export default {
 </script>
 
 <style scoped>
+
+  #app {
+    display: flex;
+    flex-wrap: wrap;
+  }
+
+  .area-principal {
+    width: calc(95% - 300px);
+  }
 
 </style>

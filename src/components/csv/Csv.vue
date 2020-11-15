@@ -1,6 +1,6 @@
 <template>
     <div>
-        <titulo-principal titulo="Parametrização"></titulo-principal>
+        <titulo-principal titulo="CSV"></titulo-principal>
         <form class="md-layout">
             <md-card class="md-layout-item md-larger-size">
                 <md-card-content>
@@ -22,10 +22,18 @@
                     </div>
                 </md-card-content>
                 <md-card-actions>
-                    <botao-submit nome_do_botao="Parametrizar"></botao-submit>
+                    <botao-submit nome_do_botao="Consultar" @botaoAtivado="getCsvList()"></botao-submit>
                 </md-card-actions>
             </md-card>
         </form>
+        <div class="respostas">
+            <titulo-principal :titulo="tituloResposta"></titulo-principal>
+            <ul>
+                <li v-for="csv in csvList" class="csv">
+                    <p @click="exibirTabela(csv)">{{ csv }}</p>
+                </li>
+            </ul>
+        </div>
     </div>
 </template>
 
@@ -52,7 +60,9 @@ export default {
             form: {
                 agency: null,
                 company: null,
-            }
+            },
+            csvList: [],
+            tituloResposta: 'Resposta'
         }
     },
     validations: {
@@ -80,6 +90,29 @@ export default {
             this.$v.$reset()
             this.form.agency = null
             this.form.company = null
+        },
+        getCsvList() {
+            fetch('http://localhost:443/csv/list', {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    agency: document.querySelector('#agency').value,
+                    company: document.querySelector('#company').value
+                    // agency: 'bigodaria',
+                    // company: 'arthurltda'
+                }
+            }).then(function(response) {
+               return response.json();
+            }).then((data) => {
+                this.tituloResposta = 'Lista de CSVs';
+                this.csvList = data;
+            }).catch((err) => {
+                this.tituloResposta = 'Erro';
+                console.log(err);
+            });
+        },
+        exibirTabela(csvName) {
+            console.log(csvName);
         }
     }
 }
@@ -88,8 +121,26 @@ export default {
 
 <style scoped>
 
-form {
-    margin-left: 50px;
-}
+    form {
+        margin-left: 50px;
+    }
+
+    .respostas {
+        width: 100%;
+    }
+
+    ul {
+        margin-left: 15px;
+        list-style: none;
+    }
+
+    .csv {
+        font-size: 16px;
+        cursor: pointer;
+    }
+
+    .csv p:hover {
+        color: #3f2b96;
+    }
 
 </style>

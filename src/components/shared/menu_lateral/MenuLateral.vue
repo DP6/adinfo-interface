@@ -1,17 +1,25 @@
 <template>
     <aside class="sidebar">
-        <nav class="nav">
-            <h2>ADINFO</h2>
-            <ul>
-                <li v-for="route in routes">
-                    <a href="#">{{ route.titulo }}</a>
-                </li>
-            </ul>
-        </nav>
+        <div class="fixed">
+            <nav class="nav">
+                <h2>ADINFO</h2>
+                <ul>
+                    <li v-for="route in routes">
+                        <router-link class="opcao" :to="route.path">{{ route.titulo }}</router-link>
+                    </li>
+                </ul>
+            </nav>
+            <footer>
+                <a href="https://github.com/DP6" target="_blank"><img src="../../../assets/logo_github.png"></a>
+                <a href="https://www.dp6.com.br/" target="_blank"><img src="../../../assets/logo_dp6.png"></a>
+                <a href="#" target="_blank"><img src="../../../assets/penguin.png"></a>
+            </footer>
+        </div>
     </aside>
 </template>
 
 <script>
+
 export default {
     props: {
         routes: {
@@ -20,6 +28,7 @@ export default {
         }
     }
 }
+
 </script>
 
 <style scoped>
@@ -29,11 +38,9 @@ export default {
     padding: 0;
     list-style: none;
     text-decoration: none;
-    font-family: 'Helvetica', sans-serif;
 }
 
 .sidebar {
-    position: fixed;
     width: 300px;
     height: 100vh;
     font-size: 0.65em;
@@ -43,11 +50,16 @@ export default {
     background-size: cover;
 }
 
+.fixed {
+    position: fixed;
+}
+
 .nav {
     position: relative;
     margin: 0 25px;
     text-align: right;
     font-weight: bold;
+    height: 100%;
 }
 
 h2 {
@@ -70,17 +82,17 @@ li {
     margin: 3.2em 0;
 }
 
-a {
+.opcao {
     line-height: 5em;
     text-transform: uppercase;
     text-decoration: none;
     letter-spacing: 0.4em;
-    color: rgba(255, 255, 255, 0.35);
+    color: white!important;
     display: block;
     transition: all ease-out 300ms;
 }
 
-li.active a {
+li.active .opcao {
     color: white;
 }
 
@@ -88,7 +100,7 @@ li:not(.active)::after {
     opacity: 0.2;
 }
 
-li:not(.active):hover a {
+li:not(.active):hover .opcao {
     color: rgba(255, 255, 255, 0.75);
 }
 
@@ -101,6 +113,16 @@ li::after {
     left: 0;
     bottom: 0;
     background-image: linear-gradient(to right, #3f2b96, #a8c0ff);
+}
+
+footer {
+    position: fixed;
+    bottom: 25px;
+}
+
+footer img {
+    height: 40px;
+    margin-left: 20px;
 }
 
 </style>
