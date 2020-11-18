@@ -43,7 +43,7 @@ export default {
 .sidebar {
     width: 300px;
     height: 100vh;
-    font-size: 0.65em;
+    font-size: 12px;
     background-image: linear-gradient(#3f2b96, #a8c0ff);
     background-position: center;
     background-repeat: no-repeat;

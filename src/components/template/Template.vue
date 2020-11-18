@@ -101,7 +101,7 @@ export default {
             a.remove();
         },
         getTemplate() {
-            fetch('http://localhost:443/config', {
+            fetch('https://adinfo.ue.r.appspot.com/config', {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
@@ -122,7 +122,7 @@ export default {
                     });
                 });
             }).then(() => {
-                return fetch('http://localhost:443/template', {
+                return fetch('https://adinfo.ue.r.appspot.com/template', {
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json',
@@ -138,7 +138,6 @@ export default {
                 blob.text().then(text => {
                     this.colunas = text.split(';');
                 });
-                console.log(this.tabela);
                 this.visivel = true;
             }).catch((err) => {
                 console.log(err);

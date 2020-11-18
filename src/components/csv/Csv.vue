@@ -30,7 +30,7 @@
             <titulo-principal :titulo="tituloResposta"></titulo-principal>
             <ul>
                 <li v-for="csv in csvList" class="csv">
-                    <p @click="exibirTabela(csv)">{{ csv }}</p>
+                    <p @click="downloadCSV(csv)">{{ csv }}</p>
                 </li>
             </ul>
         </div>
@@ -92,7 +92,7 @@ export default {
             this.form.company = null
         },
         getCsvList() {
-            fetch('http://localhost:443/csv/list', {
+            fetch('https://adinfo.ue.r.appspot.com/csv/list', {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
@@ -105,14 +105,34 @@ export default {
                return response.json();
             }).then((data) => {
                 this.tituloResposta = 'Lista de CSVs';
-                this.csvList = data;
+                this.csvList = data.map(fileName => fileName.split('/')[1]);
             }).catch((err) => {
                 this.tituloResposta = 'Erro';
                 console.log(err);
             });
         },
-        exibirTabela(csvName) {
-            console.log(csvName);
+        downloadCSV(csv) {
+            fetch('http://localhost:443/csv', {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    agency: document.querySelector('#agency').value,
+                    file: csv.replace(/\.csv$/,''),
+                    company: document.querySelector('#company').value
+                }
+            }).then(response => {
+                return response.blob();
+            }).then(fileBlob => {
+                const url = window.URL.createObjectURL(fileBlob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `${csv}`;
+                document.body.appendChild(a);
+                a.click();    
+                a.remove();
+            }).catch(err => {
+                
+            });
         }
     }
 }
