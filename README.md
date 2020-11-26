@@ -1,0 +1,1 @@
+# adinfo-intaface
