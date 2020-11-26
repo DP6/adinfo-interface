@@ -61,7 +61,7 @@
                         </md-table-toolbar>
 
                         <md-table-row slot="md-table-row" slot-scope="{ item }">
-                            <md-table-cell v-for="titulo in previaTitulo" :md-label="titulo" md-sort-by="id">{{ item[titulo] }}</md-table-cell>
+                            <md-table-cell v-for="titulo in previaTitulo" :md-label="titulo">{{ item[titulo] }}</md-table-cell>
                         </md-table-row>
 
                     </md-table>
@@ -150,7 +150,7 @@ export default {
         },
         build() {
             this.clearResposta();
-            const url = `http://localhost:443/build/${this.tool}`
+            const url = `https://adinfo.ue.r.appspot.com/build/${this.tool}`
             // fetch(url, {
             //     method: 'GET',
             //     headers: {
@@ -196,7 +196,6 @@ export default {
                     this.tabela.push(objeto);
                     return true;
                 });
-                console.log(this.previaCampos);
             }).catch(err => {
                 this.visibilidadeResposta = true;
                 this.tituloResposta = 'Falha na requisição';
@@ -207,7 +206,7 @@ export default {
             const url = window.URL.createObjectURL(this.builderFile);
             const a = document.createElement('a');
             a.href = url;
-            a.download = `bigodaria-202010051506_parametrizado.csv`;
+            a.download = `${document.querySelector('#file').files[0].name.replace(/\.csv$/, '')}_parametrizado.csv`;
             document.body.appendChild(a);
             a.click();    
             a.remove();
