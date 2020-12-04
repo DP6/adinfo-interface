@@ -32,6 +32,7 @@ export default {
 
   .area-principal {
     width: calc(95% - 300px);
+    margin-left: 300px;
   }
 
 </style>
