@@ -53,6 +53,7 @@ export default {
 
 .fixed {
     position: fixed;
+    width: 280px;
 }
 
 .nav {
@@ -80,14 +81,14 @@ ul {
 
 li {
     position: relative;
-    margin: 3.2em 0;
+    margin: 15px 0;
 }
 
 .opcao {
     line-height: 5em;
     text-transform: uppercase;
     text-decoration: none;
-    letter-spacing: 0.4em;
+    letter-spacing: 2px;
     color: white!important;
     display: block;
     transition: all ease-out 300ms;
