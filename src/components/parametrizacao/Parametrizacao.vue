@@ -180,17 +180,18 @@ export default {
                 this.builderFile = file;
                 return file.text();
             }).then(textInFile => {
+                const csvSeparator = /;/.test(textInFile) ? ';' : ',';
                 this.visibilidadeResposta = true;
                 this.tituloResposta = 'Prévia';
                 this.visibilidadePrevia = true;
-                this.previaTitulo = textInFile.split('\n')[0].split(';');
+                this.previaTitulo = textInFile.split('\n')[0].split(csvSeparator);
                 const linhas = textInFile.split('\n').slice(1);
                 linhas.every((linha, index) => {
-                    if(linha.split(';')[0] === '' || index === 6) {
+                    if(linha.split(csvSeparator)[0] === '' || index === 6) {
                         return false;
                     }
                     const objeto = {};
-                    linha.split(';').forEach((campo, indexCampo) => {
+                    linha.split(csvSeparator).forEach((campo, indexCampo) => {
                         objeto[this.previaTitulo[indexCampo]] = campo;
                     });
                     this.tabela.push(objeto);
