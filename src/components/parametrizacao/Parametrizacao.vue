@@ -180,7 +180,7 @@ export default {
                 this.builderFile = file;
                 return file.text();
             }).then(textInFile => {
-                const csvSeparator = /;/.test(textInFile) ? ';' : ',';
+                const csvSeparator = /\,/.test(textInFile.split('\n')[0]) ? ',' : ';';
                 this.visibilidadeResposta = true;
                 this.tituloResposta = 'Prévia';
                 this.visibilidadePrevia = true;
