@@ -37,12 +37,14 @@
                 <md-button @click="downloadTemplate()" class="md-dense md-raised md-primary button-download">Download Template</md-button>
             </md-card>
         </div>
+        <usuario-invalido :active="showAuthAlert"></usuario-invalido>
     </div>
 </template>
 
 <script>
 
 import TituloAreaPrincipal from '../shared/titulo_area_principal/TituloAreaPrincipal.vue';
+import InvalidUserAlert from '../shared/login/InvalidUser.vue';
 import { validationMixin } from 'vuelidate'
 import {
     required,
@@ -54,7 +56,8 @@ import BotaoSubmitForm from '../shared/botao_submit_form/BotaoSubmitForm.vue';
 export default {
     components: {
         'titulo-principal': TituloAreaPrincipal,
-        'botao-submit': BotaoSubmitForm
+        'botao-submit': BotaoSubmitForm,
+        'usuario-invalido': InvalidUserAlert
     },
     data() {
         return {
@@ -64,7 +67,9 @@ export default {
             templateFile: new Blob(),
             colunas: [],
             tabela: [],
-            visivel: false
+            visivel: false,
+            statusCode: null,
+            showAuthAlert: false,
         }
     },
     validations: {
@@ -76,7 +81,7 @@ export default {
         }
     },
     created() {
-        
+
     },
     methods: {
         getValidationClass (fieldName) {
@@ -97,19 +102,21 @@ export default {
             a.href = url;
             a.download = "template.csv";
             document.body.appendChild(a);
-            a.click();    
+            a.click();
             a.remove();
         },
         getTemplate() {
-            fetch('https://adinfo.ue.r.appspot.com/config', {
+            fetch('http://localhost:443/config', {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
                     // agency: document.querySelector('#agency').value,
                     // company: document.querySelector('#company').value
-                    company: document.querySelector('#company').value
+                    company: document.querySelector('#company').value,
+                    token: localStorage.getItem('userToken')
                 }
             }).then(configPromise => {
+                this.statusCode = configPromise.status;
                 return configPromise.json();
             }).then(configJson => {
                 const lastConfig = configJson[0].ga || configJson[0].adobe;
@@ -122,13 +129,14 @@ export default {
                     });
                 });
             }).then(() => {
-                return fetch('https://adinfo.ue.r.appspot.com/template', {
+                return fetch('http://localhost:443/template', {
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json',
                         // agency: document.querySelector('#agency').value,
                         // company: document.querySelector('#company').value
-                        company: document.querySelector('#company').value
+                        company: document.querySelector('#company').value,
+                        token: localStorage.getItem('userToken')
                     }
                 })
             }).then(function(response) {
@@ -140,8 +148,14 @@ export default {
                 });
                 this.visivel = true;
             }).catch((err) => {
+                this.showAuthAlert = this.isAuthError(this.statusCode);
                 console.log(err);
             });
+        },
+        isAuthError(statusCode){
+            if(statusCode === 403)
+                return true;
+            return false;
         }
     }
 }

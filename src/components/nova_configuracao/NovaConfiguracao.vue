@@ -22,12 +22,14 @@
             <span>{{ snackbar_message }}</span>
             <md-button class="md-primary" @click="showSnackbar = false">OK</md-button>
         </md-snackbar>
+        <usuario-invalido :active="showAuthAlert"></usuario-invalido>
     </div>
 </template>
 
 <script>
 
 import TituloAreaPrincipal from '../shared/titulo_area_principal/TituloAreaPrincipal.vue';
+import InvalidUserAlert from '../shared/login/InvalidUser.vue';
 import { validationMixin } from 'vuelidate'
 import {
     required,
@@ -41,7 +43,8 @@ export default {
     mixins: [validationMixin],
     components: {
         'titulo-principal': TituloAreaPrincipal,
-        'botao-submit': BotaoSubmitForm
+        'botao-submit': BotaoSubmitForm,
+        'usuario-invalido': InvalidUserAlert
     },
     data() {
         return {
@@ -49,7 +52,9 @@ export default {
             position: 'center',
             duration: 4000,
             isInfinity: false,
-            snackbar_message: ''
+            snackbar_message: '',
+            statusCode: null,
+            showAuthAlert: false,
         }
     },
     validations: {
@@ -76,13 +81,16 @@ export default {
                 const formdata = new FormData();
                 formdata.append("company", 'arthurltda');
                 formdata.append("config", evt.target.result);
+                formdata.append("token", localStorage.getItem('userToken'));
                 fetch(url, {
                     method: 'POST',
                     body: formdata
                 }).then((response) => {
+                    this.statusCode = response.status;
                     this.snackbar_message = 'Configuração atualizada com sucesso!';
                     this.showSnackbar = true;
                 }).catch((err) => {
+                    this.showAuthAlert = this.isAuthError(this.statusCode);
                     this.snackbar_message = 'Erro ao atualizar a configuração!';
                     this.showSnackbar = true;
                 });
@@ -94,8 +102,13 @@ export default {
             a.href = url;
             a.download = `${document.querySelector('#file').files[0].name.replace(/\.csv$/, '')}_parametrizado.csv`;
             document.body.appendChild(a);
-            a.click();    
+            a.click();
             a.remove();
+        },
+        isAuthError(statusCode){
+            if(statusCode === 403)
+                return true;
+            return false;
         }
     }
 }

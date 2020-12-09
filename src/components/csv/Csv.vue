@@ -34,12 +34,14 @@
                 </li>
             </ul>
         </div>
+        <usuario-invalido :active="showAuthAlert"></usuario-invalido>
     </div>
 </template>
 
 <script>
 
 import TituloAreaPrincipal from '../shared/titulo_area_principal/TituloAreaPrincipal.vue';
+import InvalidUserAlert from '../shared/login/InvalidUser.vue';
 import { validationMixin } from 'vuelidate'
 import {
     required,
@@ -53,7 +55,8 @@ export default {
     mixins: [validationMixin],
     components: {
         'titulo-principal': TituloAreaPrincipal,
-        'botao-submit': BotaoSubmitForm
+        'botao-submit': BotaoSubmitForm,
+        'usuario-invalido': InvalidUserAlert
     },
     data() {
         return {
@@ -62,7 +65,9 @@ export default {
                 company: null,
             },
             csvList: [],
-            tituloResposta: 'Resposta'
+            tituloResposta: 'Resposta',
+            statusCode: null,
+            showAuthAlert: false,
         }
     },
     validations: {
@@ -97,16 +102,19 @@ export default {
                 headers: {
                     'Content-Type': 'application/json',
                     agency: document.querySelector('#agency').value,
-                    company: document.querySelector('#company').value
+                    company: document.querySelector('#company').value,
+                    token: localStorage.getItem('userToken')
                     // agency: 'bigodaria',
                     // company: 'arthurltda'
                 }
             }).then(function(response) {
+                this.statusCode = response.status;
                return response.json();
             }).then((data) => {
                 this.tituloResposta = 'Lista de CSVs';
                 this.csvList = data.map(fileName => fileName.split('/')[1]);
             }).catch((err) => {
+                this.showAuthAlert = this.isAuthError(this.statusCode);
                 this.tituloResposta = 'Erro';
                 console.log(err);
             });
@@ -118,9 +126,11 @@ export default {
                     'Content-Type': 'application/json',
                     agency: document.querySelector('#agency').value,
                     file: csv.replace(/\.csv$/,''),
-                    company: document.querySelector('#company').value
+                    company: document.querySelector('#company').value,
+                    token: localStorage.getItem('userToken')
                 }
             }).then(response => {
+                this.statusCode = response.status;
                 return response.blob();
             }).then(fileBlob => {
                 const url = window.URL.createObjectURL(fileBlob);
@@ -128,11 +138,16 @@ export default {
                 a.href = url;
                 a.download = `${csv}`;
                 document.body.appendChild(a);
-                a.click();    
+                a.click();
                 a.remove();
             }).catch(err => {
-                
+                this.showAuthAlert = this.isAuthError(this.statusCode);
             });
+        },
+        isAuthError(statusCode){
+            if(statusCode === 403)
+                return true;
+            return false;
         }
     }
 }

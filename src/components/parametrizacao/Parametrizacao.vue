@@ -69,12 +69,14 @@
                 </md-card>
             </div>
         </div>
+        <usuario-invalido :active="showAuthAlert"></usuario-invalido>
     </div>
 </template>
 
 <script>
 
 import TituloAreaPrincipal from '../shared/titulo_area_principal/TituloAreaPrincipal.vue';
+import InvalidUserAlert from '../shared/login/InvalidUser.vue';
 import { validationMixin } from 'vuelidate'
 import {
     required,
@@ -88,7 +90,8 @@ export default {
     mixins: [validationMixin],
     components: {
         'titulo-principal': TituloAreaPrincipal,
-        'botao-submit': BotaoSubmitForm
+        'botao-submit': BotaoSubmitForm,
+        'usuario-invalido': InvalidUserAlert
     },
     data() {
         return {
@@ -105,7 +108,9 @@ export default {
             previaTitulo: [],
             previaCampos: [],
             tabela: [],
-            file: null
+            file: null,
+            statusCode: null,
+            showAuthAlert: false,
         }
     },
     validations: {
@@ -163,6 +168,7 @@ export default {
             formdata.append("data", document.querySelector('#file').files[0]);
             formdata.append("company", document.querySelector('#company').value);
             formdata.append("agency", document.querySelector('#agency').value);
+            formdata.append("token", localStorage.getItem('userToken'));
             const requestOptions = {
                 method: 'POST',
                 body: formdata,
@@ -170,6 +176,7 @@ export default {
             };
             fetch(url, requestOptions)
             .then(response => {
+                this.statusCode = response.status;
                 if(response.status === 200) {
                     return response.blob();
                 } else {
@@ -198,6 +205,7 @@ export default {
                     return true;
                 });
             }).catch(err => {
+                this.showAuthAlert = this.isAuthError(this.statusCode);
                 this.visibilidadeResposta = true;
                 this.tituloResposta = 'Falha na requisição';
                 this.respostaAPI = err;
@@ -209,8 +217,13 @@ export default {
             a.href = url;
             a.download = `${document.querySelector('#file').files[0].name.replace(/\.csv$/, '')}_parametrizado.csv`;
             document.body.appendChild(a);
-            a.click();    
+            a.click();
             a.remove();
+        },
+        isAuthError(statusCode){
+            if(statusCode === 403)
+                return true;
+            return false;
         }
     }
 }

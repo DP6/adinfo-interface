@@ -3,9 +3,9 @@
     <titulo-principal titulo="Configuração Atual"></titulo-principal>
     <md-card class="md-layout-item md-larger-size card">
       <md-list>
-        <md-list-item> 
+        <md-list-item>
           <md-icon @click.native="adicionarItem($event)" class="adicionar">add</md-icon>
-          
+
           <div class="md-layout md-gutter campo-adicionar">
             <div class="md-layout-item">
               <md-field>
@@ -40,7 +40,7 @@
 
           <md-list slot="md-expand">
 
-            <md-list-item v-if="item === 'ga'" class="nivel2"> 
+            <md-list-item v-if="item === 'ga'" class="nivel2">
               <md-icon @click.native="adicionarItem($event, item)" class="adicionar">add</md-icon>
               <div class="md-layout md-gutter campo-adicionar">
                 <div class="md-layout-item">
@@ -54,7 +54,7 @@
               <md-button class="md-raised md-accent botao-cancelar" @click="cancelar($event)">Cancelar</md-button>
             </md-list-item>
 
-            <md-list-item v-else class="nivel2"> 
+            <md-list-item v-else class="nivel2">
               <md-icon @click.native="adicionarItem($event, item)" class="adicionar">add</md-icon>
               <div class="md-layout md-gutter campo-adicionar">
                 <div class="md-layout-item">
@@ -88,7 +88,7 @@
 
               <md-list slot="md-expand">
 
-                <md-list-item class="nivel3"> 
+                <md-list-item class="nivel3">
                   <md-icon @click.native="adicionarItem($event, item, param)" class="adicionar">add</md-icon>
                   <div class="md-layout md-gutter campo-adicionar">
                     <div class="md-layout-item">
@@ -108,7 +108,7 @@
 
                   <md-list slot="md-expand">
 
-                    <md-list-item class="nivel4"> 
+                    <md-list-item class="nivel4">
                       <md-icon @click.native="adicionarItem($event, item, param, t)" class="adicionar">add</md-icon>
                       <div class="md-layout md-gutter campo-adicionar">
                         <div class="md-layout-item">
@@ -134,7 +134,7 @@
             </md-list-item>
           </md-list>
 
-        </md-list-item> 
+        </md-list-item>
       </md-list>
       <md-card-actions>
         <botao-submit @botaoAtivado="updateConfig()" nome_do_botao="Atualizar Configuração"></botao-submit>
@@ -144,12 +144,14 @@
       <span>{{ snackbar_message }}</span>
       <md-button class="md-primary" @click="showSnackbar = false">OK</md-button>
     </md-snackbar>
+    <usuario-invalido :active="showAuthAlert"></usuario-invalido>
   </div>
 </template>
 
 <script>
 import TituloAreaPrincipal from '../shared/titulo_area_principal/TituloAreaPrincipal.vue';
 import BotaoSubmitForm from '../shared/botao_submit_form/BotaoSubmitForm.vue';
+import InvalidUserAlert from '../shared/login/InvalidUser.vue';
 import { validationMixin } from 'vuelidate'
 import {
     required,
@@ -159,7 +161,8 @@ import {
 export default {
   components: {
     'titulo-principal': TituloAreaPrincipal,
-    'botao-submit': BotaoSubmitForm
+    'botao-submit': BotaoSubmitForm,
+    'usuario-invalido': InvalidUserAlert
   },
   data() {
     return {
@@ -172,7 +175,9 @@ export default {
       position: 'center',
       duration: 4000,
       isInfinity: false,
-      snackbar_message: ''
+      snackbar_message: '',
+      statusCode: null,
+      showAuthAlert: false,
     }
   },
   validations: {
@@ -189,15 +194,18 @@ export default {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
-        company: 'arthurltda'
+        company: 'arthurltda',
+        token: localStorage.getItem('userToken')
       }
     }).then(function(response) {
+      this.statusCode = response.status;
       return response.json();
     }).then((data) => {
       delete data[0].insertTime;
       this.configJson = data[0];
       this.generalConfig = Object.keys(data[0]);
     }).catch((err) => {
+      this.showAuthAlert = this.isAuthError(this.statusCode);
       console.log(err);
     });
   },
@@ -207,13 +215,16 @@ export default {
       const formdata = new FormData();
       formdata.append("config", JSON.stringify(this.configJson));
       formdata.append("company", 'arthurltda');
+      formdata.append("token", localStorage.getItem('userToken'));
       fetch(url, {
         method: 'POST',
         body: formdata
       }).then((response) => {
         this.snackbar_message = 'Configuração atualizada com sucesso!';
         this.showSnackbar = true;
+        this.statusCode = response.status;
       }).catch((err) => {
+        this.showAuthAlert = this.isAuthError(this.statusCode);
         this.snackbar_message = 'Erro ao atualizar a configuração!';
         this.showSnackbar = true;
       });
@@ -293,6 +304,11 @@ export default {
         delete objectKey[ids.slice(-1)[0]]
       }
       this.generalConfig = Object.keys(this.configJson);
+    },
+    isAuthError(statusCode){
+      if(statusCode === 403)
+        return true;
+      return false;
     }
   }
 }
