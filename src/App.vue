@@ -1,5 +1,6 @@
 <template>
   <div id="app">
+    <login-screen></login-screen>
     <menu-lateral :routes="routes">
     </menu-lateral>
     <div class="area-principal">
@@ -9,10 +10,12 @@
 </template>
 
 <script>
+import Login from './components/login/LoginScreen.vue';
 import MenuLateral from './components/shared/menu_lateral/MenuLateral.vue';
 import { routes } from './routes';
 export default {
   components: {
+    'login-screen': Login,
     'menu-lateral': MenuLateral
   },
   data() {
