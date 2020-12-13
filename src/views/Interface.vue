@@ -20,6 +20,19 @@ export default {
     return {
       routes
     }
+  },
+  created() {
+    this.redirectIfHasNoToken ()
+  },
+  methods: {
+        redirectIfHasNoToken (){
+          if (!localStorage.getItem('userToken')){
+            this.redirectLogin();
+          }
+        },
+        redirectLogin (){
+          this.$router.push('login');
+        },
   }
 }
 </script>

@@ -14,10 +14,10 @@
       </div>
     </div>
     <div class="text-center">
-      <router-link to="/template" @click="saveToken()" class="btn btn-primary btn-link btn-wd btn-lg">
+      <a @click="saveToken(), redirect()" class="btn btn-primary btn-link btn-wd btn-lg">
         Login
         <!-- <router-link to="/interface">Login</router-link> -->
-      </router-link>
+      </a>
     </div>
   </form>
 </template>

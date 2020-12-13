@@ -81,9 +81,18 @@ export default {
         }
     },
     created() {
-
+        this.redirectIfHasNoToken ()
     },
+
     methods: {
+        redirectIfHasNoToken (){
+            if (!localStorage.getItem('userToken')){
+                this.redirectLogin();
+            }
+        },
+        redirectLogin (){
+            this.$router.push('login');
+        },
         getValidationClass (fieldName) {
             const field = this.$v.form[fieldName]
             if (field) {
