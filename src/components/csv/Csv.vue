@@ -34,7 +34,9 @@
                 </li>
             </ul>
         </div>
-        <usuario-invalido :active="showAuthAlert"></usuario-invalido>
+        {{showAuthAlert}}
+        <usuario-invalido :active="showAuthAlert" v-on:setShowAlertFalse="setShowAlertFalse()" >
+        </usuario-invalido>
     </div>
 </template>
 
@@ -97,7 +99,8 @@ export default {
             this.form.company = null
         },
         getCsvList() {
-            fetch('https://adinfo.ue.r.appspot.com/csv/list', {
+            var fetchStatusCode = null;
+            fetch('http://localhost:443/csv/list', {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
@@ -108,13 +111,13 @@ export default {
                     // company: 'arthurltda'
                 }
             }).then(function(response) {
-                this.statusCode = response.status;
+               fetchStatusCode = response.status;
                return response.json();
             }).then((data) => {
                 this.tituloResposta = 'Lista de CSVs';
                 this.csvList = data.map(fileName => fileName.split('/')[1]);
             }).catch((err) => {
-                this.showAuthAlert = this.isAuthError(this.statusCode);
+                this.showAuthAlert = this.isAuthError(fetchStatusCode);
                 this.tituloResposta = 'Erro';
                 console.log(err);
             });
@@ -148,6 +151,9 @@ export default {
             if(statusCode === 403)
                 return true;
             return false;
+        },
+        setShowAlertFalse(){
+            this.showAuthAlert = false;
         }
     }
 }

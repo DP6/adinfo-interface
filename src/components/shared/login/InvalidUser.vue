@@ -5,6 +5,7 @@
   md-content="Desculpe, você não tem permissão para realizar esta ação."
   md-confirm-text="Login"
   md-cancel-text="Cancel"
+  @md-cancel="onCancel()"
   @md-confirm="redirect()" />
 </template>
 
@@ -18,11 +19,13 @@
             type: Boolean
         }
     },
-
     methods: {
-        redirect(){
-          this.$router.push('/login');
-        }
+      redirect(){
+        this.$router.push('/login');
+      },
+      onCancel(){
+        this.$emit('setShowAlertFalse');
+      }
     }
   }
 </script>
