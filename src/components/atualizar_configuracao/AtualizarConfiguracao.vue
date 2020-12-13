@@ -320,9 +320,6 @@ export default {
     margin-left: 50px;
   }
 
-  .main {
-    margin-bottom: 50px;
-  }
 
   .nivel2 {
     padding-left: 25px;

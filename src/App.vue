@@ -1,11 +1,6 @@
 <template>
   <div id="app">
-    <login-screen></login-screen>
-    <menu-lateral :routes="routes">
-    </menu-lateral>
-    <div class="area-principal">
-      <router-view></router-view>
-    </div>
+    <router-view></router-view>
   </div>
 </template>
 
@@ -20,7 +15,7 @@ export default {
   },
   data() {
     return {
-      routes
+      routes,
     }
   }
 }

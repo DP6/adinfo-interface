@@ -45,7 +45,6 @@ figure,
 footer,
 header,
 hgroup,
-main,
 nav,
 section {
   display: block;
@@ -72,7 +71,6 @@ hr {
   overflow: visible;
 }
 
-h1,
 h2,
 h3,
 h4,
@@ -466,7 +464,6 @@ figure,
 footer,
 header,
 hgroup,
-main,
 nav,
 section {
   display: block;
@@ -493,7 +490,6 @@ hr {
   overflow: visible;
 }
 
-h1,
 h2,
 h3,
 h4,
@@ -777,7 +773,6 @@ template {
   display: none !important;
 }
 
-h1,
 h2,
 h3,
 h4,
@@ -794,11 +789,6 @@ h6,
   font-weight: 400;
   line-height: 1.2;
   color: inherit;
-}
-
-h1,
-.h1 {
-  font-size: 3.3125rem;
 }
 
 h2,
@@ -11623,11 +11613,7 @@ a .material-icons {
   vertical-align: middle;
 }
 
-.main {
-  background: #ffffff;
-  position: relative;
-  z-index: 3;
-}
+
 
 .form-check,
 label {
@@ -11635,12 +11621,6 @@ label {
   line-height: 1.42857;
   color: #AAAAAA;
   font-weight: 400;
-}
-
-.main-raised {
-  margin: -60px 30px 0px;
-  border-radius: 6px;
-  box-shadow: 0 16px 24px 2px rgba(0, 0, 0, 0.14), 0 6px 30px 5px rgba(0, 0, 0, 0.12), 0 8px 10px -5px rgba(0, 0, 0, 0.2);
 }
 
 /*           Animations              */
@@ -11877,7 +11857,6 @@ label {
   margin-top: 0;
 }
 
-#typography h1,
 #typography h2,
 #typography h3,
 #typography h4,
@@ -12067,12 +12046,7 @@ label {
   border-radius: 0;
 }
 
-@media (max-width: 830px) {
-  .main-raised {
-    margin-left: 10px;
-    margin-right: 10px;
-  }
-}
+
 
 @media (max-width: 767px) {
   .tab-pane#schedule-2 {
@@ -12101,10 +12075,6 @@ label {
 
   .pagination.pagination-info .page-item:nth-of-type(2) {
     display: none;
-  }
-
-  .main.main-raised {
-    margin-top: -30px;
   }
 
   .form-group.is-focused .bootstrap-datetimepicker-widget {
@@ -15347,7 +15317,7 @@ textarea {
 }
 
 body,
-h1,
+
 h2,
 h3,
 h4,
@@ -15362,7 +15332,7 @@ h6,
   line-height: 1.5em;
 }
 
-h1,
+
 h2,
 h3,
 .h1,
@@ -15387,7 +15357,7 @@ html * {
   -moz-osx-font-smoothing: grayscale;
 }
 
-h1,
+
 .h1 {
   font-size: 3.3125rem;
   line-height: 1.15em;
@@ -17300,10 +17270,8 @@ footer .pull-center {
   border-radius: 6px;
 }
 
-.card[class*="bg-"] h1 small,
 .card[class*="bg-"] h2 small,
 .card[class*="bg-"] h3 small,
-.card[class*="bg-"] .card-body h1 small,
 .card[class*="bg-"] .card-body h2 small,
 .card[class*="bg-"] .card-body h3 small {
   color: rgba(255, 255, 255, 0.8);
@@ -18247,12 +18215,6 @@ footer .pull-center {
   text-align: center;
 }
 
-.index-page .brand h1 {
-  font-size: 4.2rem;
-  font-weight: 600;
-  display: inline-block;
-  position: relative;
-}
 
 .index-page .brand h3 {
   font-size: 1.313rem;
@@ -19010,7 +18972,6 @@ footer .pull-center {
 @media screen and (max-width: 991px) {
 
   .menu-on-left .page-header,
-  .menu-on-left .main,
   .menu-on-left .navbar>div {
     -webkit-transform: translate3d(0px, 0, 0);
     -moz-transform: translate3d(0px, 0, 0);
@@ -19037,8 +18998,7 @@ footer .pull-center {
     top: -15px;
   }
 
-  .nav-open .menu-on-left .page-header,
-  .nav-open .menu-on-left .main {
+  .nav-open .menu-on-left .page-header {
     -webkit-transform: translate3d(230px, 0, 0);
     -moz-transform: translate3d(230px, 0, 0);
     -o-transform: translate3d(230px, 0, 0);

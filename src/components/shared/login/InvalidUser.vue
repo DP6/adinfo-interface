@@ -21,7 +21,7 @@
 
     methods: {
         redirect(){
-          this.$router.push('/');
+          this.$router.push('/login');
         }
     }
   }

@@ -14,15 +14,12 @@
       </div>
     </div>
     <div class="text-center">
-      <a @click="saveToken(), redirect()" class="btn btn-primary btn-link btn-wd btn-lg">Confirmar</a>
+      <router-link to="/template" @click="saveToken()" class="btn btn-primary btn-link btn-wd btn-lg">
+        Login
+        <!-- <router-link to="/interface">Login</router-link> -->
+      </router-link>
     </div>
   </form>
-    <!-- text -->
-<!-- <form id="app">
-    <p>
-      <input type="password" v-model="token" @keyup.enter="saveToken">
-    </p>
-  </form> -->
 </template>
 
 <script>
@@ -30,16 +27,16 @@ export default {
   name: 'app',
   data () {
     return {
-      token: ''
+      token: '',
+      show: true
     }
   },
   methods: {
     saveToken() {
       localStorage.setItem("userToken", this.token);
     },
-
     redirect(){
-        this.$router.push('template');
+      this.$router.push('template');
     }
   }
 }

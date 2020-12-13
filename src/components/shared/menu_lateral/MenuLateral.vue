@@ -4,7 +4,7 @@
             <nav class="nav">
                 <h2>ADINFO</h2>
                 <ul>
-                    <li v-for="route in routes">
+                    <li v-for="route in interfaceChilds" :key="route">
                         <router-link class="opcao" :to="route.path">{{ route.titulo }}</router-link>
                     </li>
                 </ul>
@@ -26,7 +26,12 @@ export default {
             required: true,
             type: Array
         }
-    }
+    },
+    data() {
+        return {
+            interfaceChilds : this.routes[0].children,
+        }
+    },
 }
 
 </script>
@@ -68,7 +73,7 @@ h2 {
     text-align: center;
     margin: 50px 0;
     font-size: 30px;
-    padding: 20px; 
+    padding: 20px;
     border: 2px solid white;
     color: white;
     font-weight: lighter;

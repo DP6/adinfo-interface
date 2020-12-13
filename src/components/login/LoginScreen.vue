@@ -12,8 +12,6 @@
     </div>
 </template>
 
-
-
 <script>
 import LoginForm from './LoginForm.vue';
 
@@ -30,12 +28,11 @@ export default {
 }
 </script>
 
-
-
-<style >
+<style>
     @import url('https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Roboto+Slab:400,700|Material+Icons');
     @import url('https://maxcdn.bootstrapcdn.com/font-awesome/latest/css/font-awesome.min.css');
     @import './assets/css/material-kit.css?v=2.0.7';
+    /* TODO VER COMO IMPORTAR ISSO SEM BUGAR OS TITULOS */
 
     .fundo {
         background-image: url('./assets/img/bg7.jpg');
@@ -47,4 +44,5 @@ export default {
         width: 100%;
         height: 100%;
     }
+
 </style>
