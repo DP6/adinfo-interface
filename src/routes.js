@@ -3,7 +3,7 @@ import Csv from './components/csv/Csv.vue';
 import Template from './components/template/Template.vue';
 import AtualizarConfiguracao from './components/atualizar_configuracao/AtualizarConfiguracao.vue';
 import NovaConfiguracao from './components/nova_configuracao/NovaConfiguracao.vue';
-import Login from './components/login/LoginScreen.vue';
+import Login from './views/Login.vue';
 import Interface from './views/Interface.vue';
 
 export const routes = [

@@ -13,7 +13,7 @@
 </template>
 
 <script>
-import LoginForm from './LoginForm.vue';
+import LoginForm from '../components/login/LoginForm.vue';
 
 export default {
     name: 'Login',
@@ -31,11 +31,11 @@ export default {
 <style>
     @import url('https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Roboto+Slab:400,700|Material+Icons');
     @import url('https://maxcdn.bootstrapcdn.com/font-awesome/latest/css/font-awesome.min.css');
-    @import './assets/css/material-kit.css?v=2.0.7';
+    @import '../components/login/assets/css/material-kit.css?v=2.0.7';
     /* TODO VER COMO IMPORTAR ISSO SEM BUGAR OS TITULOS */
 
     .fundo {
-        background-image: url('./assets/img/bg7.jpg');
+        background-image: url('../components/login/assets/img/bg7.jpg');
         background-size: cover;
         background-position: top center;
     }

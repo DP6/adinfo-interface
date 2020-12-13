@@ -5,7 +5,7 @@
 </template>
 
 <script>
-import Login from './components/login/LoginScreen.vue';
+import Login from './views/Login.vue';
 import MenuLateral from './components/shared/menu_lateral/MenuLateral.vue';
 import { routes } from './routes';
 export default {
