@@ -21,6 +21,7 @@
     </div>
     <usuario-invalido :active="showAuthAlert">
     </usuario-invalido>
+    {{showAuthAlert}}
   </form>
 </template>
 
@@ -53,18 +54,19 @@ export default {
               token: localStorage.getItem('userToken')
           }
       }).then(function(response) {
-          var statusCode = response.status;
+          statusCode = response.status;
           return response.json();
       }).then((userData) => {
-          console.log(userData)
           localStorage.setItem('company', userData.company)
           localStorage.setItem('agency', userData.agency)
       }).catch((err) => {
+        console.log(this.isAuthError(statusCode))
           this.showAuthAlert = this.isAuthError(statusCode);
           console.log(err);
       });
     },
     isAuthError(statusCode){
+      console.log(statusCode)
       if(statusCode === 403)
           return true;
       return false;
