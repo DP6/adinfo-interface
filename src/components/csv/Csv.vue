@@ -34,7 +34,6 @@
                 </li>
             </ul>
         </div>
-        {{showAuthAlert}}
         <usuario-invalido :active="showAuthAlert" v-on:setShowAlertFalse="setShowAlertFalse()" >
         </usuario-invalido>
     </div>

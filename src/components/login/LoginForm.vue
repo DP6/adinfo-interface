@@ -14,21 +14,27 @@
       </div>
     </div>
     <div class="text-center">
-      <a @click="saveToken(), redirect()" class="btn btn-primary btn-link btn-wd btn-lg">
+      <a @click="saveToken(), getUserInfos()" class="btn btn-primary btn-link btn-wd btn-lg">
         Login
         <!-- <router-link to="/interface">Login</router-link> -->
       </a>
     </div>
+    <usuario-invalido :active="showAuthAlert">
+    </usuario-invalido>
   </form>
 </template>
 
 <script>
+import InvalidUserAlert from '../shared/login/InvalidUser.vue';
 export default {
   name: 'app',
+  components: {
+    'usuario-invalido': InvalidUserAlert
+  },
   data () {
     return {
       token: '',
-      show: true
+      showAuthAlert: false,
     }
   },
   methods: {
@@ -37,6 +43,34 @@ export default {
     },
     redirect(){
       this.$router.push('template');
+    },
+    getUserInfos() {
+      var statusCode = null;
+      fetch('http://localhost:443/user', {
+          method: 'GET',
+          headers: {
+              'Content-Type': 'application/json',
+              token: localStorage.getItem('userToken')
+          }
+      }).then(function(response) {
+          var statusCode = response.status;
+          return response.json();
+      }).then((userData) => {
+          console.log(userData)
+          localStorage.setItem('company', userData.company)
+          localStorage.setItem('agency', userData.agency)
+      }).catch((err) => {
+          this.showAuthAlert = this.isAuthError(statusCode);
+          console.log(err);
+      });
+    },
+    isAuthError(statusCode){
+      if(statusCode === 403)
+          return true;
+      return false;
+    },
+    setShowAlertFalse(){
+      this.showAuthAlert = false;
     }
   }
 }
