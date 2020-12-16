@@ -19,9 +19,8 @@
         <!-- <router-link to="/interface">Login</router-link> -->
       </a>
     </div>
-    <usuario-invalido :active="showAuthAlert">
+    <usuario-invalido :active="showAuthAlert"  v-on:setShowAlertFalse="setShowAlertFalse()" >
     </usuario-invalido>
-    {{showAuthAlert}}
   </form>
 </template>
 
@@ -59,6 +58,7 @@ export default {
       }).then((userData) => {
           localStorage.setItem('company', userData.company)
           localStorage.setItem('agency', userData.agency)
+          this.redirect()
       }).catch((err) => {
         console.log(this.isAuthError(statusCode))
           this.showAuthAlert = this.isAuthError(statusCode);
@@ -70,6 +70,9 @@ export default {
       if(statusCode === 403)
           return true;
       return false;
+    },
+    setShowAlertFalse(){
+      this.showAuthAlert = false;
     },
     setShowAlertFalse(){
       this.showAuthAlert = false;

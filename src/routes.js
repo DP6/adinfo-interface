@@ -3,6 +3,7 @@ import Csv from './components/csv/Csv.vue';
 import Template from './components/template/Template.vue';
 import AtualizarConfiguracao from './components/atualizar_configuracao/AtualizarConfiguracao.vue';
 import NovaConfiguracao from './components/nova_configuracao/NovaConfiguracao.vue';
+import Register from './components/register/Register.vue';
 import Login from './views/Login.vue';
 import Interface from './views/Interface.vue';
 
@@ -13,7 +14,8 @@ export const routes = [
         { path: 'csv', component: Csv, titulo: 'CSV'},
         { path: 'template', component: Template, titulo: 'Template'},
         { path: 'updateConfig', component: AtualizarConfiguracao, titulo: 'Atualizar Configuração'},
-        { path: 'newConfig', component: NovaConfiguracao, titulo: 'Nova Configuração'}
+        { path: 'newConfig', component: NovaConfiguracao, titulo: 'Nova Configuração'},
+        { path: 'register', component: Register, titulo: 'Registrar usuário'}
     ]},
     { path: '/login', component: Login, titulo:'Login'},
 ];
