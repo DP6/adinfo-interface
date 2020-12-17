@@ -96,8 +96,8 @@ export default {
     data() {
         return {
             form: {
-                agency: null,
-                company: null
+                agency: localStorage.getItem('agency') || null,
+                company: localStorage.getItem('company') || null
             },
             tool: null,
             tituloResposta: '',
