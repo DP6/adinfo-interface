@@ -115,7 +115,7 @@ export default {
             a.remove();
         },
         getTemplate() {
-            fetch('http://localhost:443/config', {
+            fetch('https://adinfo.ue.r.appspot.com/config', {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
@@ -138,7 +138,7 @@ export default {
                     });
                 });
             }).then(() => {
-                return fetch('http://localhost:443/template', {
+                return fetch('https://adinfo.ue.r.appspot.com/template', {
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json',

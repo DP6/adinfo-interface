@@ -101,7 +101,7 @@ export default {
         },
         createUser() {
             var statusCode = null;
-            const url = `http://localhost:443/register`
+            const url = `https://adinfo.ue.r.appspot.com/register`
             const formdata = new FormData();
             formdata.append("company", document.querySelector('#company').value);
             formdata.append("agency", document.querySelector('#agency').value);

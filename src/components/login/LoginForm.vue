@@ -46,7 +46,7 @@ export default {
     },
     getUserInfos() {
       var statusCode = null;
-      fetch('http://localhost:443/user', {
+      fetch('https://adinfo.ue.r.appspot.com/user', {
           method: 'GET',
           headers: {
               'Content-Type': 'application/json',

@@ -99,7 +99,7 @@ export default {
         },
         getCsvList() {
             var fetchStatusCode = null;
-            fetch('http://localhost:443/csv/list', {
+            fetch('https://adinfo.ue.r.appspot.com/csv/list', {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
@@ -122,7 +122,7 @@ export default {
             });
         },
         downloadCSV(csv) {
-            fetch('http://localhost:443/csv', {
+            fetch('https://adinfo.ue.r.appspot.com/csv', {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
