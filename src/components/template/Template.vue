@@ -62,7 +62,7 @@ export default {
     data() {
         return {
             form: {
-                company: localStorage.getItem('company') || null,
+                company: localStorage.getItem('company') || '',
             },
             templateFile: new Blob(),
             colunas: [],

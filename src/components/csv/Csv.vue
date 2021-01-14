@@ -62,8 +62,8 @@ export default {
     data() {
         return {
             form: {
-                agency: localStorage.getItem('agency') || null,
-                company: localStorage.getItem('company') || null,
+                agency: localStorage.getItem('agency') || '',
+                company: localStorage.getItem('company') || '',
             },
             csvList: [],
             tituloResposta: 'Resposta',
