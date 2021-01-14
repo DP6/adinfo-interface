@@ -197,7 +197,7 @@ export default {
         company: 'arthurltda',
         token: localStorage.getItem('userToken')
       }
-    }).then(function(response) {
+    }).then((response) => {
       this.statusCode = response.status;
       return response.json();
     }).then((data) => {
