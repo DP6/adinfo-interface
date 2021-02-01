@@ -50,6 +50,9 @@
                 </md-card-actions>
             </md-card>
         </form>
+        <div class="load" v-show="show_load">
+            <md-progress-spinner md-mode="indeterminate"></md-progress-spinner>
+        </div>
         <div class="resposta" v-show="visibilidadeResposta">
             <titulo-principal :titulo="tituloResposta"></titulo-principal>
             <div class="tabela-resposta">
@@ -111,6 +114,7 @@ export default {
             file: null,
             statusCode: null,
             showAuthAlert: false,
+            show_load: false,
         }
     },
     validations: {
@@ -155,7 +159,7 @@ export default {
         },
         build() {
             this.clearResposta();
-            const url = `https://adinfo.ue.r.appspot.com/build/${this.tool}`
+            const url = `https://adinfo.ue.r.appspot.com/build/${this.tool}`;
             // fetch(url, {
             //     method: 'GET',
             //     headers: {
@@ -166,11 +170,12 @@ export default {
             //     }
             const formdata = new FormData();
             formdata.append("data", document.querySelector('#file').files[0]);
-            formdata.append("company", document.querySelector('#company').value);
-            formdata.append("agency", document.querySelector('#agency').value);
-            formdata.append("token", localStorage.getItem('userToken'));
+            this.show_load = true;
             const requestOptions = {
                 method: 'POST',
+                headers: {
+                    token: localStorage.getItem('userToken')
+                },
                 body: formdata,
                 redirect: 'follow'
             };
@@ -187,6 +192,9 @@ export default {
                 this.builderFile = file;
                 return file.text();
             }).then(textInFile => {
+                this.previaTitulo = [];
+                this.previaCampos = [];
+                this.tabela = [];
                 const csvSeparator = /\,/.test(textInFile.split('\n')[0]) ? ',' : ';';
                 this.visibilidadeResposta = true;
                 this.tituloResposta = 'Prévia';
@@ -209,6 +217,8 @@ export default {
                 this.visibilidadeResposta = true;
                 this.tituloResposta = 'Falha na requisição';
                 this.respostaAPI = err;
+            }).finally(() => {
+                this.show_load = false;
             });
         },
         downloadParametrizacao() {
@@ -234,6 +244,11 @@ export default {
 
     form {
         margin-left: 50px;
+    }
+
+    .load {
+        margin-top: 50px;
+        text-align: center;
     }
 
     .previa div.md-table-content {

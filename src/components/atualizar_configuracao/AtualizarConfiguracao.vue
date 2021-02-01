@@ -10,17 +10,31 @@
             <div class="md-layout-item">
               <md-field>
                 <label for="tipo">Tipo</label>
-                <md-select name="tipo" id="tipo">
+                <md-select name="tipo" id="tipo" v-model="selected_field">
                   <md-option value="separator">Separator</md-option>
                   <md-option value="sepace-separator">Space Separator</md-option>
+                  <md-option value="csv-separator">Csv Separator</md-option>
                   <md-option value="ferramenta-midia">Ferramenta/Mídia</md-option>
                 </md-select>
               </md-field>
             </div>
             <div class="md-layout-item">
-              <md-field>
-                <label for="first-name">First Name</label>
-                <md-input name="first-name" id="first-name" autocomplete="given-name"/>
+              <md-field v-show="!show_select">
+                <label for="value">Valor</label>
+                <md-input name="value" class="input-field" autocomplete="given-name"/>
+              </md-field>
+              <md-field v-show="show_select">
+                <label for="tool">Mídia</label>
+                <md-select name="tool" class="select-field" v-model="ferramenta_midia">
+                  <md-optgroup label="Ferramentas">
+                    <md-option value="adobe">Adobe Analytics</md-option>
+                    <md-option value="ga">Google Analytics</md-option>
+                  </md-optgroup>
+                  <md-optgroup label="Mídias">
+                    <md-option value="facebookads">Facebook Ads</md-option>
+                    <md-option value="googleads">Google Ads</md-option>
+                  </md-optgroup>
+                </md-select>
               </md-field>
             </div>
           </div>
@@ -45,8 +59,8 @@
               <div class="md-layout md-gutter campo-adicionar">
                 <div class="md-layout-item">
                   <md-field>
-                    <label for="first-name">First Name</label>
-                    <md-input name="first-name" id="first-name" autocomplete="given-name"/>
+                    <label for="utm">UTM</label>
+                    <md-input name="utm" class="utm" autocomplete="given-name"/>
                   </md-field>
                 </div>
               </div>
@@ -68,8 +82,8 @@
                 </div>
                 <div class="md-layout-item">
                   <md-field>
-                    <label for="first-name">First Name</label>
-                    <md-input name="first-name" id="first-name" autocomplete="given-name"/>
+                    <label for="value">First Name</label>
+                    <md-input name="value" class="input-field" autocomplete="given-name"/>
                   </md-field>
                 </div>
               </div>
@@ -93,8 +107,8 @@
                   <div class="md-layout md-gutter campo-adicionar">
                     <div class="md-layout-item">
                       <md-field>
-                        <label for="first-name">First Name</label>
-                        <md-input name="first-name" id="first-name" autocomplete="given-name"/>
+                        <label for="value">First Name</label>
+                        <md-input name="value" class="input-field" autocomplete="given-name"/>
                       </md-field>
                     </div>
                   </div>
@@ -113,8 +127,8 @@
                       <div class="md-layout md-gutter campo-adicionar">
                         <div class="md-layout-item">
                           <md-field>
-                            <label for="first-name">First Name</label>
-                            <md-input name="first-name" id="first-name" autocomplete="given-name"/>
+                            <label for="value">First Name</label>
+                            <md-input name="value" class="input-field" autocomplete="given-name"/>
                           </md-field>
                         </div>
                       </div>
@@ -140,6 +154,9 @@
         <botao-submit @botaoAtivado="updateConfig()" nome_do_botao="Atualizar Configuração"></botao-submit>
       </md-card-actions>
     </md-card>
+    <div class="load" v-show="show_load">
+      <md-progress-spinner md-mode="indeterminate"></md-progress-spinner>
+    </div>
     <md-snackbar :md-position="position" :md-duration="isInfinity ? Infinity : duration" :md-active.sync="showSnackbar" md-persistent>
       <span>{{ snackbar_message }}</span>
       <md-button class="md-primary" @click="showSnackbar = false">OK</md-button>
@@ -178,6 +195,10 @@ export default {
       snackbar_message: '',
       statusCode: null,
       showAuthAlert: false,
+      show_load: false,
+      selected_field: '',
+      show_select: false,
+      ferramenta_midia: '',
     }
   },
   validations: {
@@ -190,20 +211,21 @@ export default {
   },
   created() {
     const url = `https://adinfo.ue.r.appspot.com/config`;
+    this.show_load = true;
     fetch(url, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
-        company: 'arthurltda',
         token: localStorage.getItem('userToken')
       }
     }).then((response) => {
       this.statusCode = response.status;
       return response.json();
     }).then((data) => {
-      delete data[0].insertTime;
-      this.configJson = data[0];
-      this.generalConfig = Object.keys(data[0]);
+      this.show_load = false;
+      delete data.insertTime;
+      this.configJson = data;
+      this.generalConfig = Object.keys(data);
     }).catch((err) => {
       this.showAuthAlert = this.isAuthError(this.statusCode);
       console.log(err);
@@ -212,14 +234,20 @@ export default {
   methods: {
     updateConfig() {
       const url = `https://adinfo.ue.r.appspot.com/config`;
+      this.show_load = true;
       const formdata = new FormData();
+      console.log(this.configJson);
       formdata.append("config", JSON.stringify(this.configJson));
-      formdata.append("company", 'arthurltda');
-      formdata.append("token", localStorage.getItem('userToken'));
       fetch(url, {
         method: 'POST',
+        headers: {
+          token: localStorage.getItem('userToken')
+        },
         body: formdata
       }).then((response) => {
+        if(response.status === 403) {
+          throw new Error('Você não possui permissão para realizar esta ação!');
+        }
         this.snackbar_message = 'Configuração atualizada com sucesso!';
         this.showSnackbar = true;
         this.statusCode = response.status;
@@ -227,6 +255,8 @@ export default {
         this.showAuthAlert = this.isAuthError(this.statusCode);
         this.snackbar_message = 'Erro ao atualizar a configuração!';
         this.showSnackbar = true;
+      }).finally(() => {
+        this.show_load = false;
       });
     },
     concatId(...ids) {
@@ -248,8 +278,13 @@ export default {
     },
     confirmar(event, ...ids) {
       const divAdd = event.target.parentNode.parentNode.parentNode;
-      const inputValue = divAdd.querySelector('input#first-name').value;
-      divAdd.querySelector('input#first-name').value = '';
+      let inputValue;
+      if(this.show_select) {
+        inputValue = this.ferramenta_midia;
+      } else {
+        inputValue = divAdd.querySelector('input.input-field').value;
+        divAdd.querySelector('input.input-field').value = '';
+      }
       if(ids.length === 0) {
         const type = divAdd.querySelector('.md-select input').value;
         if(type === 'Ferramenta/Mídia') {
@@ -259,16 +294,19 @@ export default {
           this.configJson[keyType] = inputValue;
         }
       } else if(ids.length === 1) {
-        const type = divAdd.querySelector('.md-select input') ? divAdd.querySelector('.md-select input').value : '';
-        if(type === "Dynamic Values") {
-          const keyType = (type.charAt(0).toLowerCase() + type.slice(1)).replace(' ', '');
-          this.configJson[ids[0]][keyType] = (inputValue == 'true');
-        } else if(type === "UTM") {
-          this.configJson[ids[0]][inputValue] = '';
-        } else {
-          console.log( divAdd.querySelector('input#first-name').value);
-          this.configJson[ids[0]][inputValue] = {};
+        if(ids[0] === 'ga') {
+          const keyType = divAdd.querySelector('input').value;
+          this.configJson[ids[0]][keyType] = {};
         }
+        // const type = divAdd.querySelector('input') ? divAdd.querySelector('input').value : '';
+        // if(type === "Dynamic Values") {
+        //   const keyType = (type.charAt(0).toLowerCase() + type.slice(1)).replace(' ', '');
+        //   this.configJson[ids[0]][keyType] = (inputValue == 'true');
+        // } else if(type === "UTM") {
+        //   this.configJson[ids[0]][inputValue] = '';
+        // } else {
+        //   this.configJson[ids[0]][inputValue] = {};
+        // }
       } else if(ids.length === 2) {
         this.configJson[ids[0]][ids[1]][inputValue] = [];
       } else if(ids.length === 3) {
@@ -310,6 +348,11 @@ export default {
         return true;
       return false;
     }
+  },
+  watch: {
+    selected_field: function(event) {
+      this.show_select = this.selected_field === 'ferramenta-midia' ? true : false;
+    }
   }
 }
 </script>
@@ -350,6 +393,11 @@ export default {
     font-size: 20px;
     cursor: pointer;
     user-select: none;
+  }
+
+  .load {
+    margin-top: 50px;
+    text-align: center;
   }
 
 </style>

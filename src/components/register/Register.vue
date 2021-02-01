@@ -26,15 +26,16 @@
                 </md-card-actions>
             </md-card>
         </form>
+        <div class="load" v-show="show_load">
+            <md-progress-spinner md-mode="indeterminate"></md-progress-spinner>
+        </div>
         <div class="respostas" v-show="visivel">
             <titulo-principal :titulo="tituloResposta"></titulo-principal>
-            <md-card md-card>
-                <ul>
-                    <li>
-                        <p> usuário criado com sucesso. Um email com um token de acesso foi enviado para o email @email.</p>
-                    </li>
-                </ul>
-            </md-card>
+            <ul>
+                <li>
+                    <p>{{ respostaAPI }}</p>
+                </li>
+            </ul>
         </div>
         <usuario-invalido :active="showAuthAlert" v-on:setShowAlertFalse="setShowAlertFalse()" >
         </usuario-invalido>
@@ -71,6 +72,8 @@ export default {
             tituloResposta: 'Resposta',
             statusCode: null,
             showAuthAlert: false,
+            respostaAPI: '',
+            show_load: false,
         }
     },
     validations: {
@@ -102,25 +105,28 @@ export default {
         createUser() {
             var statusCode = null;
             const url = `https://adinfo.ue.r.appspot.com/register`
-            const formdata = new FormData();
-            formdata.append("company", document.querySelector('#company').value);
-            formdata.append("agency", document.querySelector('#agency').value);
-            formdata.append("token", localStorage.getItem('userToken'));
             const requestOptions = {
                 method: 'POST',
-                body: formdata,
-                redirect: 'follow'
+                headers: {
+                    'Content-Type': 'application/json',
+                    token: localStorage.getItem('userToken'),
+                    agency: document.querySelector('#agency').value,
+                    permission: 'agency',
+                }
             };
+            this.show_load = true;
             fetch(url, requestOptions)
             .then(function(response) {
                 statusCode = response.status;
                 return response.text();
             }).then((response) => {
-                console.log(response)
+                this.respostaAPI = response;
                 this.visivel = true;
             }).catch((err) => {
                 this.showAuthAlert = this.isAuthError(statusCode);
                 console.log(err);
+            }).finally(() => {
+                this.show_load = false;
             });
         },
         isAuthError(statusCode){
@@ -140,6 +146,11 @@ export default {
 
     form {
         margin-left: 50px;
+    }
+
+    .load {
+        margin-top: 50px;
+        text-align: center;
     }
 
     .respostas {

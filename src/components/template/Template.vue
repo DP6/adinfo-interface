@@ -19,7 +19,9 @@
                 </md-card-actions>
             </md-card>
         </form>
-
+        <div class="load" v-show="show_load">
+            <md-progress-spinner md-mode="indeterminate"></md-progress-spinner>
+        </div>
         <div class="respostas" v-show="visivel">
             <titulo-principal titulo="Resultado"></titulo-principal>
             <md-card md-card>
@@ -70,6 +72,7 @@ export default {
             visivel: false,
             statusCode: null,
             showAuthAlert: false,
+            show_load: false,
         }
     },
     validations: {
@@ -115,20 +118,20 @@ export default {
             a.remove();
         },
         getTemplate() {
+            this.show_load = true;
             fetch('https://adinfo.ue.r.appspot.com/config', {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
-                    // agency: document.querySelector('#agency').value,
-                    // company: document.querySelector('#company').value
-                    company: document.querySelector('#company').value,
                     token: localStorage.getItem('userToken')
                 }
             }).then(configPromise => {
                 this.statusCode = configPromise.status;
                 return configPromise.json();
             }).then(configJson => {
-                const lastConfig = configJson[0].ga || configJson[0].adobe;
+                const lastConfig = configJson.ga || configJson.adobe;
+                this.tabela = [];
+                this.colunas = [];
                 Object.keys(lastConfig).map(key => {
                     Object.keys(lastConfig[key]).map(coluna => {
                         this.tabela.push({
@@ -159,6 +162,8 @@ export default {
             }).catch((err) => {
                 this.showAuthAlert = this.isAuthError(this.statusCode);
                 console.log(err);
+            }).finally(() => {
+                this.show_load = false;
             });
         },
         isAuthError(statusCode){
@@ -179,6 +184,11 @@ export default {
 
     .button-download {
         float: right;
+    }
+
+    .load {
+        margin-top: 50px;
+        text-align: center;
     }
 
     .tabela-respostas {

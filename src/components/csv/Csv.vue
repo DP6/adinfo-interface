@@ -26,8 +26,12 @@
                 </md-card-actions>
             </md-card>
         </form>
+
         <div class="respostas">
             <titulo-principal :titulo="tituloResposta"></titulo-principal>
+            <div class="load" v-show="show_load">
+                <md-progress-spinner md-mode="indeterminate"></md-progress-spinner>
+            </div>
             <ul>
                 <li v-for="csv in csvList" class="csv">
                     <p @click="downloadCSV(csv)">{{ csv }}</p>
@@ -69,6 +73,7 @@ export default {
             tituloResposta: 'Resposta',
             statusCode: null,
             showAuthAlert: false,
+            show_load: false,
         }
     },
     validations: {
@@ -99,6 +104,7 @@ export default {
         },
         getCsvList() {
             var fetchStatusCode = null;
+            this.show_load = true;
             fetch('https://adinfo.ue.r.appspot.com/csv/list', {
                 method: 'GET',
                 headers: {
@@ -119,6 +125,8 @@ export default {
                 this.showAuthAlert = this.isAuthError(fetchStatusCode);
                 this.tituloResposta = 'Erro';
                 console.log(err);
+            }).finally(() => {
+                this.show_load = false;
             });
         },
         downloadCSV(csv) {
@@ -163,6 +171,11 @@ export default {
 
     form {
         margin-left: 50px;
+    }
+
+    .load {
+        margin-top: 50px;
+        text-align: center;
     }
 
     .respostas {

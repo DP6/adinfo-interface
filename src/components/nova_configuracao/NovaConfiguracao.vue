@@ -18,6 +18,9 @@
                 </md-card-actions>
             </md-card>
         </form>
+        <div class="load" v-show="show_load">
+            <md-progress-spinner md-mode="indeterminate"></md-progress-spinner>
+        </div>
         <md-snackbar :md-position="position" :md-duration="isInfinity ? Infinity : duration" :md-active.sync="showSnackbar" md-persistent>
             <span>{{ snackbar_message }}</span>
             <md-button class="md-primary" @click="showSnackbar = false">OK</md-button>
@@ -55,6 +58,7 @@ export default {
             snackbar_message: '',
             statusCode: null,
             showAuthAlert: false,
+            show_load: false,
         }
     },
     validations: {
@@ -74,25 +78,33 @@ export default {
             }
         },
         newConfig() {
+            this.show_load = true;
             var reader = new FileReader();
             reader.readAsText(document.querySelector('#file').files[0], "UTF-8")
             reader.onload = (evt) => {
                 const url = `https://adinfo.ue.r.appspot.com/config`;
                 const formdata = new FormData();
-                formdata.append("company", 'arthurltda');
                 formdata.append("config", evt.target.result);
-                formdata.append("token", localStorage.getItem('userToken'));
                 fetch(url, {
                     method: 'POST',
+                    headers: {
+                        token: localStorage.getItem('userToken')
+                    },
                     body: formdata
                 }).then((response) => {
                     this.statusCode = response.status;
-                    this.snackbar_message = 'Configuração atualizada com sucesso!';
+                    if(response.status === 403) {
+                        this.snackbar_message = 'Permissão insuficiente!';
+                    } else {
+                        this.snackbar_message = 'Configuração atualizada com sucesso!';
+                    }
                     this.showSnackbar = true;
                 }).catch((err) => {
                     this.showAuthAlert = this.isAuthError(this.statusCode);
                     this.snackbar_message = 'Erro ao atualizar a configuração!';
                     this.showSnackbar = true;
+                }).finally(() => {
+                    this.show_load = false;
                 });
             }
         },
@@ -123,6 +135,11 @@ export default {
 
     .previa div.md-table-content {
         max-height: 300px;
+    }
+
+    .load {
+        margin-top: 50px;
+        text-align: center;
     }
 
     .tabela-resposta {

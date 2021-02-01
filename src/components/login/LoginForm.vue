@@ -50,7 +50,7 @@ export default {
           method: 'GET',
           headers: {
               'Content-Type': 'application/json',
-              token: localStorage.getItem('userToken')
+              token: this.token
           }
       }).then(function(response) {
           statusCode = response.status;
@@ -60,13 +60,12 @@ export default {
           localStorage.setItem('agency', userData.agency)
           this.redirect()
       }).catch((err) => {
-        console.log(this.isAuthError(statusCode))
+          console.log(this.isAuthError(statusCode))
           this.showAuthAlert = this.isAuthError(statusCode);
           console.log(err);
       });
     },
     isAuthError(statusCode){
-      console.log(statusCode)
       if(statusCode === 403)
           return true;
       return false;
