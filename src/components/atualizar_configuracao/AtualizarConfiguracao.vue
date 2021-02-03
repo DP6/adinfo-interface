@@ -55,12 +55,82 @@
           <md-list slot="md-expand">
 
             <md-list-item v-if="item === 'ga'" class="nivel2">
-              <md-icon @click.native="adicionarItem($event, item)" class="adicionar">add</md-icon>
+              <md-icon v-show="toolFields.ga.length !== 0" @click.native="adicionarItem($event, item)" class="adicionar">add</md-icon>
               <div class="md-layout md-gutter campo-adicionar">
                 <div class="md-layout-item">
                   <md-field>
                     <label for="utm">UTM</label>
-                    <md-input name="utm" class="utm" autocomplete="given-name"/>
+                    <md-select name="utm" class="select-field" v-model="utms">
+                      <md-option v-for="utm in toolFields.ga" :value="utm">{{utm}}</md-option>
+                    </md-select>
+                  </md-field>
+                </div>
+              </div>
+              <md-button class="md-primary md-raised botao-adicionar"  @click="confirmar($event, item)">Adicionar</md-button>
+              <md-button class="md-raised md-accent botao-cancelar" @click="cancelar($event)">Cancelar</md-button>
+            </md-list-item>
+
+            <md-list-item v-else-if="item === 'adobe'" class="nivel2">
+              <md-icon v-show="toolFields.adobe.length !== 0" @click.native="adicionarItem($event, item)" class="adicionar">add</md-icon>
+              <div class="md-layout md-gutter campo-adicionar">
+                <div class="md-layout-item">
+                  <md-field>
+                    <label for="cid">CID</label>
+                      <md-select name="cid" class="select-field" v-model="cid">
+                      <md-option v-for="cid in toolFields.adobe" :value="cid">{{cid}}</md-option>
+                    </md-select>
+                  </md-field>
+                </div>
+              </div>
+              <md-button class="md-primary md-raised botao-adicionar"  @click="confirmar($event, item)">Adicionar</md-button>
+              <md-button class="md-raised md-accent botao-cancelar" @click="cancelar($event)">Cancelar</md-button>
+            </md-list-item>
+
+            <md-list-item v-else-if="item === 'googleads'" class="nivel2">
+              <md-icon @click.native="adicionarItem($event, item)" class="adicionar">add</md-icon>
+              <div class="md-layout md-gutter campo-adicionar">
+                <div class="md-layout-item">
+                  <md-field>
+                    <label for="field">Campo</label>
+                    <md-input name="field" class="input-field" autocomplete="given-name"/>
+                  </md-field>
+                  <md-field>
+                    <label for="value">Valor</label>
+                    <md-input name="value" class="input-field-value" autocomplete="given-name"/>
+                  </md-field>
+                </div>
+              </div>
+              <md-button class="md-primary md-raised botao-adicionar"  @click="confirmar($event, item)">Adicionar</md-button>
+              <md-button class="md-raised md-accent botao-cancelar" @click="cancelar($event)">Cancelar</md-button>
+            </md-list-item>
+
+            <md-list-item v-else-if="item === 'facebookads'" class="nivel2">
+              <md-icon @click.native="adicionarItem($event, item)" class="adicionar">add</md-icon>
+              <div class="md-layout md-gutter campo-adicionar">
+                <div class="md-layout-item">
+                  <md-field>
+                    <label for="tipo">Tipo</label>
+                    <md-select name="tipo" id="tipo" v-model="selected_field_facebookads">
+                      <md-option value="dynamic-values">Valores Dinâmicos</md-option>
+                      <md-option value="campos">Campos</md-option>
+                    </md-select>
+                  </md-field>
+                </div>
+                <div class="md-layout-item">
+                  <md-field v-show="!show_facebookads_select">
+                    <label for="field">Campo</label>
+                    <md-input name="field" class="input-field" autocomplete="given-name"/>
+                  </md-field>
+                  <md-field v-show="!show_facebookads_select">
+                    <label for="value">Valor</label>
+                    <md-input name="value" class="input-field-value" autocomplete="given-name"/>
+                  </md-field>
+                  <md-field v-show="show_facebookads_select">
+                    <label for="tool">Opção</label>
+                    <md-select name="tool" class="select-field" v-model="dynamicValues">
+                      <md-option value="true">Verdadeiro</md-option>
+                      <md-option value="false">Falso</md-option>
+                    </md-select>
                   </md-field>
                 </div>
               </div>
@@ -101,14 +171,13 @@
               <md-icon class="excluir" @click.native="excluirItem(item, param)">delete</md-icon>
 
               <md-list slot="md-expand">
-
                 <md-list-item class="nivel3">
                   <md-icon @click.native="adicionarItem($event, item, param)" class="adicionar">add</md-icon>
                   <div class="md-layout md-gutter campo-adicionar">
                     <div class="md-layout-item">
                       <md-field>
-                        <label for="value">First Name</label>
-                        <md-input name="value" class="input-field" autocomplete="given-name"/>
+                        <label for="field">Campo</label>
+                        <md-input name="field" class="input-field" autocomplete="given-name"/>
                       </md-field>
                     </div>
                   </div>
@@ -127,7 +196,7 @@
                       <div class="md-layout md-gutter campo-adicionar">
                         <div class="md-layout-item">
                           <md-field>
-                            <label for="value">First Name</label>
+                            <label for="value">Valor</label>
                             <md-input name="value" class="input-field" autocomplete="given-name"/>
                           </md-field>
                         </div>
@@ -197,8 +266,21 @@ export default {
       showAuthAlert: false,
       show_load: false,
       selected_field: '',
+      selected_field_facebookads: '',
       show_select: false,
+      show_facebookads_select: false,
       ferramenta_midia: '',
+      dynamicValues: '',
+      toolFieldsFixed: {
+        'adobe': ['cid'],
+        'ga': ['utm_medium', 'utm_source', 'utm_campagin', 'utm_content', 'utm_term']
+      },
+      toolFields: {
+        'adobe': [],
+        'ga': []
+      },
+      cid: '',
+      utms: ''
     }
   },
   validations: {
@@ -226,12 +308,26 @@ export default {
       delete data.insertTime;
       this.configJson = data;
       this.generalConfig = Object.keys(data);
+      this.updateToolFields();
     }).catch((err) => {
       this.showAuthAlert = this.isAuthError(this.statusCode);
       console.log(err);
     });
   },
   methods: {
+    updateToolFields() {
+      console.log(this.configJson);
+      if(this.configJson.ga) {
+        this.toolFields.ga = this.toolFieldsFixed.ga.filter(utm => Object.keys(this.configJson.ga).indexOf(utm) === -1);
+      } else {
+        this.toolFields.ga = this.toolFieldsFixed.ga;
+      }  
+      if(this.configJson.adobe) {
+        this.toolFields.adobe = this.toolFieldsFixed.adobe.filter(cid => Object.keys(this.configJson.adobe).indexOf(cid) === -1);
+      } else {
+        this.toolFields.adobe = this.toolFieldsFixed.adobe;
+      }
+    },
     updateConfig() {
       const url = `https://adinfo.ue.r.appspot.com/config`;
       this.show_load = true;
@@ -275,16 +371,18 @@ export default {
       addField.querySelector('.campo-adicionar').style.display = 'inline-flex';
       addField.querySelector('.botao-adicionar').style.display = 'inline-flex';
       addField.querySelector('.botao-cancelar').style.display = 'inline-flex';
+      this.updateToolFields();
     },
     confirmar(event, ...ids) {
       const divAdd = event.target.parentNode.parentNode.parentNode;
       let inputValue;
-      if(this.show_select) {
+      if(this.show_select && ids.length === 0) {
         inputValue = this.ferramenta_midia;
-      } else {
+      } else if(divAdd.querySelector('input.input-field')) {
         inputValue = divAdd.querySelector('input.input-field').value;
         divAdd.querySelector('input.input-field').value = '';
       }
+      console.log(ids);  
       if(ids.length === 0) {
         const type = divAdd.querySelector('.md-select input').value;
         if(type === 'Ferramenta/Mídia') {
@@ -295,18 +393,26 @@ export default {
         }
       } else if(ids.length === 1) {
         if(ids[0] === 'ga') {
-          const keyType = divAdd.querySelector('input').value;
-          this.configJson[ids[0]][keyType] = {};
+          inputValue = this.utms;
+          this.configJson.ga[inputValue] = {};
+          this.utms = undefined;
+        } else if(ids[0] === 'adobe') {
+          inputValue = this.cid;
+          this.configJson.adobe[inputValue] = {};
+          this.cid = undefined;
+        } else if(ids[0] == 'googleads') {
+          const fieldValue = divAdd.querySelector('input.input-field-value').value;
+          divAdd.querySelector('input.input-field-value').value = '';
+          this.configJson.googleads[inputValue] = fieldValue;
+        } else if(ids[0] == 'facebookads') {
+          if(this.selected_field_facebookads === 'dynamic-values') {
+            this.configJson.facebookads.dynamicValues = this.dynamicValues;
+          } else {
+            const fieldValue = divAdd.querySelector('input.input-field-value').value;
+            divAdd.querySelector('input.input-field-value').value = '';
+            this.configJson.facebookads[inputValue] = fieldValue;
+          }
         }
-        // const type = divAdd.querySelector('input') ? divAdd.querySelector('input').value : '';
-        // if(type === "Dynamic Values") {
-        //   const keyType = (type.charAt(0).toLowerCase() + type.slice(1)).replace(' ', '');
-        //   this.configJson[ids[0]][keyType] = (inputValue == 'true');
-        // } else if(type === "UTM") {
-        //   this.configJson[ids[0]][inputValue] = '';
-        // } else {
-        //   this.configJson[ids[0]][inputValue] = {};
-        // }
       } else if(ids.length === 2) {
         this.configJson[ids[0]][ids[1]][inputValue] = [];
       } else if(ids.length === 3) {
@@ -316,6 +422,7 @@ export default {
       divAdd.querySelector('.campo-adicionar').style.display = 'none';
       divAdd.querySelector('.botao-adicionar').style.display = 'none';
       divAdd.querySelector('.botao-cancelar').style.display = 'none';
+      this.updateToolFields();
     },
     cancelar(event) {
       const divField = event.target.parentNode.parentNode.parentNode;
@@ -342,6 +449,7 @@ export default {
         delete objectKey[ids.slice(-1)[0]]
       }
       this.generalConfig = Object.keys(this.configJson);
+      this.updateToolFields();
     },
     isAuthError(statusCode){
       if(statusCode === 403)
@@ -352,6 +460,9 @@ export default {
   watch: {
     selected_field: function(event) {
       this.show_select = this.selected_field === 'ferramenta-midia' ? true : false;
+    },
+    selected_field_facebookads: function(event) {
+      this.show_facebookads_select = this.selected_field_facebookads === 'dynamic-values' ? true : false;
     }
   }
 }

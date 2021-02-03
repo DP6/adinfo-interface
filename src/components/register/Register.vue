@@ -111,7 +111,7 @@ export default {
                     'Content-Type': 'application/json',
                     token: localStorage.getItem('userToken'),
                     agency: document.querySelector('#agency').value,
-                    permission: 'agency',
+                    permission: 'user',
                 }
             };
             this.show_load = true;

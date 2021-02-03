@@ -10,12 +10,12 @@ import Interface from './views/Interface.vue';
 export const routes = [
     { path: '/', component: Interface, titulo:'Interface',
     children:[
-        { path: 'parametrizacao', component: Parametrizacao, titulo: 'Parametrização'},
-        { path: 'csv', component: Csv, titulo: 'CSV'},
-        { path: 'template', component: Template, titulo: 'Template'},
-        { path: 'updateConfig', component: AtualizarConfiguracao, titulo: 'Atualizar Configuração'},
-        { path: 'newConfig', component: NovaConfiguracao, titulo: 'Nova Configuração'},
-        { path: 'register', component: Register, titulo: 'Registrar usuário'}
+        { path: 'parametrizacao', component: Parametrizacao, titulo: 'Parametrização', permission: 'admin|owner|user'},
+        { path: 'csv', component: Csv, titulo: 'CSV', permission: 'admin|owner|user'},
+        { path: 'template', component: Template, titulo: 'Template', permission: 'admin|owner|user'},
+        { path: 'updateConfig', component: AtualizarConfiguracao, titulo: 'Atualizar Configuração', permission: 'admin|owner'},
+        { path: 'newConfig', component: NovaConfiguracao, titulo: 'Nova Configuração', permission: 'admin|owner'},
+        { path: 'register', component: Register, titulo: 'Registrar usuário', permission: 'admin|owner'}
     ]},
     { path: '/login', component: Login, titulo:'Login'},
 ];

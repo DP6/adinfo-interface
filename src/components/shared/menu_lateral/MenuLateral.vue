@@ -4,7 +4,7 @@
             <nav class="nav">
                 <h2>ADINFO</h2>
                 <ul>
-                    <li v-for="route in interfaceChilds" :key="route">
+                    <li v-for="route in interfaceChilds" :key="route" v-if="route.permission.indexOf(permission) > -1">
                         <router-link class="opcao" :to="route.path">{{ route.titulo }}</router-link>
                     </li>
                 </ul>
@@ -30,6 +30,7 @@ export default {
     data() {
         return {
             interfaceChilds : this.routes[0].children,
+            permission: localStorage.getItem("permission"),
         }
     },
 }

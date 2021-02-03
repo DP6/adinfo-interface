@@ -47,22 +47,23 @@ export default {
     getUserInfos() {
       var statusCode = null;
       fetch('https://adinfo.ue.r.appspot.com/user', {
-          method: 'GET',
-          headers: {
-              'Content-Type': 'application/json',
-              token: this.token
-          }
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          token: this.token
+        }
       }).then(function(response) {
-          statusCode = response.status;
-          return response.json();
+        statusCode = response.status;
+        return response.json();
       }).then((userData) => {
-          localStorage.setItem('company', userData.company)
-          localStorage.setItem('agency', userData.agency)
-          this.redirect()
+        localStorage.setItem('company', userData.company);
+        localStorage.setItem('agency', userData.agency);
+        localStorage.setItem('permission', userData.permission);
+        this.redirect()
       }).catch((err) => {
-          console.log(this.isAuthError(statusCode))
-          this.showAuthAlert = this.isAuthError(statusCode);
-          console.log(err);
+        console.log(this.isAuthError(statusCode))
+        this.showAuthAlert = this.isAuthError(statusCode);
+        console.log(err);
       });
     },
     isAuthError(statusCode){
