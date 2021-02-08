@@ -31,14 +31,12 @@
                             <md-field>
                                 <label for="tool">Mídia</label>
                                 <md-select v-model="tool" name="tool" id="tool">
-                                    <md-optgroup label="Ferramentas">
-                                        <md-option value="adobe">Adobe Analytics</md-option>
-                                        <md-option value="ga">Google Analytics</md-option>
+                                    <md-optgroup v-if="parametrizers.filter(parametrizer => parametrizer.type === 'analytics')" label="Ferramentas">
+                                        <md-option v-for="tool in parametrizers.filter(parametrizer => parametrizer.type === 'analytics')" :value="tool.value">{{ tool.title }}</md-option>
                                     </md-optgroup>
 
-                                    <md-optgroup label="Mídias">
-                                        <md-option value="facebookads">Facebook Ads</md-option>
-                                        <md-option value="googleads">Google Ads</md-option>
+                                    <md-optgroup v-if="parametrizers.filter(parametrizer => parametrizer.type === 'media')" label="Mídias">
+                                        <md-option v-for="vehicle in parametrizers.filter(parametrizer => parametrizer.type === 'media')" :value="vehicle.value">{{ vehicle.title }}</md-option>
                                     </md-optgroup>
                                 </md-select>
                             </md-field>
@@ -115,6 +113,8 @@ export default {
             statusCode: null,
             showAuthAlert: false,
             show_load: false,
+            configJson: {},
+            parametrizers: [],
         }
     },
     validations: {
@@ -132,6 +132,42 @@ export default {
                 minLength: minLength(3)
             }
         }
+    },
+    created() {
+        const url = `https://adinfo.ue.r.appspot.com/config`;
+        this.show_load = true;
+        fetch(url, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+            token: localStorage.getItem('userToken')
+        }
+        }).then((response) => {
+            this.statusCode = response.status;
+            return response.json();
+        }).then((data) => {
+            this.show_load = false;
+            delete data.insertTime;
+            this.configJson = data;
+            const titles = {
+                'ga': 'Google Analytics',
+                'adobe': 'Adobe Analytics',
+                'facebookads': 'Facebook Ads',
+                'googleads': 'Google Ads'
+            };
+            Object.keys(this.configJson).forEach(key => {
+                if(typeof this.configJson[key] === 'object' && key !== 'columns') {
+                    this.parametrizers.push({
+                        title: titles[key] ? titles[key] : key.charAt(0).toUpperCase() + key.slice(1),
+                        value: key,
+                        type: (key === 'ga' || key === 'adobe') ? 'analytics' : 'media'
+                    });
+                }
+            });
+        }).catch((err) => {
+            this.showAuthAlert = this.isAuthError(this.statusCode);
+            console.log(err);
+        });
     },
     methods: {
         getValidationClass (fieldName) {
@@ -180,46 +216,46 @@ export default {
                 redirect: 'follow'
             };
             fetch(url, requestOptions)
-            .then(response => {
-                this.statusCode = response.status;
-                if(response.status === 200) {
-                    return response.blob();
-                } else {
-                    return response.json();
-                }
-            }).then(file => {
-                if(file.message) throw new Error(file.message);
-                this.builderFile = file;
-                return file.text();
-            }).then(textInFile => {
-                this.previaTitulo = [];
-                this.previaCampos = [];
-                this.tabela = [];
-                const csvSeparator = /\,/.test(textInFile.split('\n')[0]) ? ',' : ';';
-                this.visibilidadeResposta = true;
-                this.tituloResposta = 'Prévia';
-                this.visibilidadePrevia = true;
-                this.previaTitulo = textInFile.split('\n')[0].split(csvSeparator);
-                const linhas = textInFile.split('\n').slice(1);
-                linhas.every((linha, index) => {
-                    if(linha.split(csvSeparator)[0] === '' || index === 6) {
-                        return false;
+                .then(response => {
+                    this.statusCode = response.status;
+                    if(response.status === 200) {
+                        return response.blob();
+                    } else {
+                        return response.json();
                     }
-                    const objeto = {};
-                    linha.split(csvSeparator).forEach((campo, indexCampo) => {
-                        objeto[this.previaTitulo[indexCampo]] = campo;
+                }).then(file => {
+                    if(file.message) throw new Error(file.message);
+                    this.builderFile = file;
+                    return file.text();
+                }).then(textInFile => {
+                    this.previaTitulo = [];
+                    this.previaCampos = [];
+                    this.tabela = [];
+                    const csvSeparator = /\,/.test(textInFile.split('\n')[0]) ? ',' : ';';
+                    this.visibilidadeResposta = true;
+                    this.tituloResposta = 'Prévia';
+                    this.visibilidadePrevia = true;
+                    this.previaTitulo = textInFile.split('\n')[0].split(csvSeparator);
+                    const linhas = textInFile.split('\n').slice(1);
+                    linhas.every((linha, index) => {
+                        if(linha.split(csvSeparator)[0] === '' || index === 6) {
+                            return false;
+                        }
+                        const objeto = {};
+                        linha.split(csvSeparator).forEach((campo, indexCampo) => {
+                            objeto[this.previaTitulo[indexCampo]] = campo;
+                        });
+                        this.tabela.push(objeto);
+                        return true;
                     });
-                    this.tabela.push(objeto);
-                    return true;
+                }).catch(err => {
+                    this.showAuthAlert = this.isAuthError(this.statusCode);
+                    this.visibilidadeResposta = true;
+                    this.tituloResposta = 'Falha na requisição';
+                    this.respostaAPI = err;
+                }).finally(() => {
+                    this.show_load = false;
                 });
-            }).catch(err => {
-                this.showAuthAlert = this.isAuthError(this.statusCode);
-                this.visibilidadeResposta = true;
-                this.tituloResposta = 'Falha na requisição';
-                this.respostaAPI = err;
-            }).finally(() => {
-                this.show_load = false;
-            });
         },
         downloadParametrizacao() {
             const url = window.URL.createObjectURL(this.builderFile);

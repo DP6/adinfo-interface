@@ -15,6 +15,7 @@
                   <md-option value="sepace-separator">Space Separator</md-option>
                   <md-option value="csv-separator">Csv Separator</md-option>
                   <md-option value="ferramenta-midia">Ferramenta/Mídia</md-option>
+                  <md-option value="custom-ferramenta-midia">Ferramenta/Mídia Personalizada</md-option>
                 </md-select>
               </md-field>
             </div>
@@ -94,13 +95,29 @@
               <md-icon class="excluir" @click.native="excluirItem(item, param)">delete</md-icon>
 
               <md-list slot="md-expand">
-                <md-list-item class="nivel3">
+                <md-list-item v-if="item === 'columns'" class="nivel3">
                   <md-icon @click.native="adicionarItem($event, item, param)" class="adicionar">add</md-icon>
                   <div class="md-layout md-gutter campo-adicionar">
                     <div class="md-layout-item">
                       <md-field>
                         <label for="field">Coluna</label>
                         <md-input name="field" class="input-field" autocomplete="given-name"/>
+                      </md-field>
+                    </div>
+                  </div>
+                  <md-button class="md-primary md-raised botao-adicionar"  @click="confirmar($event, item, param)">Adicionar</md-button>
+                  <md-button class="md-raised md-accent botao-cancelar" @click="cancelar($event)">Cancelar</md-button>
+                </md-list-item>
+                
+                <md-list-item v-else class="nivel3">
+                  <md-icon v-if="columns.filter(c => configJson[item][param].indexOf(c) === -1).length > 0" @click.native="adicionarItem($event, item, param)" class="adicionar">add</md-icon>
+                  <div class="md-layout md-gutter campo-adicionar">
+                    <div class="md-layout-item">
+                      <md-field>
+                        <label for="column">Coluna</label>
+                        <md-select name="column" class="select-field" v-model="column_select">
+                          <md-option v-for="column in columns.filter(c => configJson[item][param].indexOf(c) === -1)" :value="column">{{column}}</md-option>
+                        </md-select>
                       </md-field>
                     </div>
                   </div>
@@ -171,6 +188,8 @@ export default {
       show_select: false,
       ferramenta_midia: '',
       dynamicValues: '',
+      column_select: '',
+      columns: [],
       toolConfigValues: {
         'adobe': '',
         'ga': '',
@@ -216,6 +235,7 @@ export default {
       delete data.insertTime;
       this.configJson = data;
       this.generalConfig = Object.keys(data);
+      this.columns = Object.keys(data.columns);
       this.updateToolFields();
     }).catch((err) => {
       this.showAuthAlert = this.isAuthError(this.statusCode);
@@ -226,10 +246,12 @@ export default {
     updateToolFields() {
       const toolsToUpdate = Object.keys(this.toolConfigValues);
       toolsToUpdate.forEach(tool => {
-        if(this.configJson[tool]) {
-          this.toolFields[tool] = this.toolFieldsFixed[tool].filter(elm => Object.keys(this.configJson[tool]).indexOf(elm) === -1);
-        } else {
-          this.toolFields[tool] = this.toolFieldsFixed[tool];
+        if(Object.keys(this.toolFieldsFixed).indexOf(tool) > -1) {
+          if(this.configJson[tool]) {
+            this.toolFields[tool] = this.toolFieldsFixed[tool].filter(elm => Object.keys(this.configJson[tool]).indexOf(elm) === -1);
+          } else {
+            this.toolFields[tool] = this.toolFieldsFixed[tool];
+          }
         }
       });
     },
@@ -288,32 +310,27 @@ export default {
       }
       if(ids.length === 0) {
         const type = divAdd.querySelector('.md-select input').value;
-        if(type === 'Ferramenta/Mídia') {
+        if(type.indexOf('Ferramenta/Mídia') > -1) {
           this.configJson[inputValue] = {};
         } else {
           const keyType = (type.charAt(0).toLowerCase() + type.slice(1)).replace(' ', '');
           this.configJson[keyType] = inputValue;
         }
       } else if(ids.length === 1) {
-        if(ids[0] === 'ga') {
-          inputValue = this.toolConfigValues.ga;
-          this.configJson.ga[inputValue] = [];
-          this.toolConfigValues.ga = undefined;
-        } else if(ids[0] === 'adobe') {
-          inputValue = this.toolConfigValues.adobe;
-          this.configJson.adobe[inputValue] = [];
-          this.toolConfigValues.adobe = undefined;
-        } else if(ids[0] == 'googleads') {
-          inputValue = this.toolConfigValues.googleads;
-          this.configJson.googleads[inputValue] = [];
-          this.toolConfigValues.googleads = undefined;
-        } else if(ids[0] == 'facebookads') {
-          inputValue = this.toolConfigValues.facebookads;
-          this.configJson.facebookads[inputValue] = [];
-          this.toolConfigValues.facebookads = undefined;
+        if(!inputValue) {
+          inputValue = this.toolConfigValues[ids[0]];
         }
+        if(inputValue) {
+          this.configJson[ids[0]][inputValue] = [];
+        }
+        this.toolConfigValues[ids[0]] = undefined;
       } else if(ids.length === 2) {
-        this.configJson[ids[0]][ids[1]].push(inputValue);
+        if(inputValue) {
+          this.configJson[ids[0]][ids[1]].push(inputValue);
+        } else if(this.column_select) {
+          this.configJson[ids[0]][ids[1]].push(this.column_select);
+          this.column_select = '';
+        }
       }
       this.generalConfig = Object.keys(this.configJson);
       divAdd.querySelector('.campo-adicionar').style.display = 'none';
