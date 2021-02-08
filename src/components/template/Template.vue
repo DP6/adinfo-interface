@@ -129,15 +129,13 @@ export default {
                 this.statusCode = configPromise.status;
                 return configPromise.json();
             }).then(configJson => {
-                const lastConfig = configJson.ga || configJson.adobe;
+                const columnsConfig = configJson.columns;
                 this.tabela = [];
                 this.colunas = [];
-                Object.keys(lastConfig).map(key => {
-                    Object.keys(lastConfig[key]).map(coluna => {
-                        this.tabela.push({
-                            valor: lastConfig[key][coluna].join(', '),
-                            campo: coluna
-                        });
+                Object.keys(columnsConfig).map(column => {
+                    this.tabela.push({
+                        valor: columnsConfig[column].join(', '),
+                        campo: column
                     });
                 });
             }).then(() => {
