@@ -9,11 +9,6 @@
                     </li>
                 </ul>
             </nav>
-            <footer>
-                <a href="https://github.com/DP6" target="_blank"><img src="../../../assets/logo_github.png"></a>
-                <a href="https://www.dp6.com.br/" target="_blank"><img src="../../../assets/logo_dp6.png"></a>
-                <a href="#" target="_blank"><img src="../../../assets/penguin.png"></a>
-            </footer>
         </div>
     </aside>
 </template>

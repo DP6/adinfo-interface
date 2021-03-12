@@ -176,6 +176,7 @@ export default {
       },
       generalConfig: [],
       configJson: {},
+      dependenciesConfig: [],
       showSnackbar: false,
       position: 'center',
       duration: 4000,
@@ -233,6 +234,8 @@ export default {
     }).then((data) => {
       this.show_load = false;
       delete data.insertTime;
+      this.dependenciesConfig = data.dependenciesConfig;
+      delete data.dependenciesConfig;
       this.configJson = data;
       this.generalConfig = Object.keys(data);
       this.columns = Object.keys(data.columns);
@@ -259,7 +262,9 @@ export default {
       const url = `https://adinfo.ue.r.appspot.com/config`;
       this.show_load = true;
       const formdata = new FormData();
-      formdata.append("config", JSON.stringify(this.configJson));
+      const configToUpdate = this.configJson;
+      configToUpdate.dependenciesConfig = this.dependenciesConfig;
+      formdata.append("config", JSON.stringify(configToUpdate));
       fetch(url, {
         method: 'POST',
         headers: {
