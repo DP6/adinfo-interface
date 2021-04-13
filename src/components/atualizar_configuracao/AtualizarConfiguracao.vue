@@ -220,7 +220,7 @@ export default {
     }
   },
   created() {
-    const url = `https://adinfo.ue.r.appspot.com/config`;
+    const url = `${this.$apiRoute}/config`;
     this.show_load = true;
     fetch(url, {
       method: 'GET',
@@ -259,7 +259,7 @@ export default {
       });
     },
     updateConfig() {
-      const url = `https://adinfo.ue.r.appspot.com/config`;
+      const url = `${this.$apiRoute}/config`;
       this.show_load = true;
       const formdata = new FormData();
       const configToUpdate = this.configJson;

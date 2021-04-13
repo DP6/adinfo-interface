@@ -105,7 +105,7 @@ export default {
         getCsvList() {
             var fetchStatusCode = null;
             this.show_load = true;
-            fetch('https://adinfo.ue.r.appspot.com/csv/list', {
+            fetch(`${this.$apiRoute}/csv/list`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
@@ -130,7 +130,7 @@ export default {
             });
         },
         downloadCSV(csv) {
-            fetch('https://adinfo.ue.r.appspot.com/csv', {
+            fetch(`${this.$apiRoute}/csv`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',

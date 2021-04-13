@@ -82,7 +82,7 @@ export default {
             var reader = new FileReader();
             reader.readAsText(document.querySelector('#file').files[0], "UTF-8")
             reader.onload = (evt) => {
-                const url = `https://adinfo.ue.r.appspot.com/config`;
+                const url = `${this.$apiRoute}/config`;
                 const formdata = new FormData();
                 formdata.append("config", evt.target.result);
                 fetch(url, {

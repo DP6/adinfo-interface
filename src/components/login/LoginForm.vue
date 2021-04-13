@@ -46,7 +46,7 @@ export default {
     },
     getUserInfos() {
       var statusCode = null;
-      fetch('https://adinfo.ue.r.appspot.com/user', {
+      fetch(`${this.$apiRoute}/user`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',

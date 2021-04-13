@@ -119,7 +119,7 @@ export default {
         },
         getTemplate() {
             this.show_load = true;
-            fetch('https://adinfo.ue.r.appspot.com/config', {
+            fetch(`${this.$apiRoute}/config`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
@@ -139,7 +139,7 @@ export default {
                     });
                 });
             }).then(() => {
-                return fetch('https://adinfo.ue.r.appspot.com/template', {
+                return fetch(`${this.$apiRoute}/template`, {
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json',

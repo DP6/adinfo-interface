@@ -134,7 +134,7 @@ export default {
         }
     },
     created() {
-        const url = `https://adinfo.ue.r.appspot.com/config`;
+        const url = `${this.$apiRoute}/config`;
         this.show_load = true;
         fetch(url, {
         method: 'GET',
@@ -195,15 +195,7 @@ export default {
         },
         build() {
             this.clearResposta();
-            const url = `https://adinfo.ue.r.appspot.com/build/${this.tool}`;
-            // fetch(url, {
-            //     method: 'GET',
-            //     headers: {
-            //         'Content-Type': 'application/json',
-            //         agency: document.querySelector('#agency').value,
-            //         file: 'bigodaria-202009021901',
-            //         company: document.querySelector('#company').value
-            //     }
+            const url = `${this.$apiRoute}/build/${this.tool}`;
             const formdata = new FormData();
             formdata.append("data", document.querySelector('#file').files[0]);
             this.show_load = true;

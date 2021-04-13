@@ -8,11 +8,12 @@ import { routes } from './routes';
 import 'vue-material/dist/vue-material.min.css';
 import 'vue-material/dist/theme/default.css';
 
-
 Vue.use(VueResource);
 Vue.use(VueRouter);
 Vue.use(VueMaterial);
 Vue.use(Vuelidate);
+
+Vue.prototype.$apiRoute = 'https://adinfo.ue.r.appspot.com';
 
 const router = new VueRouter({
   routes,

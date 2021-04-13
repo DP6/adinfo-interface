@@ -104,7 +104,7 @@ export default {
         },
         createUser() {
             var statusCode = null;
-            const url = `https://adinfo.ue.r.appspot.com/register`
+            const url = `${this.$apiRoute}/register`
             const requestOptions = {
                 method: 'POST',
                 headers: {
