@@ -32,11 +32,19 @@
                                 <label for="tool">Mídia</label>
                                 <md-select v-model="tool" name="tool" id="tool">
                                     <md-optgroup v-if="parametrizers.filter(parametrizer => parametrizer.type === 'analytics')" label="Ferramentas">
-                                        <md-option v-for="tool in parametrizers.filter(parametrizer => parametrizer.type === 'analytics')" :value="tool.value">{{ tool.title }}</md-option>
+                                        <md-option 
+                                            v-for="tool in parametrizers.filter(parametrizer => parametrizer.type === 'analytics')" 
+                                            :value="tool.value"
+                                            :key="tool.title"
+                                        >{{ tool.title }}</md-option>
                                     </md-optgroup>
 
                                     <md-optgroup v-if="parametrizers.filter(parametrizer => parametrizer.type === 'media')" label="Mídias">
-                                        <md-option v-for="vehicle in parametrizers.filter(parametrizer => parametrizer.type === 'media')" :value="vehicle.value">{{ vehicle.title }}</md-option>
+                                        <md-option 
+                                            v-for="vehicle in parametrizers.filter(parametrizer => parametrizer.type === 'media')" 
+                                            :value="vehicle.value"
+                                            :key="vehicle.value"
+                                        >{{ vehicle.title }}</md-option>
                                     </md-optgroup>
                                 </md-select>
                             </md-field>
@@ -62,7 +70,7 @@
                         </md-table-toolbar>
 
                         <md-table-row slot="md-table-row" slot-scope="{ item }">
-                            <md-table-cell v-for="titulo in previaTitulo" :md-label="titulo">{{ item[titulo] }}</md-table-cell>
+                            <md-table-cell v-for="titulo in previaTitulo" :md-label="titulo" :key="titulo">{{ item[titulo] }}</md-table-cell>
                         </md-table-row>
 
                     </md-table>

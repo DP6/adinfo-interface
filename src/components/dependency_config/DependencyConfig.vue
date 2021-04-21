@@ -12,7 +12,7 @@
                         <md-field>
                             <label for="columnReference">Coluna de Referência</label>
                             <md-select name="columnReference" id="columnReference" v-model="add_dependency_select_columnReference">
-                                <md-option v-for="column in Object.keys(configJson.columns)" :value="column">{{ column }}</md-option>
+                                <md-option v-for="column in Object.keys(configJson.columns)" :value="column" :key="column">{{ column }}</md-option>
                             </md-select>
                         </md-field>
                     </div>
@@ -20,7 +20,7 @@
                         <md-field>
                             <label for="columnDestiny">Coluna de Destino</label>
                             <md-select name="columnDestiny" id="columnDestiny" v-model="add_dependency_select_columnDestiny">
-                                <md-option v-for="column in Object.keys(configJson.columns)" :value="column">{{ column }}</md-option>
+                                <md-option v-for="column in Object.keys(configJson.columns)" :value="column" :key="column">{{ column }}</md-option>
                             </md-select>
                         </md-field>
                     </div>
@@ -55,7 +55,7 @@
                 <md-button class="md-raised md-accent botao-cancelar" @click="cancelar($event)">Cancelar</md-button>
             </md-list-item>
 
-            <md-list-item md-expand v-for="item in dependenciesConfig" :id="item.columnDestiny">
+            <md-list-item md-expand v-for="item in dependenciesConfig" :key="item.columnDestiny" :id="item.columnDestiny">
                 <span class="md-list-item-text">Referência: {{ item.columnReference }}<br>Destino: {{ item.columnDestiny }}</span>
                 <md-icon class="excluir" @click.native="excluirItem(item)">delete</md-icon>
 

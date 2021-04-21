@@ -33,7 +33,7 @@
                 <md-progress-spinner md-mode="indeterminate"></md-progress-spinner>
             </div>
             <ul>
-                <li v-for="csv in csvList" class="csv">
+                <li v-for="csv in csvList" class="csv" :key="csv">
                     <p @click="downloadCSV(csv)">{{ csv }}</p>
                 </li>
             </ul>
