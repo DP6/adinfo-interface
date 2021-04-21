@@ -11,6 +11,7 @@
               <md-field>
                 <label for="tipo">Tipo</label>
                 <md-select name="tipo" id="tipo" v-model="selected_field">
+                  <md-option value="columns">Colunas</md-option>
                   <md-option value="separator">Separator</md-option>
                   <md-option value="sepace-separator">Space Separator</md-option>
                   <md-option value="csv-separator">Csv Separator</md-option>
@@ -20,7 +21,7 @@
               </md-field>
             </div>
             <div class="md-layout-item">
-              <md-field v-show="!show_select">
+              <md-field v-show="!show_select && show_field">
                 <label for="value">Valor</label>
                 <md-input name="value" class="input-field" autocomplete="given-name"/>
               </md-field>
@@ -44,12 +45,20 @@
           <md-button class="md-raised md-accent botao-cancelar" @click="cancelar($event)">Cancelar</md-button>
         </md-list-item>
 
-        <md-list-item v-for="item in generalConfig.filter(key => typeof(configJson[key]) === 'string')" :id="item">
+        <md-list-item 
+          v-for="item in generalConfig.filter(key => typeof(configJson[key]) === 'string')" 
+          :key="item"
+          :id="item"
+        >
           <span class="md-list-item-text">{{item}} : {{ configJson[item] }}</span>
           <md-icon class="excluir" @click.native="excluirItem(item)">delete</md-icon>
         </md-list-item>
 
-        <md-list-item md-expand v-for="item in generalConfig.filter(key => typeof(configJson[key]) === 'object')" :id="item">
+        <md-list-item md-expand 
+          v-for="item in generalConfig.filter(key => typeof(configJson[key]) === 'object')" 
+          :key="item"
+          :id="item"
+        >
           <span class="md-list-item-text">{{ item }}</span>
           <md-icon class="excluir" @click.native="excluirItem(item)">delete</md-icon>
 
@@ -62,7 +71,11 @@
                   <md-field>
                     <label for="param">Parâmetro</label>
                     <md-select name="param" class="select-field" v-model="toolConfigValues[item]">
-                      <md-option v-for="param in toolFields[item]" :value="param">{{param}}</md-option>
+                      <md-option 
+                        v-for="param in toolFields[item]" 
+                        :key="param"
+                        :value="param"
+                      >{{param}}</md-option>
                     </md-select>
                   </md-field>
                 </div>
@@ -85,12 +98,22 @@
               <md-button class="md-raised md-accent botao-cancelar" @click="cancelar($event)">Cancelar</md-button>
             </md-list-item>
 
-            <md-list-item v-for="param in Object.keys(configJson[item]).filter(key => typeof(configJson[item][key]) !== 'object')" :id="concatId(item, param)" class="nivel2">
+            <md-list-item 
+              v-for="param in Object.keys(configJson[item]).filter(key => typeof(configJson[item][key]) !== 'object')" 
+              :key="concatId(item, param)"
+              :id="concatId(item, param)" 
+              class="nivel2"
+            >
               <span class="md-list-item-text">{{param}} : {{ configJson[item][param] }}</span>
               <md-icon class="excluir" @click.native="excluirItem(item, param)">delete</md-icon>
             </md-list-item>
 
-            <md-list-item md-expand v-for="param in Object.keys(configJson[item]).filter(key => typeof(configJson[item][key]) === 'object')" :id="concatId(item, param)" class="nivel2">
+            <md-list-item 
+              md-expand v-for="param in Object.keys(configJson[item]).filter(key => typeof(configJson[item][key]) === 'object')" 
+              :key="concatId(item, param)"
+              :id="concatId(item, param)" 
+              class="nivel2"
+            >
               <span class="md-list-item-text">{{param}}</span>
               <md-icon class="excluir" @click.native="excluirItem(item, param)">delete</md-icon>
 
@@ -116,7 +139,11 @@
                       <md-field>
                         <label for="column">Coluna</label>
                         <md-select name="column" class="select-field" v-model="column_select">
-                          <md-option v-for="column in columns.filter(c => configJson[item][param].indexOf(c) === -1)" :value="column">{{column}}</md-option>
+                          <md-option 
+                            v-for="column in columns.filter(c => configJson[item][param].indexOf(c) === -1)" 
+                            :key="column"
+                            :value="column"
+                          >{{column}}</md-option>
                         </md-select>
                       </md-field>
                     </div>
@@ -125,7 +152,12 @@
                   <md-button class="md-raised md-accent botao-cancelar" @click="cancelar($event)">Cancelar</md-button>
                 </md-list-item>
 
-                <md-list-item v-for="t in configJson[item][param]" :id="concatId(item, param, t)" class="nivel4">
+                <md-list-item 
+                  v-for="t in configJson[item][param]" 
+                  :key="concatId(item, param, t)"
+                  :id="concatId(item, param, t)" 
+                  class="nivel4"
+                >
                   <span class="md-list-item-text">{{t}}</span>
                   <md-icon class="excluir" @click.native="excluirItem(item, param, t)">delete</md-icon>
                 </md-list-item>
@@ -139,9 +171,20 @@
         </md-list-item>
       </md-list>
       <md-card-actions>
-        <botao-submit @botaoAtivado="updateConfig()" nome_do_botao="Atualizar Configuração"></botao-submit>
+        <botao-submit @botaoAtivado="updateConfig()" nome_do_botao="Atualizar Configuração" :disabled="disable_button"></botao-submit>
       </md-card-actions>
     </md-card>
+
+    <div class="msg-enviar-configuracao" v-show="disable_button">
+      <p>Campos obrigatórios para a configuração: 
+        <b>Separator</b>, 
+        <b>CSV Separator</b>, 
+        <b>Space Separator</b>, 
+        <b>Columns</b>, 
+        alguma ferramenta de mídia (GA ou Adobe)
+      </p>
+    </div>
+    
     <div class="load" v-show="show_load">
       <md-progress-spinner md-mode="indeterminate"></md-progress-spinner>
     </div>
@@ -157,11 +200,9 @@
 import TituloAreaPrincipal from '../shared/titulo_area_principal/TituloAreaPrincipal.vue';
 import BotaoSubmitForm from '../shared/botao_submit_form/BotaoSubmitForm.vue';
 import InvalidUserAlert from '../shared/login/InvalidUser.vue';
-import { validationMixin } from 'vuelidate'
 import {
     required,
-    minLength,
-    maxLength
+    minLength
 } from 'vuelidate/lib/validators'
 export default {
   components: {
@@ -187,6 +228,8 @@ export default {
       show_load: false,
       selected_field: '',
       show_select: false,
+      show_field: false,
+      disable_button: true,
       ferramenta_midia: '',
       dynamicValues: '',
       column_select: '',
@@ -246,6 +289,18 @@ export default {
     });
   },
   methods: {
+    habilitar_envio() {
+      const fields = Object.keys(this.configJson);
+      const checks = [
+        fields.indexOf("csvSeparator"), 
+        fields.indexOf("separator"),
+        fields.indexOf("spaceSeparator"),
+        fields.indexOf("columns"),
+        fields.indexOf("separator"),
+        (fields.indexOf("ga") > -1 || fields.indexOf("adobe") > -1) ? 1 : -1
+      ];
+      this.disable_button = checks.filter(check => check === -1).length > 0;
+    },
     updateToolFields() {
       const toolsToUpdate = Object.keys(this.toolConfigValues);
       toolsToUpdate.forEach(tool => {
@@ -257,6 +312,8 @@ export default {
           }
         }
       });
+      this.columns = Object.keys(this.configJson['columns']);
+      this.habilitar_envio();
     },
     updateConfig() {
       const url = `${this.$apiRoute}/config`;
@@ -272,10 +329,12 @@ export default {
         },
         body: formdata
       }).then((response) => {
+        this.snackbar_message = 'Erro ao criar a configuração!';
         if(response.status === 403) {
           throw new Error('Você não possui permissão para realizar esta ação!');
+        } else if(response.status === 200) {
+          this.snackbar_message = 'Configuração atualizada com sucesso!';
         }
-        this.snackbar_message = 'Configuração atualizada com sucesso!';
         this.showSnackbar = true;
         this.statusCode = response.status;
       }).catch((err) => {
@@ -309,6 +368,8 @@ export default {
       let inputValue;
       if(this.show_select && ids.length === 0) {
         inputValue = this.ferramenta_midia;
+      } else if(!this.show_field && ids.length === 0) {
+        this.configJson['columns'] = {};
       } else if(divAdd.querySelector('input.input-field')) {
         inputValue = divAdd.querySelector('input.input-field').value;
         divAdd.querySelector('input.input-field').value = '';
@@ -317,7 +378,7 @@ export default {
         const type = divAdd.querySelector('.md-select input').value;
         if(type.indexOf('Ferramenta/Mídia') > -1) {
           this.configJson[inputValue] = {};
-        } else {
+        } else if(this.show_field) {
           const keyType = (type.charAt(0).toLowerCase() + type.slice(1)).replace(' ', '');
           this.configJson[keyType] = inputValue;
         }
@@ -379,6 +440,7 @@ export default {
   watch: {
     selected_field: function(event) {
       this.show_select = this.selected_field === 'ferramenta-midia' ? true : false;
+      this.show_field = this.selected_field === 'columns' ? false : true;
     }
   }
 }
@@ -400,6 +462,12 @@ export default {
 
   .nivel4 {
     padding-left: 75px;
+  }
+
+  .msg-enviar-configuracao {
+    color: rgb(194, 6, 6);
+    font-size: 16px;
+    margin-left: 50px;
   }
 
   .botao-adicionar,
