@@ -8,15 +8,20 @@
                         <div class="md-layout-item md-medium-size-100">
                             <md-field :class="getValidationClass('company')">
                                 <label for="company">Empresa</label>
-                                <md-input name="company" id="company" v-model="form.company"/>
-                                <span class="md-error" v-if="!$v.form.company.required">The first name is required</span>
+                                <md-input disabled=disable name="company" id="company" v-model="form.company"/>
+                                <span class="md-error" v-if="!$v.form.company.required">Empresa é um campo obrigatório</span>
+                            </md-field>
+                        </div>
+                        <div class="md-layout-item md-medium-size-100" v-show="form.agency !== ''">
+                            <md-field :class="getValidationClass('agency')">
+                                <label for="agency">Agência</label>
+                                <md-input disabled=disable name="agency" id="agency" v-model="form.agency"/>
                             </md-field>
                         </div>
                         <div class="md-layout-item md-medium-size-100">
-                            <md-field :class="getValidationClass('agency')">
-                                <label for="agency">Agência</label>
-                                <md-input name="agency" id="agency" v-model="form.agency"/>
-                                <span class="md-error" v-if="!$v.form.agency.required">The first name is required</span>
+                            <md-field :class="getValidationClass('campaign')">
+                                <label for="campaign">Campanha</label>
+                                <md-input name="campaign" id="campaign" v-model="form.campaign"/>
                             </md-field>
                         </div>
                     </div>
@@ -68,6 +73,7 @@ export default {
             form: {
                 agency: localStorage.getItem('agency') || '',
                 company: localStorage.getItem('company') || '',
+                campaign: '',
             },
             csvList: [],
             tituloResposta: 'Resposta',
@@ -83,6 +89,10 @@ export default {
                 minLength: minLength(3)
             },
             company: {
+                required,
+                minLength: minLength(3)
+            },
+            campaign: {
                 required,
                 minLength: minLength(3)
             }
@@ -101,6 +111,7 @@ export default {
             this.$v.$reset()
             this.form.agency = null
             this.form.company = null
+            this.form.campaign = null
         },
         getCsvList() {
             var fetchStatusCode = null;
@@ -109,18 +120,15 @@ export default {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
-                    agency: document.querySelector('#agency').value,
-                    company: document.querySelector('#company').value,
-                    token: localStorage.getItem('userToken')
-                    // agency: 'bigodaria',
-                    // company: 'arthurltda'
+                    token: localStorage.getItem('userToken'),
+                    campaign: document.querySelector('#campaign').value
                 }
             }).then(function(response) {
                fetchStatusCode = response.status;
                return response.json();
             }).then((data) => {
                 this.tituloResposta = 'Lista de CSVs';
-                this.csvList = data.map(fileName => fileName.split('/')[1]);
+                this.csvList = data;
             }).catch((err) => {
                 this.showAuthAlert = this.isAuthError(fetchStatusCode);
                 this.tituloResposta = 'Erro';
@@ -130,14 +138,18 @@ export default {
             });
         },
         downloadCSV(csv) {
+            const fileName = csv.match(/\/.*\/.*\/(.*)\./)[1];
+            let campaign = document.querySelector('#campaign').value;
+            if(!campaign) {
+                campaign = csv.match(/\/.*\/(.*)\/.*\./)[1];
+            }
             fetch(`${this.$apiRoute}/csv`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
-                    agency: document.querySelector('#agency').value,
-                    file: csv.replace(/\.csv$/,''),
-                    company: document.querySelector('#company').value,
-                    token: localStorage.getItem('userToken')
+                    file: fileName,
+                    token: localStorage.getItem('userToken'),
+                    campaign: campaign
                 }
             }).then(response => {
                 this.statusCode = response.status;

@@ -8,15 +8,20 @@
                         <div class="md-layout-item md-medium-size-100">
                             <md-field :class="getValidationClass('company')">
                                 <label for="company">Empresa</label>
-                                <md-input name="company" id="company" v-model="form.company"/>
-                                <span class="md-error" v-if="!$v.form.company.required">The first name is required</span>
+                                <md-input disabled=disable name="company" id="company" v-model="form.company"/>
+                            </md-field>
+                        </div>
+                        <div class="md-layout-item md-medium-size-100" v-show="form.agency !== ''">
+                            <md-field :class="getValidationClass('agency')">
+                                <label for="agency">Agência</label>
+                                <md-input disabled=disable name="agency" id="agency" v-model="form.agency"/>
                             </md-field>
                         </div>
                         <div class="md-layout-item md-medium-size-100">
-                            <md-field :class="getValidationClass('agency')">
-                                <label for="agency">Agência</label>
-                                <md-input name="agency" id="agency" v-model="form.agency"/>
-                                <span class="md-error" v-if="!$v.form.agency.required">The first name is required</span>
+                            <md-field :class="getValidationClass('campaign')">
+                                <label for="campaign">Campanha</label>
+                                <md-input name="campaign" id="campaign" v-model="form.campaign"/>
+                                <span class="md-error" v-if="!$v.form.campaign.required">Campanha é um campo obrigatório</span>
                             </md-field>
                         </div>
                         <div class="md-layout-item md-medium-size-100">
@@ -106,7 +111,8 @@ export default {
         return {
             form: {
                 agency: localStorage.getItem('agency') || '',
-                company: localStorage.getItem('company') || ''
+                company: localStorage.getItem('company') || '',
+                campaign: ''
             },
             tool: null,
             tituloResposta: '',
@@ -132,6 +138,10 @@ export default {
                 minLength: minLength(3)
             },
             company: {
+                required,
+                minLength: minLength(3)
+            },
+            campaign: {
                 required,
                 minLength: minLength(3)
             },
@@ -191,6 +201,7 @@ export default {
             this.form.agency = null
             this.form.company = null
             this.form.file = null
+            this.form.campaign = null
         },
         clearResposta() {
             this.tituloResposta = '';
@@ -210,7 +221,8 @@ export default {
             const requestOptions = {
                 method: 'POST',
                 headers: {
-                    token: localStorage.getItem('userToken')
+                    token: localStorage.getItem('userToken'),
+                    campaign: document.querySelector('#campaign').value
                 },
                 body: formdata,
                 redirect: 'follow'
