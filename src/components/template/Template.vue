@@ -8,7 +8,7 @@
                         <div class="md-layout-item md-medium-size-100">
                             <md-field :class="getValidationClass('company')">
                                 <label for="company">Empresa</label>
-                                <md-input name="company" id="company" v-model="form.company"/>
+                                <md-input disabled=disable name="company" id="company" v-model="form.company"/>
                                 <span class="md-error" v-if="!$v.form.company.required">The first name is required</span>
                             </md-field>
                         </div>
