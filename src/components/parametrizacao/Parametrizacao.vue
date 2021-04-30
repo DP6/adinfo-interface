@@ -175,11 +175,13 @@ export default {
             };
             Object.keys(this.configJson).forEach(key => {
                 if(typeof this.configJson[key] === 'object' && key !== 'columns') {
-                    this.parametrizers.push({
-                        title: titles[key] ? titles[key] : key.charAt(0).toUpperCase() + key.slice(1),
-                        value: key,
-                        type: (key === 'ga' || key === 'adobe') ? 'analytics' : 'media'
-                    });
+                    if(key != 'dependenciesConfig') {
+                        this.parametrizers.push({
+                            title: titles[key] ? titles[key] : key.charAt(0).toUpperCase() + key.slice(1),
+                            value: key,
+                            type: (key === 'ga' || key === 'adobe') ? 'analytics' : 'media'
+                        });
+                    }
                 }
             });
         }).catch((err) => {
