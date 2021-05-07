@@ -16,7 +16,14 @@
                             <md-field :class="getValidationClass('agency')">
                                 <label for="agency">Agência</label>
                                 <md-input name="agency" id="agency" v-model="form.agency"/>
-                                <span class="md-error" v-if="!$v.form.agency.required">The first name is required</span>
+                                <span class="md-error" v-if="!$v.form.agency.required">The agency name is required</span>
+                            </md-field>
+                        </div>
+                        <div class="md-layout-item md-medium-size-100">
+                            <md-field :class="getValidationClass('agency')">
+                                <label for="email">E-mail</label>
+                                <md-input name="email" id="email" v-model="form.email"/>
+                                <span class="md-error" v-if="!$v.form.email.required">The email is required</span>
                             </md-field>
                         </div>
                     </div>
@@ -50,7 +57,8 @@ import { validationMixin } from 'vuelidate'
 import {
     required,
     minLength,
-    maxLength
+    maxLength, 
+    email,
 } from 'vuelidate/lib/validators'
 import BotaoSubmitForm from '../shared/botao_submit_form/BotaoSubmitForm.vue';
 
@@ -67,6 +75,7 @@ export default {
             form: {
                 company: null,
                 agency: null,
+                email: null,
             },
             visivel: false,
             tituloResposta: 'Resposta',
@@ -85,6 +94,10 @@ export default {
             company: {
                 required,
                 minLength: minLength(3)
+            },
+            email: {
+                required,
+                email
             }
         }
     },
@@ -101,6 +114,7 @@ export default {
             this.$v.$reset()
             this.form.agency = null
             this.form.company = null
+            this.form.email = null
         },
         createUser() {
             var statusCode = null;
@@ -111,8 +125,9 @@ export default {
                     'Content-Type': 'application/json',
                     token: localStorage.getItem('userToken'),
                     agency: document.querySelector('#agency').value,
+                    email: document.querySelector('#email').value,
                     permission: 'user',
-                }
+                },
             };
             this.show_load = true;
             fetch(url, requestOptions)
