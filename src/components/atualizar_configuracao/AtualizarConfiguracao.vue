@@ -50,8 +50,8 @@
           :key="item"
           :id="item"
         >
-          <span class="md-list-item-text">{{item}} : {{ configJson[item] }}</span>
           <md-icon class="excluir" @click.native="excluirItem(item)">delete</md-icon>
+          <span class="md-list-item-text">{{item}} : {{ configJson[item] }}</span>
         </md-list-item>
 
         <md-list-item md-expand 
@@ -59,8 +59,8 @@
           :key="item"
           :id="item"
         >
-          <span class="md-list-item-text">{{ item }}</span>
           <md-icon class="excluir" @click.native="excluirItem(item)">delete</md-icon>
+          <span class="md-list-item-text">{{ item }}</span>
 
           <md-list slot="md-expand">
 
@@ -104,8 +104,8 @@
               :id="concatId(item, param)" 
               class="nivel2"
             >
-              <span class="md-list-item-text">{{param}} : {{ configJson[item][param] }}</span>
               <md-icon class="excluir" @click.native="excluirItem(item, param)">delete</md-icon>
+              <span class="md-list-item-text">{{param}} : {{ configJson[item][param] }}</span>
             </md-list-item>
 
             <md-list-item 
@@ -114,8 +114,8 @@
               :id="concatId(item, param)" 
               class="nivel2"
             >
-              <span class="md-list-item-text">{{param}}</span>
               <md-icon class="excluir" @click.native="excluirItem(item, param)">delete</md-icon>
+              <span class="md-list-item-text">{{param}}</span>
 
               <md-list slot="md-expand">
                 <md-list-item v-if="item === 'columns'" class="nivel3">
@@ -158,8 +158,8 @@
                   :id="concatId(item, param, t)" 
                   class="nivel4"
                 >
-                  <span class="md-list-item-text">{{t}}</span>
                   <md-icon class="excluir" @click.native="excluirItem(item, param, t)">delete</md-icon>
+                  <span class="md-list-item-text">{{t}}</span>
                 </md-list-item>
                 
               </md-list>
@@ -283,6 +283,8 @@ export default {
       this.generalConfig = Object.keys(data);
       this.columns = Object.keys(data.columns);
       this.updateToolFields();
+      console.log(this.configJson);
+      console.log(this.columns);
     }).catch((err) => {
       this.showAuthAlert = this.isAuthError(this.statusCode);
       console.log(err);
@@ -418,7 +420,7 @@ export default {
         return acc[id];
       }, this.configJson);
       if(Array.isArray(keyToExcludeValue)){
-        const exclude = Object.keys(objectKey)[0];
+        const exclude = ids.slice(-1)[0];
         const t = ids.slice(0, -1).reduce((acc, id) => {
           return acc[id];
         }, this.configJson);
