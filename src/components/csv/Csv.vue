@@ -138,7 +138,7 @@ export default {
             });
         },
         downloadCSV(csv) {
-            const fileName = csv.match(/\/.*\/.*\/(.*)\./)[1];
+            const fileName = csv.match(/\/.*\/.*\/(.*)\./)[1] || csv.match(/\/.*\/(.*)\./)[1];
             let campaign = document.querySelector('#campaign').value;
             if(!campaign) {
                 campaign = csv.match(/\/.*\/(.*)\/.*\./)[1];
