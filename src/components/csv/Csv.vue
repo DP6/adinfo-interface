@@ -138,18 +138,18 @@ export default {
             });
         },
         downloadCSV(csv) {
-            const fileName = csv.match(/\/.*\/.*\/(.*)\./)[1] || csv.match(/\/.*\/(.*)\./)[1];
+            const fileName = csv.match(/\/.*\/.*\/(.*)\./) || csv.match(/\/.*\/(.*)\./);
             let campaign = document.querySelector('#campaign').value;
             if(!campaign) {
-                campaign = csv.match(/\/.*\/(.*)\/.*\./)[1];
+                campaign = csv.match(/\/.*\/(.*)\/.*\./) || csv.match(/.*\/(.*)\/.*\./);
             }
             fetch(`${this.$apiRoute}/csv`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
-                    file: fileName,
+                    file: fileName[1],
                     token: localStorage.getItem('userToken'),
-                    campaign: campaign
+                    campaign: campaign[1]
                 }
             }).then(response => {
                 this.statusCode = response.status;
