@@ -118,8 +118,7 @@ export default {
         },
         createUser() {
             var statusCode = null;
-            // const url = `https://adinfo.ue.r.appspot.com/register`
-            const url = `localhost:443/register`
+            const url = `https://adinfo.ue.r.appspot.com/register`
             const requestOptions = {
                 method: 'POST',
                 headers: {
