@@ -20,7 +20,7 @@
                             </md-field>
                         </div>
                         <div class="md-layout-item md-medium-size-100">
-                            <md-field :class="getValidationClass('agency')">
+                            <md-field :class="getValidationClass('email')">
                                 <label for="email">E-mail</label>
                                 <md-input name="email" id="email" v-model="form.email"/>
                                 <span class="md-error" v-if="!$v.form.email.required">The email is required</span>
@@ -118,7 +118,8 @@ export default {
         },
         createUser() {
             var statusCode = null;
-            const url = `https://adinfo.ue.r.appspot.com/register`
+            // const url = `https://adinfo.ue.r.appspot.com/register`
+            const url = `localhost:443/register`
             const requestOptions = {
                 method: 'POST',
                 headers: {
