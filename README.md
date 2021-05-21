@@ -1,6 +1,7 @@
 # interface-adinfo
 
-> A Vue.js project
+# A Vue.js project
+O projeto é o Front-end da aplicação do Adinfo, usando Vue.js, para que usuários possam usar a ferramenta de forma mais prática e intuitiva.
 
 ## Build Setup
 
