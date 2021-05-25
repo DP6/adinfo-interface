@@ -95,6 +95,8 @@ export default {
                     this.statusCode = response.status;
                     if(response.status === 403) {
                         this.snackbar_message = 'Permissão insuficiente!';
+                    } else if(response.status === 500) {
+                        this.snackbar_message = 'Ocorreu um erro ao salvar a configuração!';
                     } else {
                         this.snackbar_message = 'Configuração atualizada com sucesso!';
                     }
