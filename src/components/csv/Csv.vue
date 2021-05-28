@@ -37,7 +37,10 @@
             <div class="load" v-show="show_load">
                 <md-progress-spinner md-mode="indeterminate"></md-progress-spinner>
             </div>
-            <ul>
+            <p v-if="csvList.length === 1 && csvList[0] === ''" class="response">
+                Nenhum arquivo foi encontrado!
+            </p>
+            <ul v-if="csvList.length > 0">
                 <li v-for="csv in csvList" class="csv" :key="csv">
                     <p @click="downloadCSV(csv)">{{ csv }}</p>
                 </li>
@@ -128,7 +131,7 @@ export default {
                return response.json();
             }).then((data) => {
                 this.tituloResposta = 'Lista de CSVs';
-                this.csvList = data;
+                this.csvList = data.responseText.split(',');
             }).catch((err) => {
                 this.showAuthAlert = this.isAuthError(fetchStatusCode);
                 this.tituloResposta = 'Erro';
@@ -192,6 +195,10 @@ export default {
 
     .respostas {
         width: 100%;
+    }
+
+    p.response {
+        margin-left: 60px;
     }
 
     ul {
