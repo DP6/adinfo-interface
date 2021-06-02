@@ -48,7 +48,7 @@ export default {
       localStorage.setItem("userToken", this.token);
     },
     redirect(){
-      this.$router.push('template');
+      this.$router.push('parametrizacao');
     },
     getUserInfos() {
       this.show_load=true;
