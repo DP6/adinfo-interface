@@ -11,7 +11,7 @@
               <i class="material-icons">lock_outline</i>
             </span>
           </div>
-          <input type="password" v-model="token" class="form-control" placeholder="Token...">
+          <input type="password" v-model="token" class="form-control" placeholder="Token..." @keydown.enter.stop.prevent="saveToken(), getUserInfos()">
         </div>
       </div>
       <div class="text-center">
