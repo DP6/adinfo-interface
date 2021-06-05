@@ -51,7 +51,7 @@ export default {
       this.$router.push('template');
     },
     getUserInfos() {
-      this.show_load=true;
+      this.show_load = true;
       var statusCode = null;
       fetch(`${this.$apiRoute}/user`, {
         method: 'GET',
@@ -59,21 +59,23 @@ export default {
           'Content-Type': 'application/json',
           token: this.token
         }
-      }).then(function(response) {
+      }).then((response) => {
         statusCode = response.status;
         return response.json();
-      }).then((userData) => {
+      }).then((response) => {
+        const userData = JSON.parse(response.responseText);
         localStorage.setItem('company', userData.company);
         localStorage.setItem('agency', userData.agency);
         localStorage.setItem('permission', userData.permission);
-        this.redirect()
+        this.redirect();
       }).catch((err) => {
-        console.log(this.isAuthError(statusCode))
         this.showAuthAlert = this.isAuthError(statusCode);
         console.log(err);
-      }).finally(()=>{this.show_load=false});
+      }).finally(() => {
+        this.show_load = false
+      });
     },
-    isAuthError(statusCode){
+    isAuthError(statusCode) {
       if(statusCode === 403)
           return true;
       return false;

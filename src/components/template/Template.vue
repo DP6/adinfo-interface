@@ -24,7 +24,7 @@
         </div>
         <div class="respostas" v-show="visivel">
             <titulo-principal titulo="Resultado"></titulo-principal>
-            <md-card md-card>
+            <md-card md-card v-show="!apiError">
                 <md-table md-fixed-header v-model="tabela" >
                     <md-table-toolbar>
                         <h1 class="md-title">Colunas</h1>
@@ -38,6 +38,9 @@
                 </md-table>
                 <md-button @click="downloadTemplate()" class="md-dense md-raised md-primary button-download">Download Template</md-button>
             </md-card>
+            <p v-show="apiError" class="response">
+                {{ apiErrorMessage }}
+            </p>
         </div>
         <usuario-invalido :active="showAuthAlert"></usuario-invalido>
     </div>
@@ -73,6 +76,8 @@ export default {
             statusCode: null,
             showAuthAlert: false,
             show_load: false,
+            apiError: false,
+            apiErrorMessage: '',
         }
     },
     validations: {
@@ -119,6 +124,7 @@ export default {
         },
         getTemplate() {
             this.show_load = true;
+            this.visivel = false;
             fetch(`${this.$apiRoute}/config`, {
                 method: 'GET',
                 headers: {
@@ -128,7 +134,13 @@ export default {
             }).then(configPromise => {
                 this.statusCode = configPromise.status;
                 return configPromise.json();
-            }).then(configJson => {
+            }).then(response => {
+                if(this.statusCode !== 200) {
+                    console.log(response.errorMessage);
+                    throw new Error(response.responseText);
+                }
+                this.apiError = false;
+                const configJson = JSON.parse(response.responseText);
                 const columnsConfig = configJson.columns;
                 this.tabela = [];
                 this.colunas = [];
@@ -138,29 +150,16 @@ export default {
                         campo: column
                     });
                 });
-            }).then(() => {
-                return fetch(`${this.$apiRoute}/template`, {
-                    method: 'GET',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        // agency: document.querySelector('#agency').value,
-                        // company: document.querySelector('#company').value
-                        company: document.querySelector('#company').value,
-                        token: localStorage.getItem('userToken')
-                    }
-                })
-            }).then(function(response) {
-                return response.blob();
-            }).then((blob) => {
-                this.templateFile = blob;
-                blob.text().then(text => {
-                    this.colunas = text.split(';');
+                this.colunas = Object.keys(columnsConfig).map(key => key);
+                this.templateFile = new Blob([['Url'].concat(this.colunas).join(',')], {
+                    type: 'application/json'
                 });
-                this.visivel = true;
             }).catch((err) => {
                 this.showAuthAlert = this.isAuthError(this.statusCode);
-                console.log(err);
+                this.apiError = true;
+                this.apiErrorMessage = err.message;
             }).finally(() => {
+                this.visivel = true;
                 this.show_load = false;
             });
         },
@@ -182,6 +181,10 @@ export default {
 
     .button-download {
         float: right;
+    }
+
+    p.response {
+        margin-left: 60px;
     }
 
     .load {

@@ -1,114 +1,123 @@
 <template>
   <div class="main">
-    <titulo-principal titulo="Configuração de Dependências"></titulo-principal>
-    <md-card class="md-layout-item md-larger-size card">
-        <md-list>
+    <div v-show="!apiError">
+        <titulo-principal titulo="Configuração de Dependências"></titulo-principal>
+        <md-card class="md-layout-item md-larger-size card">
+            <md-list>
 
-            <md-list-item>
-                <md-icon @click.native="adicionarItem($event)" class="adicionar">add</md-icon>
+                <md-list-item>
+                    <md-icon @click.native="adicionarItem($event)" class="adicionar">add</md-icon>
 
-                <div class="md-layout md-gutter campo-adicionar">
-                    <div class="md-layout-item">
-                        <md-field>
-                            <label for="columnReference">Coluna de Referência</label>
-                            <md-select name="columnReference" id="columnReference" v-model="add_dependency_select_columnReference">
-                                <md-option v-for="column in Object.keys(configJson.columns)" :value="column" :key="column">{{ column }}</md-option>
-                            </md-select>
-                        </md-field>
-                    </div>
-                    <div class="md-layout-item">
-                        <md-field>
-                            <label for="columnDestiny">Coluna de Destino</label>
-                            <md-select name="columnDestiny" id="columnDestiny" v-model="add_dependency_select_columnDestiny">
-                                <md-option v-for="column in Object.keys(configJson.columns)" :value="column" :key="column">{{ column }}</md-option>
-                            </md-select>
-                        </md-field>
-                    </div>
-                </div>
-                <div class="md-layout md-gutter campo-adicionar">
-                    <div class="md-layout-item">
-                        <md-field>
-                            <label for="valuesReference">Valores de Referência</label>
-                            <md-input name="valuesReference" id="add_valuesReference" class="input-field" autocomplete="given-name"/>
-                        </md-field>
-                    </div>
-                    <div class="md-layout-item">
-                        <md-field>
-                            <label for="matches">Valores de Destino</label>
-                            <md-input name="matches" id="add_matches" class="input-field" autocomplete="given-name"/>
-                        </md-field>
-                    </div>
-                </div>
-                <div class="md-layout md-gutter campo-adicionar">
-                    <div class="md-layout-item">
-                        <md-field>
-                            <label for="hasMatch">Match</label>
-                            <md-select name="hasMatch" id="hasMatch" v-model="add_hasMatch">
-                                <md-option value="true">True</md-option>
-                                <md-option value="false">False</md-option>
-                            </md-select>
-                        </md-field>
-                    </div>
-                </div>
-
-                <md-button class="md-primary md-raised botao-adicionar"  @click="adicionarDependencia($event)">Adicionar</md-button>
-                <md-button class="md-raised md-accent botao-cancelar" @click="cancelar($event)">Cancelar</md-button>
-            </md-list-item>
-
-            <md-list-item md-expand v-for="item in dependenciesConfig" :key="item.columnDestiny" :id="item.columnDestiny">
-                <span class="md-list-item-text">Referência: {{ item.columnReference }}<br>Destino: {{ item.columnDestiny }}</span>
-                <md-icon class="excluir" @click.native="excluirItem(item)">delete</md-icon>
-
-                <md-list slot="md-expand">
-                    <md-list-item>
-                        Coluna de Referência: {{ item.columnReference }}
-                    </md-list-item>
-                    <md-list-item>
-                        Valores de Referência: {{ item.valuesReference }}
-                        <md-icon class="modificar" @click.native="adicionarItem($event)">edit</md-icon>
-                        <div class="md-layout md-gutter campo-adicionar">
-                            <div class="md-layout-item">
-                                <md-field>
-                                    <label for="param">Coluna de Referência</label>
-                                    <md-input name="param" class="input-field" :value="item.valuesReference" autocomplete="given-name"/>
-                                </md-field>
-                            </div>
+                    <div class="md-layout md-gutter campo-adicionar">
+                        <div class="md-layout-item">
+                            <md-field>
+                                <label for="columnReference">Coluna de Referência</label>
+                                <md-select name="columnReference" id="columnReference" v-model="add_dependency_select_columnReference">
+                                    <md-option v-for="column in Object.keys(configJson.columns)" :value="column" :key="column">{{ column }}</md-option>
+                                </md-select>
+                            </md-field>
                         </div>
-                        <md-button class="md-primary md-raised botao-adicionar"  @click="confirmar($event, item, 'valuesReference')">Adicionar</md-button>
-                        <md-button class="md-raised md-accent botao-cancelar" @click="cancelar($event)">Cancelar</md-button>
-                    </md-list-item>
-                    <md-list-item>
-                        Match: {{ item.hasMatch }}
-                    </md-list-item>
-                    <md-list-item>
-                        Coluna de Destino: {{ item.columnDestiny }}
-                    </md-list-item>
-                    <md-list-item>
-                        Valores de Destino: {{ item.matches }}
-                        <md-icon class="modificar" @click.native="adicionarItem($event)">edit</md-icon>
-                        <div class="md-layout md-gutter campo-adicionar">
-                            <div class="md-layout-item">
-                                <md-field>
-                                    <label for="param">Coluna de Referência</label>
-                                    <md-input name="param" class="input-field" :value="item.matches" autocomplete="given-name"/>
-                                </md-field>
-                            </div>
+                        <div class="md-layout-item">
+                            <md-field>
+                                <label for="columnDestiny">Coluna de Destino</label>
+                                <md-select name="columnDestiny" id="columnDestiny" v-model="add_dependency_select_columnDestiny">
+                                    <md-option v-for="column in Object.keys(configJson.columns)" :value="column" :key="column">{{ column }}</md-option>
+                                </md-select>
+                            </md-field>
                         </div>
-                        <md-button class="md-primary md-raised botao-adicionar"  @click="confirmar($event, item, 'matches')">Adicionar</md-button>
-                        <md-button class="md-raised md-accent botao-cancelar" @click="cancelar($event)">Cancelar</md-button>
-                    </md-list-item>
-                </md-list>
+                    </div>
+                    <div class="md-layout md-gutter campo-adicionar">
+                        <div class="md-layout-item">
+                            <md-field>
+                                <label for="valuesReference">Valores de Referência</label>
+                                <md-input name="valuesReference" id="add_valuesReference" class="input-field" autocomplete="given-name"/>
+                            </md-field>
+                        </div>
+                        <div class="md-layout-item">
+                            <md-field>
+                                <label for="matches">Valores de Destino</label>
+                                <md-input name="matches" id="add_matches" class="input-field" autocomplete="given-name"/>
+                            </md-field>
+                        </div>
+                    </div>
+                    <div class="md-layout md-gutter campo-adicionar">
+                        <div class="md-layout-item">
+                            <md-field>
+                                <label for="hasMatch">Match</label>
+                                <md-select name="hasMatch" id="hasMatch" v-model="add_hasMatch">
+                                    <md-option value="true">True</md-option>
+                                    <md-option value="false">False</md-option>
+                                </md-select>
+                            </md-field>
+                        </div>
+                    </div>
 
-            </md-list-item>
+                    <md-button class="md-primary md-raised botao-adicionar"  @click="adicionarDependencia($event)">Adicionar</md-button>
+                    <md-button class="md-raised md-accent botao-cancelar" @click="cancelar($event)">Cancelar</md-button>
+                </md-list-item>
+
+                <md-list-item md-expand v-for="item in dependenciesConfig" :key="item.columnDestiny" :id="item.columnDestiny">
+                    <span class="md-list-item-text">Referência: {{ item.columnReference }}<br>Destino: {{ item.columnDestiny }}</span>
+                    <md-icon class="excluir" @click.native="excluirItem(item)">delete</md-icon>
+
+                    <md-list slot="md-expand">
+                        <md-list-item>
+                            Coluna de Referência: {{ item.columnReference }}
+                        </md-list-item>
+                        <md-list-item>
+                            Valores de Referência: {{ item.valuesReference }}
+                            <md-icon class="modificar" @click.native="adicionarItem($event)">edit</md-icon>
+                            <div class="md-layout md-gutter campo-adicionar">
+                                <div class="md-layout-item">
+                                    <md-field>
+                                        <label for="param">Coluna de Referência</label>
+                                        <md-input name="param" class="input-field" :value="item.valuesReference" autocomplete="given-name"/>
+                                    </md-field>
+                                </div>
+                            </div>
+                            <md-button class="md-primary md-raised botao-adicionar"  @click="confirmar($event, item, 'valuesReference')">Adicionar</md-button>
+                            <md-button class="md-raised md-accent botao-cancelar" @click="cancelar($event)">Cancelar</md-button>
+                        </md-list-item>
+                        <md-list-item>
+                            Match: {{ item.hasMatch }}
+                        </md-list-item>
+                        <md-list-item>
+                            Coluna de Destino: {{ item.columnDestiny }}
+                        </md-list-item>
+                        <md-list-item>
+                            Valores de Destino: {{ item.matches }}
+                            <md-icon class="modificar" @click.native="adicionarItem($event)">edit</md-icon>
+                            <div class="md-layout md-gutter campo-adicionar">
+                                <div class="md-layout-item">
+                                    <md-field>
+                                        <label for="param">Coluna de Referência</label>
+                                        <md-input name="param" class="input-field" :value="item.matches" autocomplete="given-name"/>
+                                    </md-field>
+                                </div>
+                            </div>
+                            <md-button class="md-primary md-raised botao-adicionar"  @click="confirmar($event, item, 'matches')">Adicionar</md-button>
+                            <md-button class="md-raised md-accent botao-cancelar" @click="cancelar($event)">Cancelar</md-button>
+                        </md-list-item>
+                    </md-list>
+
+                </md-list-item>
 
 
-        </md-list>
+            </md-list>
 
-        <md-card-actions>
-            <botao-submit @botaoAtivado="updateConfig()" nome_do_botao="Atualizar Dependências"></botao-submit>
-        </md-card-actions>
+            <md-card-actions>
+                <botao-submit @botaoAtivado="updateConfig()" nome_do_botao="Atualizar Dependências"></botao-submit>
+            </md-card-actions>
 
-    </md-card>
+        </md-card>
+    </div>
+
+    <div class="respostas" v-show="apiError">
+        <titulo-principal :titulo="tituloResposta"></titulo-principal>
+        <p class="response">
+            {{ apiErrorMessage }}
+        </p>
+    </div>
     
     <div class="load" v-show="show_load">
         <md-progress-spinner md-mode="indeterminate"></md-progress-spinner>
@@ -137,7 +146,7 @@ export default {
     },
     data() {
         return {
-            tituloResposta: 'Resposta',
+            tituloResposta: '',
             statusCode: null,
             showAuthAlert: false,
             show_load: false,
@@ -147,9 +156,10 @@ export default {
             add_dependency_select_columnReference: '',
             add_dependency_select_columnDestiny: '',
             add_hasMatch: '',
-            showAuthAlert: false,
             show_load: false,
-            showSnackbar: false
+            showSnackbar: false,
+            apiError: false,
+            apiErrorMessage: '',
         }
     },
     methods: {
@@ -226,10 +236,9 @@ export default {
                 },
                 body: formdata
             }).then((response) => {
-                if(response.status === 403) {
-                    throw new Error('Você não possui permissão para realizar esta ação!');
-                }
-                this.snackbar_message = 'Configuração atualizada com sucesso!';
+                return response.json();
+            }).then(response => {
+                this.snackbar_message = response.errorMessage || response.responseText;
                 this.showSnackbar = true;
                 this.statusCode = response.status;
             }).catch((err) => {
@@ -239,6 +248,11 @@ export default {
             }).finally(() => {
                 this.show_load = false;
             });
+        },
+        isAuthError(statusCode) {
+            if(statusCode === 403)
+                return true;
+            return false;
         }
     },
     created() {
@@ -253,15 +267,23 @@ export default {
         }).then((response) => {
             this.statusCode = response.status;
             return response.json();
-        }).then((data) => {
-            this.show_load = false;
+        }).then((response) => {
+            if(this.statusCode !== 200) {
+                this.configJson = {'columns': {}};
+                throw new Error(response.errorMessage || response.responseText);
+            }
+            const data = JSON.parse(response.responseText);
             delete data.insertTime;
             this.dependenciesConfig = data.dependenciesConfig;
             delete data.dependenciesConfig;
             this.configJson = data;
         }).catch((err) => {
+            this.apiError = true;
+            this.tituloResposta = 'Erro ao recuperar configuração';
+            this.apiErrorMessage = err.message;
             this.showAuthAlert = this.isAuthError(this.statusCode);
-            console.log(err);
+        }).finally(() => {
+            this.show_load = false;
         });
     },
 }
@@ -291,6 +313,14 @@ export default {
     .botao-cancelar,
     .campo-adicionar {
         display: none;
+    }
+
+    .respostas {
+        width: 100%;
+    }
+
+    p.response {
+        margin-left: 60px;
     }
 
     .load {

@@ -32,20 +32,31 @@
             </md-card>
         </form>
 
-        <div class="respostas">
-            <titulo-principal :titulo="tituloResposta"></titulo-principal>
-            <div class="load" v-show="show_load">
-                <md-progress-spinner md-mode="indeterminate"></md-progress-spinner>
-            </div>
-            <p v-if="csvList.length === 1 && csvList[0] === ''" class="response">
-                Nenhum arquivo foi encontrado!
-            </p>
-            <ul v-if="csvList.length > 0">
-                <li v-for="csv in csvList" class="csv" :key="csv">
-                    <p @click="downloadCSV(csv)">{{ csv }}</p>
-                </li>
-            </ul>
+
+        <div class="load" v-show="show_load">
+            <md-progress-spinner md-mode="indeterminate"></md-progress-spinner>
         </div>
+
+        <div class="respostas" v-show="responseVisibility">
+            <titulo-principal :titulo="tituloResposta"></titulo-principal>
+            <p v-show="apiError" class="response">
+                {{ apiErrorMessage }}
+            </p>
+            <div v-show="!apiError">
+                <p v-if="csvList.length === 1 && csvList[0] === ''" class="response">
+                    Nenhum arquivo foi encontrado!
+                </p>
+                <ul v-if="csvList.length > 0">
+                    <li v-for="csv in csvList" class="csv" :key="csv">
+                        <p @click="downloadCSV(csv)">{{ csv }}</p>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <md-dialog-alert
+            :md-active.sync="downloadError"
+            md-title="Erro ao baixar CSV"
+            :md-content="downloadErrorMessage" />
         <usuario-invalido :active="showAuthAlert" v-on:setShowAlertFalse="setShowAlertFalse()" >
         </usuario-invalido>
     </div>
@@ -58,8 +69,7 @@ import InvalidUserAlert from '../shared/login/InvalidUser.vue';
 import { validationMixin } from 'vuelidate'
 import {
     required,
-    minLength,
-    maxLength
+    minLength
 } from 'vuelidate/lib/validators'
 import BotaoSubmitForm from '../shared/botao_submit_form/BotaoSubmitForm.vue';
 
@@ -69,7 +79,7 @@ export default {
     components: {
         'titulo-principal': TituloAreaPrincipal,
         'botao-submit': BotaoSubmitForm,
-        'usuario-invalido': InvalidUserAlert
+        'usuario-invalido': InvalidUserAlert,
     },
     data() {
         return {
@@ -83,6 +93,11 @@ export default {
             statusCode: null,
             showAuthAlert: false,
             show_load: false,
+            apiError: false,
+            apiErrorMessage: 'Erro na API!',
+            downloadError: false,
+            downloadErrorMessage: 'Erro no Download!',
+            responseVisibility: false
         }
     },
     validations: {
@@ -117,8 +132,9 @@ export default {
             this.form.campaign = null
         },
         getCsvList() {
-            var fetchStatusCode = null;
+            let fetchStatusCode;
             this.show_load = true;
+            this.responseVisibility = false;
             fetch(`${this.$apiRoute}/csv/list`, {
                 method: 'GET',
                 headers: {
@@ -130,14 +146,20 @@ export default {
                fetchStatusCode = response.status;
                return response.json();
             }).then((data) => {
+                if(fetchStatusCode !== 200) {
+                    throw new Error(data.responseText);
+                }
+                this.apiError = false;
                 this.tituloResposta = 'Lista de CSVs';
                 this.csvList = data.responseText.split(',');
             }).catch((err) => {
+                this.apiError = true;
+                this.apiErrorMessage = err.message;
                 this.showAuthAlert = this.isAuthError(fetchStatusCode);
                 this.tituloResposta = 'Erro';
-                console.log(err);
             }).finally(() => {
                 this.show_load = false;
+                this.responseVisibility = true;
             });
         },
         downloadCSV(csv) {
@@ -156,16 +178,27 @@ export default {
                 }
             }).then(response => {
                 this.statusCode = response.status;
+                if(response.status !== 200) {
+                    return response.json();
+                }
                 return response.blob();
-            }).then(fileBlob => {
-                const url = window.URL.createObjectURL(fileBlob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = `${csv}`;
-                document.body.appendChild(a);
-                a.click();
-                a.remove();
+            }).then(response => {
+                if(response instanceof Blob) {
+                    const fileBlob = response;
+                    const url = window.URL.createObjectURL(fileBlob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `${csv}`;
+                    document.body.appendChild(a);
+                    a.click();
+                    a.remove();
+                } else {
+                    console.log(response.errorMessage);
+                    throw new Error(response.responseText);
+                }
             }).catch(err => {
+                this.downloadError = true;
+                this.downloadErrorMessage = err.message;
                 this.showAuthAlert = this.isAuthError(this.statusCode);
             });
         },
