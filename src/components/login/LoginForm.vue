@@ -23,6 +23,10 @@
       <usuario-invalido :active="showAuthAlert"  v-on:setShowAlertFalse="setShowAlertFalse()" >
       </usuario-invalido>
     </form>
+    <md-dialog-alert
+      :md-active.sync="apiError"
+      md-title="Erro ao fazer login"
+      :md-content="apiErrorMessage" />
     <div class="load" v-show="show_load">
       <md-progress-bar class="barra" md-mode="indeterminate"></md-progress-bar>
     </div>
@@ -40,7 +44,9 @@ export default {
     return {
       token: '',
       showAuthAlert: false,
-      show_load: false
+      show_load: false,
+      apiError: false,
+      apiErrorMessage: ''
     }
   },
   methods: {
@@ -52,7 +58,7 @@ export default {
     },
     getUserInfos() {
       this.show_load = true;
-      var statusCode = null;
+      let statusCode = null;
       fetch(`${this.$apiRoute}/user`, {
         method: 'GET',
         headers: {
@@ -63,21 +69,25 @@ export default {
         statusCode = response.status;
         return response.json();
       }).then((response) => {
+        if(statusCode !== 200) {
+          throw new Error(response.responseText);
+        }
         const userData = JSON.parse(response.responseText);
         localStorage.setItem('company', userData.company);
         localStorage.setItem('agency', userData.agency);
         localStorage.setItem('permission', userData.permission);
         this.redirect();
       }).catch((err) => {
+        this.apiErrorMessage = err.message;
         this.showAuthAlert = this.isAuthError(statusCode);
-        console.log(err);
       }).finally(() => {
         this.show_load = false
       });
     },
     isAuthError(statusCode) {
       if(statusCode === 403)
-          return true;
+        return true;
+      this.apiError = true;
       return false;
     },
     setShowAlertFalse(){
