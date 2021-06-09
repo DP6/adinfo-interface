@@ -66,7 +66,7 @@
         </div>
         <div class="resposta" v-show="visibilidadeResposta">
             <titulo-principal :titulo="tituloResposta"></titulo-principal>
-            <div class="tabela-resposta">
+            <div class="tabela-resposta" v-show="!apiError">
                 {{ respostaAPI }}
                 <md-card md-card v-show="visibilidadePrevia">
                     <md-table  md-height="300px" class="previa" md-fixed-header v-model="tabela" >
@@ -82,7 +82,14 @@
                     <md-button @click="downloadParametrizacao()" class="md-dense md-raised md-primary button-download">Download Parametrização</md-button>
                 </md-card>
             </div>
+            <p v-show="apiError" class="response">
+                {{ apiErrorMessage }}
+            </p>
         </div>
+        <md-dialog-alert
+            :md-active.sync="downloadError"
+            md-title="Erro ao baixar CSV"
+            :md-content="downloadErrorMessage" />
         <usuario-invalido :active="showAuthAlert"></usuario-invalido>
     </div>
 </template>
@@ -129,6 +136,10 @@ export default {
             show_load: false,
             configJson: {},
             parametrizers: [],
+            apiError: false,
+            apiErrorMessage: '',
+            downloadError: false,
+            downloadErrorMessage: 'Erro no Download!'
         }
     },
     validations: {
@@ -153,17 +164,22 @@ export default {
     },
     created() {
         const url = `${this.$apiRoute}/config`;
+        this.apiError = false;
         this.show_load = true;
         fetch(url, {
-        method: 'GET',
-        headers: {
-            'Content-Type': 'application/json',
-            token: localStorage.getItem('userToken')
-        }
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                token: localStorage.getItem('userToken')
+            }
         }).then((response) => {
             this.statusCode = response.status;
             return response.json();
-        }).then((data) => {
+        }).then((response) => {
+            if(this.statusCode !== 200) {
+                throw new Error(response.errorMessage || response.responseText);
+            }
+            const data = JSON.parse(response.responseText);
             this.show_load = false;
             delete data.insertTime;
             this.configJson = data;
@@ -185,8 +201,14 @@ export default {
                 }
             });
         }).catch((err) => {
+            this.visibilidadeResposta = true;
+            this.tituloResposta = 'Erro ao recuperar configuração';
             this.showAuthAlert = this.isAuthError(this.statusCode);
+            this.apiError = true;
+            this.apiErrorMessage = err.message;
             console.log(err);
+        }).finally(() => {
+            this.show_load = false;
         });
     },
     methods: {
@@ -219,6 +241,7 @@ export default {
             const url = `${this.$apiRoute}/build/${this.tool}`;
             const formdata = new FormData();
             formdata.append("data", document.querySelector('#file').files[0]);
+            this.apiError = false;
             this.show_load = true;
             const requestOptions = {
                 method: 'POST',
@@ -237,10 +260,13 @@ export default {
                     } else {
                         return response.json();
                     }
-                }).then(file => {
-                    if(file.message) throw new Error(file.message);
-                    this.builderFile = file;
-                    return file.text();
+                }).then(response => {
+                    console.log(response);
+                    if(this.statusCode !== 200) {
+                        throw new Error(response.errorMessage || response.responseText);
+                    }
+                    this.builderFile = response;
+                    return response.text();
                 }).then(textInFile => {
                     this.previaTitulo = [];
                     this.previaCampos = [];
@@ -263,10 +289,12 @@ export default {
                         return true;
                     });
                 }).catch(err => {
+                    this.apiError = true;
                     this.showAuthAlert = this.isAuthError(this.statusCode);
                     this.visibilidadeResposta = true;
-                    this.tituloResposta = 'Falha na requisição';
-                    this.respostaAPI = err;
+                    this.tituloResposta = 'Falha na parametrização';
+                    this.apiErrorMessage = err.message;
+                    console.log(err);
                 }).finally(() => {
                     this.show_load = false;
                 });
@@ -294,6 +322,10 @@ export default {
 
     form {
         margin-left: 50px;
+    }
+
+    p.response {
+        margin-left: 60px;
     }
 
     .load {

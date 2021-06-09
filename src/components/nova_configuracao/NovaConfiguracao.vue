@@ -8,13 +8,13 @@
                         <div class="md-layout-item md-medium-size-100">
                             <md-field>
                                 <label>Upload files</label>
-                                <md-file v-model="file" id="file" placeholder="Anexar Arquivo" />
+                                <md-file v-model="file" accept=".json" id="file" @change="validaArquivo($event)" placeholder="Anexar Arquivo" />
                             </md-field>
                         </div>
                     </div>
                 </md-card-content>
                 <md-card-actions>
-                    <botao-submit @botaoAtivado="newConfig()" nome_do_botao="Enviar Nova Configuração"></botao-submit>
+                    <botao-submit @botaoAtivado="newConfig()" nome_do_botao="Enviar Nova Configuração" :disabled="disable_button"></botao-submit>
                 </md-card-actions>
             </md-card>
         </form>
@@ -59,6 +59,7 @@ export default {
             statusCode: null,
             showAuthAlert: false,
             show_load: false,
+            disable_button: true
         }
     },
     validations: {
@@ -77,6 +78,9 @@ export default {
                 }
             }
         },
+        validaArquivo(e) {
+            this.disable_button = false;
+        },
         newConfig() {
             this.show_load = true;
             var reader = new FileReader();
@@ -93,13 +97,10 @@ export default {
                     body: formdata
                 }).then((response) => {
                     this.statusCode = response.status;
-                    if(response.status === 403) {
-                        this.snackbar_message = 'Permissão insuficiente!';
-                    } else if(response.status === 500) {
-                        this.snackbar_message = 'Ocorreu um erro ao salvar a configuração!';
-                    } else {
-                        this.snackbar_message = 'Configuração atualizada com sucesso!';
-                    }
+                    return response.json();
+                }).then((response) => {
+                    console.log(response);
+                    this.snackbar_message = response.errorMessage || response.responseText;
                     this.showSnackbar = true;
                 }).catch((err) => {
                     this.showAuthAlert = this.isAuthError(this.statusCode);
