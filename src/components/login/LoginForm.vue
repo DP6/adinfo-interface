@@ -11,11 +11,11 @@
               <i class="material-icons">lock_outline</i>
             </span>
           </div>
-          <input type="password" v-model="token" class="form-control" placeholder="Token..." @keydown.enter.stop.prevent="saveToken(), getUserInfos()">
+          <input type="password" v-model="token" class="form-control samsung-input" placeholder="Token..." @keydown.enter.stop.prevent="saveToken(), getUserInfos()">
         </div>
       </div>
       <div class="text-center">
-        <a @click="saveToken(), getUserInfos()" class="btn btn-primary btn-link btn-wd btn-lg">
+        <a @click="saveToken(), getUserInfos()" class="login-btn btn btn-link btn-wd btn-lg">
           Login
           <!-- <router-link to="/interface">Login</router-link> -->
         </a>
@@ -109,5 +109,16 @@ export default {
   .barra {
     border-bottom-left-radius: 250px;
     border-bottom-right-radius: 250px;
+  }
+  .card-header {
+    background: #1428A0;
+  }
+  .login-btn {
+    color: #001522;
+    font-weight: 600;
+    letter-spacing: 2px;
+  }
+  .form-control:focus, .is-focused {
+    background-image: linear-gradient(to top,  #1428A0 2px, rgba(156, 39, 176, 0) 2px), linear-gradient(to top, #1428A0 1px, rgba(210, 210, 210, 0) 1px)
   }
 </style>

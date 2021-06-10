@@ -13,7 +13,8 @@ Vue.use(VueRouter);
 Vue.use(VueMaterial);
 Vue.use(Vuelidate);
 
-Vue.prototype.$apiRoute = 'https://adinfo-dot-samsung-hhp.uc.r.appspot.com';
+// Vue.prototype.$apiRoute = 'https://v1-dot-samsung-hhp.uc.r.appspot.com';
+Vue.prototype.$apiRoute = 'http://localhost:443';
 
 const router = new VueRouter({
   routes,

@@ -2,7 +2,11 @@
     <aside class="sidebar">
         <div class="fixed">
             <nav class="nav">
-                <h2>ADINFO</h2>
+                <div class="logo">
+                    <h2>ADINFO</h2>
+                    <img src="../../../assets/samsung-logo-pr-bw.png"/>
+                </div>
+                
                 <ul>
                     <li v-for="route in interfaceChilds" :key="route">
                         <router-link class="opcao" :to="route.path">{{ route.titulo }}</router-link>
@@ -48,10 +52,11 @@ export default {
     height: 100%;
     font-size: 12px;
     position: absolute;
-    background-image: linear-gradient(#3f2b96, #a8c0ff);
+    background-color: #001522;
     background-position: center;
     background-repeat: no-repeat;
     background-size: cover;
+    padding-left: 10px;
 }
 
 .fixed {
@@ -67,19 +72,24 @@ export default {
     height: 100%;
 }
 
-h2 {
-    text-align: center;
-    margin: 50px 0;
-    font-size: 30px;
-    padding: 20px;
-    border: 2px solid white;
-    color: white;
+.logo h2 {
+    text-align: start;
+    margin: 30px 0 -5px 40px;
+    font-size: 14px;
+    color: #C5C3C3;
     font-weight: lighter;
-    letter-spacing: 10px;
+    letter-spacing: 1px;
+}
+
+.logo img {
+    width: 160px;
+    display: flex;
+    margin: 0 auto;
 }
 
 ul {
     list-style: none;
+    padding: 0 0 0 auto;
 }
 
 li {
