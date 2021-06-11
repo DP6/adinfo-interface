@@ -74,15 +74,15 @@ export default {
 
 .logo h2 {
     text-align: start;
-    margin: 30px 0 -5px 40px;
+    margin: 30px 0 -5px 47px;
     font-size: 14px;
-    color: #C5C3C3;
+    color: #A9A4A4;
     font-weight: lighter;
     letter-spacing: 1px;
 }
 
 .logo img {
-    width: 160px;
+    width: 145px;
     display: flex;
     margin: 0 auto;
 }
@@ -127,7 +127,7 @@ li::after {
     background: black;
     left: 0;
     bottom: 0;
-    background-image: linear-gradient(to right, #3f2b96, #a8c0ff);
+    background-image: linear-gradient(to right, #001522, #A9A4A4);
 }
 
 footer {

@@ -182,6 +182,7 @@ export default {
             const data = JSON.parse(response.responseText);
             this.show_load = false;
             delete data.insertTime;
+            delete data.customConfig;
             this.configJson = data;
             const titles = {
                 'ga': 'Google Analytics',

@@ -291,6 +291,7 @@ export default {
       }
       const data = JSON.parse(response.responseText);
       this.show_load = false;
+      delete data.customConfig;
       delete data.insertTime;
       this.dependenciesConfig = data.dependenciesConfig;
       delete data.dependenciesConfig;
