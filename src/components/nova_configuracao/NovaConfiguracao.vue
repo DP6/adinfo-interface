@@ -100,7 +100,7 @@ export default {
                     return response.json();
                 }).then((response) => {
                     console.log(response);
-                    this.snackbar_message = response.errorMessage || response.responseText;
+                    this.snackbar_message = response.responseText || response.errorMessage;
                     this.showSnackbar = true;
                 }).catch((err) => {
                     this.showAuthAlert = this.isAuthError(this.statusCode);
