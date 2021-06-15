@@ -313,11 +313,10 @@ export default {
       this.show_field_message = true;
       const fields = Object.keys(this.configJson);
       const checks = [
-        fields.indexOf("csvSeparator"), 
         fields.indexOf("separator"),
         fields.indexOf("spaceSeparator"),
         fields.indexOf("columns"),
-        fields.indexOf("separator"),
+        fields.indexOf("separator"), //Pode tirar essa duplicidade?
         (fields.indexOf("ga") > -1 || fields.indexOf("adobe") > -1) ? 1 : -1
       ];
       this.disable_button = checks.filter(check => check === -1).length > 0;
