@@ -316,7 +316,6 @@ export default {
         fields.indexOf("separator"),
         fields.indexOf("spaceSeparator"),
         fields.indexOf("columns"),
-        fields.indexOf("separator"), //Pode tirar essa duplicidade?
         (fields.indexOf("ga") > -1 || fields.indexOf("adobe") > -1) ? 1 : -1
       ];
       this.disable_button = checks.filter(check => check === -1).length > 0;
