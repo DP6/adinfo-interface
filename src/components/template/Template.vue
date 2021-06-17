@@ -24,6 +24,7 @@
         </div>
         <div class="respostas" v-show="visivel">
             <titulo-principal titulo="Resultado"></titulo-principal>
+            <p class="md-body-1" v-show="!apiError">Template gerado a partir da configuração de versão n° <b>{{configVersion}}</b>, criada/atualizada em <b>{{configDate}}</b>.</p>
             <md-card md-card v-show="!apiError">
                 <md-table md-fixed-header v-model="tabela" >
                     <md-table-toolbar>
@@ -79,6 +80,8 @@ export default {
             show_load: false,
             apiError: false,
             apiErrorMessage: '',
+            configVersion: '',
+            configDate: '',
         }
     },
     validations: {
@@ -169,6 +172,8 @@ export default {
                 this.templateFile = new Blob([['Url'].concat(this.colunas).join(',')], {
                     type: 'application/json'
                 });
+                this.configVersion = configJson.version;
+                this.configDate = `${configJson.insertTime.substring(6, 8)}/${configJson.insertTime.substring(4, 6)}/${configJson.insertTime.substring(0, 4)}`;
             }).catch((err) => {
                 this.showAuthAlert = this.isAuthError(this.statusCode);
                 this.apiError = true;
@@ -209,6 +214,10 @@ export default {
 
     .tabela-respostas {
         max-height: calc(100vh - 400px);
+    }
+
+    p.md-body-1 {
+        margin-left: 50px;
     }
 
 </style>
