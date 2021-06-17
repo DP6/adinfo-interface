@@ -177,7 +177,7 @@ export default {
             return response.json();
         }).then((response) => {
             if(this.statusCode !== 200) {
-                throw new Error(response.errorMessage || response.responseText);
+                throw new Error(response.responseText || response.errorMessage);
             }
             const data = JSON.parse(response.responseText);
             this.show_load = false;
@@ -263,7 +263,7 @@ export default {
                 }).then(response => {
                     console.log(response);
                     if(this.statusCode !== 200) {
-                        throw new Error(response.errorMessage || response.responseText);
+                        throw new Error(response.responseText || response.errorMessage);
                     }
                     this.builderFile = response;
                     return response.text();

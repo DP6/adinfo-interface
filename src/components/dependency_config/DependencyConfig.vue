@@ -238,7 +238,7 @@ export default {
             }).then((response) => {
                 return response.json();
             }).then(response => {
-                this.snackbar_message = response.errorMessage || response.responseText;
+                this.snackbar_message = response.responseText || response.errorMessage;
                 this.showSnackbar = true;
                 this.statusCode = response.status;
             }).catch((err) => {
@@ -270,7 +270,7 @@ export default {
         }).then((response) => {
             if(this.statusCode !== 200) {
                 this.configJson = {'columns': {}};
-                throw new Error(response.errorMessage || response.responseText);
+                throw new Error(response.responseText || response.errorMessage);
             }
             const data = JSON.parse(response.responseText);
             delete data.insertTime;
