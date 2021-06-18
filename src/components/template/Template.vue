@@ -36,6 +36,7 @@
                     </md-table-row>
 
                 </md-table>
+                <md-button @click="downloadTemplateExcel()" class="md-dense md-raised md-primary button-download">Download .XLSX</md-button>
                 <md-button @click="downloadTemplate()" class="md-dense md-raised md-primary button-download">Download Template</md-button>
             </md-card>
             <p v-show="apiError" class="response">
@@ -114,10 +115,24 @@ export default {
             this.form.company = null
         },
         downloadTemplate() {
-            const url = window.URL.createObjectURL(this.templateFile);
+            this.download(this.templateFile, 'template.csv');
+        },
+        downloadTemplateExcel() {
+            fetch(`${this.$apiRoute}/template/excel`, {
+                method: 'GET',
+                headers: {
+                    token: localStorage.getItem('userToken')
+                }
+            }).then(response => response.blob()).then(blob => {
+                console.log(blob)
+                this.download(blob, 'template.xlsx')
+            })
+        },
+        download(item, fileName) {
+            const url = window.URL.createObjectURL(item);
             const a = document.createElement('a');
             a.href = url;
-            a.download = "template.csv";
+            a.download = fileName;
             document.body.appendChild(a);
             a.click();
             a.remove();
