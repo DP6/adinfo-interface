@@ -287,7 +287,7 @@ export default {
       return response.json();
     }).then((response) => {
       if(this.statusCode !== 200) {
-        throw new Error(response.errorMessage || response.responseText);
+        throw new Error(response.responseText || response.errorMessage);
       }
       const data = JSON.parse(response.responseText);
       this.show_load = false;
@@ -354,7 +354,7 @@ export default {
         return response.json();
       }).then(response => {
         console.log(response);
-        this.snackbar_message = response.errorMessage || response.responseText;
+        this.snackbar_message = response.responseText || response.errorMessage;
         this.showSnackbar = true;
         this.statusCode = response.status;
       }).catch((err) => {

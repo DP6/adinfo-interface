@@ -66,6 +66,7 @@
         </div>
         <div class="resposta" v-show="visibilidadeResposta">
             <titulo-principal :titulo="tituloResposta"></titulo-principal>
+            <p class="md-body-1" v-show="!apiError">Parametrização realizada a partir da configuração de versão n° <b>{{configVersion}}</b>, criada/atualizada em <b>{{configDate}}</b>.</p>
             <div class="tabela-resposta" v-show="!apiError">
                 {{ respostaAPI }}
                 <md-card md-card v-show="visibilidadePrevia">
@@ -139,7 +140,9 @@ export default {
             apiError: false,
             apiErrorMessage: '',
             downloadError: false,
-            downloadErrorMessage: 'Erro no Download!'
+            downloadErrorMessage: 'Erro no Download!',
+            configVersion: '',
+            configDate: '',
         }
     },
     validations: {
@@ -177,10 +180,12 @@ export default {
             return response.json();
         }).then((response) => {
             if(this.statusCode !== 200) {
-                throw new Error(response.errorMessage || response.responseText);
+                throw new Error(response.responseText || response.errorMessage);
             }
             const data = JSON.parse(response.responseText);
             this.show_load = false;
+            this.configVersion = data.version;
+            this.configDate = `${data.insertTime.substring(6, 8)}/${data.insertTime.substring(4, 6)}/${data.insertTime.substring(0, 4)}`;
             delete data.insertTime;
             delete data.customConfig;
             this.configJson = data;
@@ -264,7 +269,7 @@ export default {
                 }).then(response => {
                     console.log(response);
                     if(this.statusCode !== 200) {
-                        throw new Error(response.errorMessage || response.responseText);
+                        throw new Error(response.responseText || response.errorMessage);
                     }
                     this.builderFile = response;
                     return response.text();
@@ -339,6 +344,10 @@ export default {
     }
 
     .tabela-resposta {
+        margin-left: 50px;
+    }
+
+    p.md-body-1 {
         margin-left: 50px;
     }
 

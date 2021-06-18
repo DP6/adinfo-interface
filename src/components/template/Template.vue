@@ -24,6 +24,7 @@
         </div>
         <div class="respostas" v-show="visivel">
             <titulo-principal titulo="Resultado"></titulo-principal>
+            <p class="md-body-1" v-show="!apiError">Template gerado a partir da configuração de versão n° <b>{{configVersion}}</b>, criada/atualizada em <b>{{configDate}}</b>.</p>
             <md-card md-card v-show="!apiError">
                 <md-table md-fixed-header v-model="tabela" >
                     <md-table-toolbar>
@@ -36,7 +37,8 @@
                     </md-table-row>
 
                 </md-table>
-                <md-button @click="downloadTemplate()" class="md-dense md-raised md-primary button-download">Download Template</md-button>
+                <md-button @click="downloadTemplateExcel()" class="md-dense md-raised md-primary button-download">Download .XLSX</md-button>
+                <md-button @click="downloadTemplate()" class="md-dense md-raised md-primary button-download">Download .CSV</md-button>
             </md-card>
             <p v-show="apiError" class="response">
                 {{ apiErrorMessage }}
@@ -78,6 +80,8 @@ export default {
             show_load: false,
             apiError: false,
             apiErrorMessage: '',
+            configVersion: '',
+            configDate: '',
         }
     },
     validations: {
@@ -114,10 +118,24 @@ export default {
             this.form.company = null
         },
         downloadTemplate() {
-            const url = window.URL.createObjectURL(this.templateFile);
+            this.download(this.templateFile, 'template.csv');
+        },
+        downloadTemplateExcel() {
+            fetch(`${this.$apiRoute}/template/excel`, {
+                method: 'GET',
+                headers: {
+                    token: localStorage.getItem('userToken')
+                }
+            }).then(response => response.blob()).then(blob => {
+                console.log(blob)
+                this.download(blob, 'template.xlsx')
+            })
+        },
+        download(item, fileName) {
+            const url = window.URL.createObjectURL(item);
             const a = document.createElement('a');
             a.href = url;
-            a.download = "template.csv";
+            a.download = fileName;
             document.body.appendChild(a);
             a.click();
             a.remove();
@@ -154,6 +172,8 @@ export default {
                 this.templateFile = new Blob([['Url'].concat(this.colunas).join(',')], {
                     type: 'application/json'
                 });
+                this.configVersion = configJson.version;
+                this.configDate = `${configJson.insertTime.substring(6, 8)}/${configJson.insertTime.substring(4, 6)}/${configJson.insertTime.substring(0, 4)}`;
             }).catch((err) => {
                 this.showAuthAlert = this.isAuthError(this.statusCode);
                 this.apiError = true;
@@ -194,6 +214,10 @@ export default {
 
     .tabela-respostas {
         max-height: calc(100vh - 400px);
+    }
+
+    p.md-body-1 {
+        margin-left: 50px;
     }
 
 </style>
