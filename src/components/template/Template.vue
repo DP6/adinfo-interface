@@ -38,7 +38,7 @@
 
                 </md-table>
                 <md-button @click="downloadTemplateExcel()" class="md-dense md-raised md-primary button-download">Download .XLSX</md-button>
-                <md-button @click="downloadTemplate()" class="md-dense md-raised md-primary button-download">Download Template</md-button>
+                <md-button @click="downloadTemplate()" class="md-dense md-raised md-primary button-download">Download .CSV</md-button>
             </md-card>
             <p v-show="apiError" class="response">
                 {{ apiErrorMessage }}
