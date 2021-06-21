@@ -177,8 +177,7 @@
 
     <div class="msg-enviar-configuracao" v-show="disable_button && show_field_message">
       <p>Campos obrigatórios para a configuração: 
-        <b>Separator</b>, 
-        <b>CSV Separator</b>, 
+        <b>Separator</b>,
         <b>Space Separator</b>, 
         <b>Columns</b>, 
         alguma ferramenta de mídia (GA ou Adobe)
