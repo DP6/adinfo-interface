@@ -175,13 +175,19 @@
       </md-card-actions>
     </md-card>
 
-    <div class="msg-enviar-configuracao" v-show="disable_button">
+    <div class="msg-enviar-configuracao" v-show="disable_button && show_field_message">
       <p>Campos obrigatórios para a configuração: 
-        <b>Separator</b>, 
-        <b>CSV Separator</b>, 
+        <b>Separator</b>,
         <b>Space Separator</b>, 
         <b>Columns</b>, 
         alguma ferramenta de mídia (GA ou Adobe)
+      </p>
+    </div>
+
+    <div class="respostas" v-show="apiError">
+      <titulo-principal :titulo="tituloResposta"></titulo-principal>
+      <p v-show="apiError" class="response">
+        {{ apiErrorMessage }}
       </p>
     </div>
     
@@ -230,6 +236,10 @@ export default {
       show_select: false,
       show_field: false,
       disable_button: true,
+      show_field_message: false,
+      apiError: false,
+      apiErrorMessage: '',
+      tituloResposta: '',
       ferramenta_midia: '',
       dynamicValues: '',
       column_select: '',
@@ -274,7 +284,11 @@ export default {
     }).then((response) => {
       this.statusCode = response.status;
       return response.json();
-    }).then((data) => {
+    }).then((response) => {
+      if(this.statusCode !== 200) {
+        throw new Error(response.responseText || response.errorMessage);
+      }
+      const data = JSON.parse(response.responseText);
       this.show_load = false;
       delete data.insertTime;
       this.dependenciesConfig = data.dependenciesConfig;
@@ -283,22 +297,24 @@ export default {
       this.generalConfig = Object.keys(data);
       this.columns = Object.keys(data.columns);
       this.updateToolFields();
-      console.log(this.configJson);
-      console.log(this.columns);
     }).catch((err) => {
+      this.apiError = true;
+      this.apiErrorMessage = err.message;
+      this.tituloResposta = 'Erro ao recuperar configuração';
       this.showAuthAlert = this.isAuthError(this.statusCode);
       console.log(err);
+    }).finally(() => {
+      this.show_load = false;
     });
   },
   methods: {
     habilitar_envio() {
+      this.show_field_message = true;
       const fields = Object.keys(this.configJson);
       const checks = [
-        fields.indexOf("csvSeparator"), 
         fields.indexOf("separator"),
         fields.indexOf("spaceSeparator"),
         fields.indexOf("columns"),
-        fields.indexOf("separator"),
         (fields.indexOf("ga") > -1 || fields.indexOf("adobe") > -1) ? 1 : -1
       ];
       this.disable_button = checks.filter(check => check === -1).length > 0;
@@ -331,12 +347,10 @@ export default {
         },
         body: formdata
       }).then((response) => {
-        this.snackbar_message = 'Erro ao criar a configuração!';
-        if(response.status === 403) {
-          throw new Error('Você não possui permissão para realizar esta ação!');
-        } else if(response.status === 200) {
-          this.snackbar_message = 'Configuração atualizada com sucesso!';
-        }
+        return response.json();
+      }).then(response => {
+        console.log(response);
+        this.snackbar_message = response.responseText || response.errorMessage;
         this.showSnackbar = true;
         this.statusCode = response.status;
       }).catch((err) => {
@@ -483,6 +497,10 @@ export default {
     font-size: 20px;
     cursor: pointer;
     user-select: none;
+  }
+
+  p.response {
+    margin-left: 60px;
   }
 
   .excluir {

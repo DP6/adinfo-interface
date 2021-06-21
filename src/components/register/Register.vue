@@ -38,7 +38,10 @@
         </div>
         <div class="respostas" v-show="visivel">
             <titulo-principal :titulo="tituloResposta"></titulo-principal>
-            <ul>
+            <p v-show="apiError" class="response">
+                {{ apiErrorMessage }}
+            </p>
+            <ul v-show="!apiError">
                 <li>
                     <p>{{ respostaAPI }}</p>
                 </li>
@@ -73,7 +76,7 @@ export default {
     data() {
         return {
             form: {
-                company: null,
+                company: localStorage.getItem('company') || '',
                 agency: null,
                 email: null,
             },
@@ -83,6 +86,8 @@ export default {
             showAuthAlert: false,
             respostaAPI: '',
             show_load: false,
+            apiError: false,
+            apiErrorMessage: ''
         }
     },
     validations: {
@@ -117,7 +122,9 @@ export default {
             this.form.email = null
         },
         createUser() {
-            var statusCode = null;
+            let statusCode;
+            this.visivel = false;
+            this.apiError = false;
             const url = `${this.$apiRoute}/register`
             const requestOptions = {
                 method: 'POST',
@@ -131,16 +138,23 @@ export default {
             };
             this.show_load = true;
             fetch(url, requestOptions)
-            .then(function(response) {
+            .then((response) => {
                 statusCode = response.status;
-                return response.text();
+                return response.json();
             }).then((response) => {
-                this.respostaAPI = response;
-                this.visivel = true;
+                if(statusCode !== 200) {
+                    console.log(response.errorMessage);
+                    throw new Error(response.responseText);
+                }
+                this.apiError = false;
+                this.respostaAPI = response.responseText;
             }).catch((err) => {
-                this.showAuthAlert = this.isAuthError(statusCode);
                 console.log(err);
+                this.showAuthAlert = this.isAuthError(statusCode);
+                this.apiError = true;
+                this.apiErrorMessage = err.message;
             }).finally(() => {
+                this.visivel = true;
                 this.show_load = false;
             });
         },
@@ -175,6 +189,10 @@ export default {
     ul {
         margin-left: 15px;
         list-style: none;
+    }
+
+    p.response {
+        margin-left: 60px;
     }
 
     .csv {
