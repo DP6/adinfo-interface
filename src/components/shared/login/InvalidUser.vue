@@ -1,10 +1,9 @@
 <template>
-  <md-dialog-confirm
+<md-dialog-alert
   :md-active.sync="active"
   md-title="Usuário sem permissão!"
   md-content="Desculpe, você não tem permissão para realizar esta ação."
-  md-confirm-text="Login"
-  md-cancel-text="Cancel"
+  md-confirm-text="Voltar"
   @md-cancel="onCancel()"
   @md-confirm="redirect()" />
 </template>
