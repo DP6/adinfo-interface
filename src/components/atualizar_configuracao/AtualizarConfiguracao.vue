@@ -177,8 +177,7 @@
 
     <div class="msg-enviar-configuracao" v-show="disable_button && show_field_message">
       <p>Campos obrigatórios para a configuração: 
-        <b>Separator</b>, 
-        <b>CSV Separator</b>, 
+        <b>Separator</b>,
         <b>Space Separator</b>, 
         <b>Columns</b>, 
         alguma ferramenta de mídia (GA ou Adobe)
@@ -313,11 +312,9 @@ export default {
       this.show_field_message = true;
       const fields = Object.keys(this.configJson);
       const checks = [
-        fields.indexOf("csvSeparator"), 
         fields.indexOf("separator"),
         fields.indexOf("spaceSeparator"),
         fields.indexOf("columns"),
-        fields.indexOf("separator"),
         (fields.indexOf("ga") > -1 || fields.indexOf("adobe") > -1) ? 1 : -1
       ];
       this.disable_button = checks.filter(check => check === -1).length > 0;
