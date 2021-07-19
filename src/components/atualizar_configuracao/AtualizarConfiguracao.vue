@@ -46,7 +46,7 @@
         </md-list-item>
 
         <md-list-item 
-          v-for="item in generalConfig.filter(key => typeof(configJson[key]) === 'string')" 
+          v-for="item in generalConfig.filter(key => typeof(key !== 'customConfig' && configJson[key]) === 'string')" 
           :key="item"
           :id="item"
         >
@@ -55,7 +55,7 @@
         </md-list-item>
 
         <md-list-item md-expand 
-          v-for="item in generalConfig.filter(key => typeof(configJson[key]) === 'object')" 
+          v-for="item in generalConfig.filter(key => typeof(key !== 'customConfig' && configJson[key]) === 'object')" 
           :key="item"
           :id="item"
         >
@@ -291,7 +291,6 @@ export default {
       }
       const data = JSON.parse(response.responseText);
       this.show_load = false;
-      delete data.customConfig;
       delete data.insertTime;
       this.dependenciesConfig = data.dependenciesConfig;
       delete data.dependenciesConfig;
@@ -343,6 +342,7 @@ export default {
       const formdata = new FormData();
       const configToUpdate = this.configJson;
       configToUpdate.dependenciesConfig = this.dependenciesConfig;
+      console.log(configToUpdate);
       formdata.append("config", JSON.stringify(configToUpdate));
       fetch(url, {
         method: 'POST',
