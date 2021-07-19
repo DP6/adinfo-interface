@@ -167,6 +167,7 @@ export default {
             let campaign = document.querySelector('#campaign').value;
             if(!campaign) {
                 campaign = csv.match(/\/.*\/(.*)\/.*\./) || csv.match(/.*\/(.*)\/.*\./);
+                campaign = campaign[1]
             }
             fetch(`${this.$apiRoute}/csv`, {
                 method: 'GET',
@@ -174,7 +175,7 @@ export default {
                     'Content-Type': 'application/json',
                     file: fileName[1],
                     token: localStorage.getItem('userToken'),
-                    campaign: campaign[1]
+                    campaign: campaign
                 }
             }).then(response => {
                 this.statusCode = response.status;
