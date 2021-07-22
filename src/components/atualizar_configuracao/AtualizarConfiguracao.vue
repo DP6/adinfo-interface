@@ -133,16 +133,13 @@
                 </md-list-item>
                 
                 <md-list-item v-else class="nivel3">
-                  <!-- <md-icon v-if="columns.filter(c => configJson[item][param].data.indexOf(c) === -1).length > 0" @click.native="adicionarItem($event, item, param)" class="adicionar">add</md-icon> -->
                   <md-icon v-if="columns.filter(c => configJson[item][param].indexOf(c) === -1).length > 0" @click.native="adicionarItem($event, item, param)" class="adicionar">add</md-icon>
-
                   <div class="md-layout md-gutter campo-adicionar">
                     <div class="md-layout-item">
                       <md-field>
                         <label for="column">Coluna</label>
                         <md-select name="column" class="select-field" v-model="column_select">
                           <md-option 
-                            // v-for="column in columns.filter(c => configJson[item][param].data.indexOf(c) === -1)" 
                             v-for="column in columns.filter(c => configJson[item][param].indexOf(c) === -1)" 
                             :key="column"
                             :value="column"
@@ -370,7 +367,6 @@ export default {
       const formdata = new FormData();
       const configToUpdate = this.estruturarConfig();
       configToUpdate.dependenciesConfig = this.dependenciesConfig;
-      console.log(configToUpdate);
       formdata.append("config", JSON.stringify(configToUpdate));
       fetch(url, {
         method: 'POST',
@@ -381,7 +377,6 @@ export default {
       }).then((response) => {
         return response.json();
       }).then(response => {
-        console.log(response);
         this.snackbar_message = response.responseText || response.errorMessage;
         this.showSnackbar = true;
         this.statusCode = response.status;
