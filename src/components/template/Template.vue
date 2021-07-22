@@ -159,16 +159,22 @@ export default {
                 }
                 this.apiError = false;
                 const configJson = JSON.parse(response.responseText);
-                const columnsConfig = configJson.columns;
+                let columnsConfig = Object.keys(configJson.columns).map(item => {
+                    return {
+                        item: item,
+                        ...configJson.columns[item]
+                    };
+                });
+                columnsConfig = columnsConfig.sort((a, b) => a.index - b.index);
                 this.tabela = [];
                 this.colunas = [];
-                Object.keys(columnsConfig).map(column => {
+                columnsConfig.map(column => {
                     this.tabela.push({
-                        valor: columnsConfig[column].join(', '),
-                        campo: column
+                        valor: column.data.join(', '),
+                        campo: column.item
                     });
                 });
-                this.colunas = Object.keys(columnsConfig).map(key => key);
+                this.colunas = columnsConfig.map(item => item.item);
                 this.templateFile = new Blob([['Url'].concat(this.colunas).join(',')], {
                     type: 'application/json'
                 });

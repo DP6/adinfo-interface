@@ -133,13 +133,16 @@
                 </md-list-item>
                 
                 <md-list-item v-else class="nivel3">
+                  <!-- <md-icon v-if="columns.filter(c => configJson[item][param].data.indexOf(c) === -1).length > 0" @click.native="adicionarItem($event, item, param)" class="adicionar">add</md-icon> -->
                   <md-icon v-if="columns.filter(c => configJson[item][param].indexOf(c) === -1).length > 0" @click.native="adicionarItem($event, item, param)" class="adicionar">add</md-icon>
+
                   <div class="md-layout md-gutter campo-adicionar">
                     <div class="md-layout-item">
                       <md-field>
                         <label for="column">Coluna</label>
                         <md-select name="column" class="select-field" v-model="column_select">
                           <md-option 
+                            // v-for="column in columns.filter(c => configJson[item][param].data.indexOf(c) === -1)" 
                             v-for="column in columns.filter(c => configJson[item][param].indexOf(c) === -1)" 
                             :key="column"
                             :value="column"
@@ -293,7 +296,19 @@ export default {
       delete data.insertTime;
       this.dependenciesConfig = data.dependenciesConfig;
       delete data.dependenciesConfig;
-      this.configJson = data;
+      let configJsonAux = {};
+      Object.keys(data).map(key => {
+        if (['csvSeparator', 'separator', 'spaceSeparator', 'version'].indexOf(key) < 0) {
+          configJsonAux[key] = {};
+          let orderedItems = Object.keys(data[key]).sort((a, b) => data[key][a].index - data[key][b].index);
+          orderedItems.map(item => {
+            configJsonAux[key][item] = data[key][item].data;
+          })
+        } else {
+          configJsonAux[key] = data[key]
+        }
+      })
+      this.configJson = configJsonAux;
       this.generalConfig = Object.keys(data);
       this.columns = Object.keys(data.columns);
       this.updateToolFields();
@@ -302,7 +317,6 @@ export default {
       this.apiErrorMessage = err.message;
       this.tituloResposta = 'Erro ao recuperar configuração';
       this.showAuthAlert = this.isAuthError(this.statusCode);
-      console.log(err);
     }).finally(() => {
       this.show_load = false;
     });
@@ -333,11 +347,28 @@ export default {
       this.columns = Object.keys(this.configJson['columns']);
       this.habilitar_envio();
     },
+    estruturarConfig() {
+      let configJsonAux = {};
+      Object.keys(this.configJson).map(key => {
+        if (['csvSeparator', 'separator', 'spaceSeparator', 'version'].indexOf(key) < 0) {
+          configJsonAux[key] = {};
+          Object.keys(this.configJson[key]).map((item, index) => {
+            configJsonAux[key][item] = {
+              index: (key === 'columns')? index : undefined,
+              data: this.configJson[key][item]
+            }
+          })
+        } else {
+          configJsonAux[key] = this.configJson[key]
+        }
+      });
+      return configJsonAux;
+    },
     updateConfig() {
       const url = `${this.$apiRoute}/config`;
       this.show_load = true;
       const formdata = new FormData();
-      const configToUpdate = this.configJson;
+      const configToUpdate = this.estruturarConfig();
       configToUpdate.dependenciesConfig = this.dependenciesConfig;
       console.log(configToUpdate);
       formdata.append("config", JSON.stringify(configToUpdate));
