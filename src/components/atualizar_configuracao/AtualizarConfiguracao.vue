@@ -295,7 +295,7 @@ export default {
       delete data.dependenciesConfig;
       let configJsonAux = {};
       Object.keys(data).map(key => {
-        if (['csvSeparator', 'separator', 'spaceSeparator', 'version'].indexOf(key) < 0) {
+        if (['csvSeparator', 'separator', 'spaceSeparator', 'version', 'customConfig'].indexOf(key) < 0) {
           configJsonAux[key] = {};
           let orderedItems = Object.keys(data[key]).sort((a, b) => data[key][a].index - data[key][b].index);
           orderedItems.map(item => {
@@ -347,7 +347,7 @@ export default {
     estruturarConfig() {
       let configJsonAux = {};
       Object.keys(this.configJson).map(key => {
-        if (['csvSeparator', 'separator', 'spaceSeparator', 'version'].indexOf(key) < 0) {
+        if (['csvSeparator', 'separator', 'spaceSeparator', 'version', 'customConfig'].indexOf(key) < 0) {
           configJsonAux[key] = {};
           Object.keys(this.configJson[key]).map((item, index) => {
             configJsonAux[key][item] = {
@@ -366,6 +366,7 @@ export default {
       this.show_load = true;
       const formdata = new FormData();
       const configToUpdate = this.estruturarConfig();
+      console.log(configToUpdate)
       configToUpdate.dependenciesConfig = this.dependenciesConfig;
       formdata.append("config", JSON.stringify(configToUpdate));
       fetch(url, {
