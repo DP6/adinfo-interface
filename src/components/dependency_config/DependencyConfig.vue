@@ -160,6 +160,10 @@ export default {
             showSnackbar: false,
             apiError: false,
             apiErrorMessage: '',
+            duration: 4000,
+            snackbar_message: '',
+            isInfinity: false,
+            position: 'center',
         }
     },
     methods: {
@@ -169,6 +173,7 @@ export default {
             const matches = divAdd.querySelector('#add_matches').value.split(',');
             divAdd.querySelector('#add_valuesReference').value = '';
             divAdd.querySelector('#add_matches').value = '';
+            console.log(this.dependenciesConfig);
             this.dependenciesConfig.push({
                 columnReference: this.add_dependency_select_columnReference,
                 columnDestiny: this.add_dependency_select_columnDestiny,
@@ -274,7 +279,7 @@ export default {
             }
             const data = JSON.parse(response.responseText);
             delete data.insertTime;
-            this.dependenciesConfig = data.dependenciesConfig;
+            this.dependenciesConfig = !!data.dependenciesConfig ? data.dependenciesConfig : [];
             delete data.dependenciesConfig;
             this.configJson = data;
         }).catch((err) => {
