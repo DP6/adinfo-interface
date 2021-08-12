@@ -4,7 +4,7 @@
         <form class="md-layout">
             <md-card class="md-layout-item md-larger-size">
                 <md-card-content>
-                    <div class="md-layout md-gutter">
+                    <!-- <div class="md-layout md-gutter">
                         <div class="md-layout-item md-medium-size-100">
                             <md-field :class="getValidationClass('company')">
                                 <label for="company">Empresa</label>
@@ -12,7 +12,7 @@
                                 <span class="md-error" v-if="!$v.form.company.required">The first name is required</span>
                             </md-field>
                         </div>
-                    </div>
+                    </div> -->
                 </md-card-content>
                 <md-card-actions>
                     <botao-submit nome_do_botao="Consultar Template" @botaoAtivado="getTemplate()"></botao-submit>
@@ -68,9 +68,6 @@ export default {
     },
     data() {
         return {
-            form: {
-                company: localStorage.getItem('company') || '',
-            },
             templateFile: new Blob(),
             colunas: [],
             tabela: [],

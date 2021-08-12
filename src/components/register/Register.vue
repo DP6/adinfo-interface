@@ -5,13 +5,13 @@
             <md-card class="md-layout-item md-larger-size">
                 <md-card-content>
                     <div class="md-layout md-gutter">
-                        <div class="md-layout-item md-medium-size-100">
+                        <!-- <div class="md-layout-item md-medium-size-100">
                             <md-field :class="getValidationClass('company')">
                                 <label for="company">Empresa do novo usuário</label>
                                 <md-input name="company" id="company" v-model="form.company"/>
                                 <span class="md-error" v-if="!$v.form.company.required">The first name is required</span>
                             </md-field>
-                        </div>
+                        </div> -->
                         <div class="md-layout-item md-medium-size-100">
                             <md-field :class="getValidationClass('agency')">
                                 <label for="agency">Agência</label>
@@ -24,6 +24,13 @@
                                 <label for="email">E-mail</label>
                                 <md-input name="email" id="email" v-model="form.email"/>
                                 <span class="md-error" v-if="!$v.form.email.required">The email is required</span>
+                            </md-field>
+                        </div>
+                        <div class="md-layout-item md-medium-size-100">
+                            <md-field :class="getValidationClass('senha')">
+                                <label for="senha">Senha</label>
+                                <md-input name="senha" id="senha" v-model="form.senha" type="password"/>
+                                <span class="md-error" v-if="!$v.form.senha.required">The senha is required</span>
                             </md-field>
                         </div>
                     </div>
@@ -76,9 +83,10 @@ export default {
     data() {
         return {
             form: {
-                company: localStorage.getItem('company') || '',
+                // company: localStorage.getItem('company') || '',
                 agency: null,
                 email: null,
+                senha: null,
             },
             visivel: false,
             tituloResposta: 'Resposta',
@@ -93,8 +101,6 @@ export default {
     validations: {
         form: {
             agency: {
-                required,
-                minLength: minLength(3)
             },
             company: {
                 required,
@@ -103,6 +109,10 @@ export default {
             email: {
                 required,
                 email
+            },
+            senha: {
+                required,
+                minLength: minLength(5)
             }
         }
     },
@@ -120,21 +130,25 @@ export default {
             this.form.agency = null
             this.form.company = null
             this.form.email = null
+            this.form.senha = null
         },
         createUser() {
             let statusCode;
             this.visivel = false;
             this.apiError = false;
-            const url = `${this.$apiRoute}/register`
+            const url = `${this.$apiRoute}/register`;
+            const formdata = new FormData();
+            formdata.append("email", this.form.email);
+            formdata.append("password", this.form.senha);
+            formdata.append("agency", this.form.agency);
+            formdata.append("permission", this.form.agency ? 'user' : 'admin');
             const requestOptions = {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json',
-                    token: localStorage.getItem('userToken'),
-                    agency: document.querySelector('#agency').value,
-                    email: document.querySelector('#email').value,
-                    permission: 'user',
+                    token: localStorage.getItem('userToken')
                 },
+                body: formdata,
+                redirect: 'follow'
             };
             this.show_load = true;
             fetch(url, requestOptions)

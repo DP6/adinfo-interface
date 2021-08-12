@@ -5,7 +5,7 @@
             <md-card class="md-layout-item md-larger-size">
                 <md-card-content>
                     <div class="md-layout md-gutter">
-                        <div class="md-layout-item md-medium-size-100">
+                        <!-- <div class="md-layout-item md-medium-size-100">
                             <md-field :class="getValidationClass('company')">
                                 <label for="company">Empresa</label>
                                 <md-input disabled=disable name="company" id="company" v-model="form.company"/>
@@ -17,7 +17,7 @@
                                 <label for="agency">Agência</label>
                                 <md-input disabled=disable name="agency" id="agency" v-model="form.agency"/>
                             </md-field>
-                        </div>
+                        </div> -->
                         <div class="md-layout-item md-medium-size-100">
                             <md-field :class="getValidationClass('campaign')">
                                 <label for="campaign">Campanha</label>
@@ -84,8 +84,8 @@ export default {
     data() {
         return {
             form: {
-                agency: localStorage.getItem('agency') || '',
-                company: localStorage.getItem('company') || '',
+                // agency: localStorage.getItem('agency') || '',
+                // company: localStorage.getItem('company') || '',
                 campaign: '',
             },
             csvList: [],
@@ -127,8 +127,8 @@ export default {
         },
         clearForm () {
             this.$v.$reset()
-            this.form.agency = null
-            this.form.company = null
+            // this.form.agency = null
+            // this.form.company = null
             this.form.campaign = null
         },
         getCsvList() {
