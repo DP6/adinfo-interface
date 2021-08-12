@@ -71,12 +71,12 @@ export default {
         redirect: 'follow'
       }).then((response) => {
         statusCode = response.status;
-        return response.json();
+        localStorage.setItem('userToken', response.headers.get('Authorization'));
+        return statusCode === 204 ? undefined : response.json();
       }).then((response) => {
         if(statusCode !== 204) {
           throw new Error(response.responseText);
         }
-        localStorage.setItem('userToken', response.headers.get('Authorization'));
         return fetch(`${this.$apiRoute}/user`, {
           method: 'GET',
           headers: {
