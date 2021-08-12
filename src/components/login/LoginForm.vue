@@ -71,6 +71,8 @@ export default {
         redirect: 'follow'
       }).then((response) => {
         statusCode = response.status;
+        return response.json();
+      }).then((response) => {
         if(statusCode !== 204) {
           throw new Error(response.responseText);
         }
@@ -92,6 +94,7 @@ export default {
         localStorage.setItem('permission', JSON.parse(data.responseText).permission);
         this.redirect();
       }).catch((err) => {
+        console.log(err);
         this.apiErrorMessage = err.message;
         this.showAuthAlert = this.isAuthError(statusCode);
       }).finally(() => {
