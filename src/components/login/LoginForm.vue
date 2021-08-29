@@ -72,6 +72,7 @@ export default {
       }).then((response) => {
         statusCode = response.status;
         localStorage.setItem('userToken', response.headers.get('Authorization'));
+        localStorage.setItem('email', this.email);
         return statusCode === 204 ? undefined : response.json();
       }).then((response) => {
         if(statusCode !== 204) {

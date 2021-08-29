@@ -117,6 +117,12 @@ export default {
         }
     },
     methods: {
+        isAuthError(statusCode) {
+            if(statusCode === 403)
+                return true;
+            this.apiError = true;
+            return false;
+        },
         changePassword() {
             const url = `${this.$apiRoute}/user/changepass`;
             this.show_load = true;
