@@ -349,7 +349,6 @@ export default {
       }).then((response) => {
         return response.json();
       }).then(response => {
-        console.log(response);
         this.snackbar_message = response.responseText || response.errorMessage;
         this.showSnackbar = true;
         this.statusCode = response.status;
