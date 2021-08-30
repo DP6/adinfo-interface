@@ -7,7 +7,7 @@
             <md-list class="lista_usuarios">
                 <md-list-item v-for="user in users_activates" :key="user.id" class="usuario">
                     {{user.email}} ({{user.permission}})
-                <md-icon class="md-size-2x desativar_usuario" @click.native="gerenciaUsuario(user.id, 'desativa')">toggle_off</md-icon>
+                <md-icon class="md-size-2x desativar_usuario" @click.native="gerenciaUsuario(user.id, 'desativa')">toggle_on</md-icon>
                 </md-list-item>
             </md-list>
         </md-card>
@@ -16,7 +16,7 @@
             <md-list class="lista_usuarios_desativados lista_usuarios">
                 <md-list-item v-for="user in users_deactivates" :key="user.id" class="usuario">
                     {{user.email}} ({{user.permission}})
-                <md-icon class="md-size-2x ativar_usuario usuaroi" @click.native="gerenciaUsuario(user.id, 'ativa')">toggle_on</md-icon>
+                <md-icon class="md-size-2x ativar_usuario usuario" @click.native="gerenciaUsuario(user.id, 'ativa')">toggle_off</md-icon>
                 </md-list-item>
             </md-list>
         </md-card>
@@ -206,13 +206,13 @@ export default {
     i.ativar_usuario {
         font-size: 20px;
         cursor: pointer;
-        color: green!important;
+        color: red!important;
     }
 
     i.desativar_usuario {
         font-size: 20px;
         cursor: pointer;
-        color: red!important;
+        color: green!important;
     }
 
 </style>
