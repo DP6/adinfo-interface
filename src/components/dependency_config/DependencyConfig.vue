@@ -173,13 +173,12 @@ export default {
             const matches = divAdd.querySelector('#add_matches').value.split(',');
             divAdd.querySelector('#add_valuesReference').value = '';
             divAdd.querySelector('#add_matches').value = '';
-            console.log(this.dependenciesConfig);
             this.dependenciesConfig.push({
                 columnReference: this.add_dependency_select_columnReference,
                 columnDestiny: this.add_dependency_select_columnDestiny,
                 matches: matches,
                 valuesReference: valuesReference,
-                hasMatch: this.add_hasMatch === "True" ? true : false
+                hasMatch: this.add_hasMatch === "true" ? true : false
             });
             this.add_dependency_select_columnReference = '';
             this.add_dependency_select_columnDestiny = '';
