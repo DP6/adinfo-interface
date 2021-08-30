@@ -25,17 +25,11 @@ export default {
     }
   },
   created() {
-    this.redirectIfHasNoToken ()
-  },
-  methods: {
-        redirectIfHasNoToken (){
-          if (!localStorage.getItem('userToken')){
-            this.redirectLogin();
-          }
-        },
-        redirectLogin (){
-          this.$router.push('login');
-        },
+    if(localStorage.getItem('userToken')) {
+      this.$router.push('parametrizacao');
+    } else {
+      this.$router.push('login');
+    }
   }
 }
 </script>

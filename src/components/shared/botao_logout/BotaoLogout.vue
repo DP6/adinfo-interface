@@ -70,7 +70,7 @@ export default {
                 if(this.statusCode !== 200) {
                     throw new Error(response.responseText || response.errorMessage);
                 }
-                localStorage.setItem('token', '');
+                localStorage.setItem('userToken', '');
                 localStorage.setItem('email', '');
             }).catch((err) => {
                 this.apiError = true;
@@ -79,7 +79,7 @@ export default {
                 this.showAuthAlert = this.isAuthError(this.statusCode);
             }).finally(() => {
                 this.show_load = false;
-                localStorage.setItem('token', '');
+                localStorage.setItem('userToken', '');
                 localStorage.setItem('email', '');
                 this.$router.push('login');
             });
