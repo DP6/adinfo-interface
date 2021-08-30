@@ -3,6 +3,7 @@
     <menu-lateral :routes="routes">
     </menu-lateral>
     <div class="area-principal">
+        <botao-logout></botao-logout>
         <router-view>
         </router-view>
     </div>
@@ -11,10 +12,12 @@
 
 <script>
 import MenuLateral from '../components/shared/menu_lateral/MenuLateral.vue';
+import BotaoLogout from '../components/shared/botao_logout/BotaoLogout.vue'
 import { routes } from '../routes';
 export default {
   components: {
-    'menu-lateral': MenuLateral
+    'menu-lateral': MenuLateral,
+    'botao-logout': BotaoLogout,
   },
   data() {
     return {

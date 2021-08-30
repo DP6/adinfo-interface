@@ -67,7 +67,9 @@ export default {
             downloadErrorMessage: 'Erro no Download!',
             responseVisibility: false,
             users_activates: [],
-            users_deactivates: []
+            users_deactivates: [],
+            snackbar_message: '',
+            showSnackbar: false
         }
     },
     created() {
