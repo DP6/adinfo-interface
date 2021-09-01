@@ -4,7 +4,7 @@
             <i class="material-icons menu bx-menu">menu</i>
         </div> -->
         <h2>ADINFO</h2>
-        <ul class="nav-links" onload="teste()">
+        <ul class="nav-links">
             <li class="item-menu" v-for="menu in menus" :key="menu.titulo">
                 <div v-if="!menu.grupo">
                     <router-link :to="menu.atributos[0].path">
@@ -111,7 +111,7 @@ export default {
         });
     },
     mounted() {
-        let arrow = document.querySelectorAll(".arrow");
+        const arrow = document.querySelectorAll(".arrow");
         for (var i = 0; i < arrow.length; i++) {
             arrow[i].parentElement.parentElement.parentElement.addEventListener("click", (e) => {
                 let targetParent = e.target;
@@ -121,8 +121,12 @@ export default {
                 targetParent.classList.toggle("showMenu");
             });
         }
-        let sidebar = document.querySelector(".sidebar");
-        let sidebarBtn = document.querySelector(".bx-menu");
+
+        const itensMenu = document.querySelectorAll(".item-menu");
+        itensMenu[itensMenu.length - 1].classList.add("last-item-menu");
+
+        const sidebar = document.querySelector(".sidebar");
+        const sidebarBtn = document.querySelector(".bx-menu");
         sidebarBtn.addEventListener("click", ()=>{
             sidebar.classList.toggle("close");
         });
@@ -174,6 +178,10 @@ export default {
 
     .sidebar .item-menu {
         cursor: pointer;
+    }
+
+    .last-item-menu {
+        margin-bottom: 45px;
     }
 
     .sidebar.close {
