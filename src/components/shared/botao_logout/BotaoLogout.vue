@@ -24,12 +24,6 @@ export default {
     components: {
         'usuario-invalido': InvalidUserAlert,
     },
-    props: {
-        nome_do_botao: {
-            required: true,
-            type: String
-        }
-    },
     data() {
         return {
             showAuthAlert: false,
@@ -44,6 +38,7 @@ export default {
             snackbar_message: '',
             showSnackbar: false,
             duration: 4000,
+            position: 'center',
             isInfinity: false,
         }
     },
@@ -93,19 +88,12 @@ export default {
 
     span {
         font-size: 26px;
-        color: rgb(226, 97, 97);
-        position: fixed;
+        color: #E74C3C;
         cursor: pointer;
-        right: 85px;
-        top: 20px;
     }
 
     .load_backgroud {
         background-color: rgba(221, 221, 221, .7);
-        width: 100%;
-        position: absolute;
-        height: 100%;
-        z-index: 2;
     }
 
     .load {

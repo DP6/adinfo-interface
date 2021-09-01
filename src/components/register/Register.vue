@@ -150,7 +150,6 @@ export default {
                 return response.json();
             }).then((response) => {
                 if(statusCode !== 200) {
-                    console.log(response.errorMessage);
                     throw new Error(response.responseText);
                 }
                 this.apiError = false;

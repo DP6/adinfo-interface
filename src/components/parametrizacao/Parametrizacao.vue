@@ -179,7 +179,9 @@ export default {
             this.statusCode = response.status;
             return response.json();
         }).then((response) => {
-            if(this.statusCode !== 200) {
+            if(this.statusCode === 401) {
+                this.$router.push('login');
+            } else if(this.statusCode !== 200) {
                 throw new Error(response.responseText || response.errorMessage);
             }
             const data = JSON.parse(response.responseText);
@@ -211,7 +213,6 @@ export default {
             this.showAuthAlert = this.isAuthError(this.statusCode);
             this.apiError = true;
             this.apiErrorMessage = err.message;
-            console.log(err);
         }).finally(() => {
             this.show_load = false;
         });
@@ -266,7 +267,6 @@ export default {
                         return response.json();
                     }
                 }).then(response => {
-                    console.log(response);
                     if(this.statusCode !== 200) {
                         throw new Error(response.responseText || response.errorMessage);
                     }

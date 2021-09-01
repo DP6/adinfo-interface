@@ -124,7 +124,6 @@ export default {
                     token: localStorage.getItem('userToken')
                 }
             }).then(response => response.blob()).then(blob => {
-                console.log(blob)
                 this.download(blob, 'template.xlsx')
             })
         },

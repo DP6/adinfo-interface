@@ -99,7 +99,6 @@ export default {
                     this.statusCode = response.status;
                     return response.json();
                 }).then((response) => {
-                    console.log(response);
                     this.snackbar_message = response.responseText || response.errorMessage;
                     this.showSnackbar = true;
                 }).catch((err) => {

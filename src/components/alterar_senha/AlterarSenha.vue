@@ -87,6 +87,7 @@ export default {
             downloadErrorMessage: 'Erro no Download!',
             responseVisibility: false,
             desabilitarAlteracaoSenha: true,
+            position: 'center',
             senhasIguais: true
         }
     },

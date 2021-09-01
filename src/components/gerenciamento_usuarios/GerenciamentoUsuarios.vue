@@ -69,6 +69,7 @@ export default {
             users_activates: [],
             users_deactivates: [],
             snackbar_message: '',
+            position: 'center',
             showSnackbar: false
         }
     },
