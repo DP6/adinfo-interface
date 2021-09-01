@@ -1,8 +1,8 @@
 <template>
     <aside class="sidebar">
-        <div class="logo-details">
+        <!-- <div class="logo-details">
             <i class="material-icons menu bx-menu">menu</i>
-        </div>
+        </div> -->
         <h2>ADINFO</h2>
         <ul class="nav-links" onload="teste()">
             <li class="item-menu" v-for="menu in menus" :key="menu.titulo">
@@ -141,7 +141,7 @@ export default {
 
     h2 {
         text-align: center;
-        margin-top: 20px;
+        margin-top: 40px;
         margin-right: 40px;
         margin-bottom: 10px;
         margin-left: 40px;
