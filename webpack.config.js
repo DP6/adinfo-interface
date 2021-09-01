@@ -38,28 +38,6 @@ module.exports = {
         }
       }
     ],
-    scss: {
-      test: /\.scss$/,
-      oneOf: {
-        'useable-styles': {
-          test: /AppHomepage\.scss$/,// pattern for useable styles
-          use: {
-            'style-loader': {
-              loader: 'style-loader/useable',
-              options: {
-                sourceMap: false,
-              },
-            },
-            'css-loader': { /*...*/ },
-            'resolve-url-loader': { /*...*/},
-            'sass-loader': { /*...*/},
-          },
-        },
-        'vue-modules': { /*...*/},
-        vue: { /*...*/},
-        normal: { /*...*/},
-      },
-    },
   },
   resolve: {
     alias: {
