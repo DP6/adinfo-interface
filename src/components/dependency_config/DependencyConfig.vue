@@ -5,8 +5,8 @@
         <md-card class="md-layout-item md-larger-size card">
             <md-list>
 
-                <md-list-item>
-                    <md-icon @click.native="adicionarItem($event)" class="adicionar">add</md-icon>
+                <md-list-item v-if=show_icon>
+                    <md-icon  @click.native="adicionarItem($event)" class="adicionar">add</md-icon>
 
                     <div class="md-layout md-gutter campo-adicionar">
                         <div class="md-layout-item">
@@ -58,13 +58,13 @@
 
                 <md-list-item md-expand v-for="item in dependenciesConfig" :key="item.columnDestiny" :id="item.columnDestiny">
                     <span class="md-list-item-text">Referência: {{ item.columnReference }}<br>Destino: {{ item.columnDestiny }}</span>
-                    <md-icon class="excluir" @click.native="excluirItem(item)">delete</md-icon>
+                    <md-icon v-if=show_icon class="excluir" @click.native="excluirItem(item)">delete</md-icon>
 
                     <md-list slot="md-expand">
                         <md-list-item>
                             Coluna de Referência: {{ item.columnReference }}
                         </md-list-item>
-                        <md-list-item>
+                        <md-list-item v-if=show_icon >
                             Valores de Referência: {{ item.valuesReference }}
                             <md-icon class="modificar" @click.native="adicionarItem($event)">edit</md-icon>
                             <div class="md-layout md-gutter campo-adicionar">
@@ -86,7 +86,7 @@
                         </md-list-item>
                         <md-list-item>
                             Valores de Destino: {{ item.matches }}
-                            <md-icon class="modificar" @click.native="adicionarItem($event)">edit</md-icon>
+                            <md-icon v-if=show_icon class="modificar" @click.native="adicionarItem($event)">edit</md-icon>
                             <div class="md-layout md-gutter campo-adicionar">
                                 <div class="md-layout-item">
                                     <md-field>
@@ -105,7 +105,7 @@
 
             </md-list>
 
-            <md-card-actions>
+            <md-card-actions v-if=show_icon>
                 <botao-submit @botaoAtivado="updateConfig()" nome_do_botao="Atualizar Dependências"></botao-submit>
             </md-card-actions>
 
@@ -157,6 +157,7 @@ export default {
             add_dependency_select_columnDestiny: '',
             add_hasMatch: '',
             show_load: false,
+            show_icon: false,
             showSnackbar: false,
             apiError: false,
             apiErrorMessage: '',
@@ -194,7 +195,7 @@ export default {
         adicionarItem(event) {
             const addField = event.target.parentNode;
             addField.querySelectorAll('.campo-adicionar').forEach(field => {
-                field.style.display = 'inline-flex';
+                field.style.display = 'inline-flex';    
             });
             addField.querySelector('.botao-adicionar').style.display = 'inline-flex';
             addField.querySelector('.botao-cancelar').style.display = 'inline-flex';
@@ -288,6 +289,9 @@ export default {
             this.showAuthAlert = this.isAuthError(this.statusCode);
         }).finally(() => {
             this.show_load = false;
+            if(localStorage.getItem('permission') !== 'user'){
+                this.show_icon = true;
+            }
         });
     },
 }
