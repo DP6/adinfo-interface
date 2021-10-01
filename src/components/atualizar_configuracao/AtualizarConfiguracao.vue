@@ -403,8 +403,11 @@ export default {
         if(!inputValue) {
           inputValue = this.toolConfigValues[ids[0]];
         }
-        if(inputValue) {
+        if(inputValue && ids[0]!=='csvSeparator') {
           this.configJson[ids[0]][inputValue] = [];
+        }
+        else if(inputValue && ids[0]==='csvSeparator'){
+          this.configJson[ids[0]].push(inputValue);
         }
         this.toolConfigValues[ids[0]] = undefined;
       } else if(ids.length === 2) {
