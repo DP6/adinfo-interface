@@ -403,10 +403,10 @@ export default {
         if(!inputValue) {
           inputValue = this.toolConfigValues[ids[0]];
         }
-        if(inputValue && ids[0]!=='csvSeparator') {
+        if(inputValue && ids[0] !== 'csvSeparator') {
           this.configJson[ids[0]][inputValue] = [];
         }
-        else if(inputValue && ids[0]==='csvSeparator'){
+        else if(inputValue && ids[0] === 'csvSeparator'){
           this.configJson[ids[0]].push(inputValue);
         }
         this.toolConfigValues[ids[0]] = undefined;
@@ -445,6 +445,8 @@ export default {
         delete t[exclude];
       } else if(typeof(keyToExcludeValue) === 'undefined') {
         objectKey.splice(objectKey.indexOf(ids.slice(-1)[0]), 1);
+      } else if(ids[0] === 'csvSeparator') {
+        objectKey.splice(ids[1], 1);
       } else {
         delete objectKey[ids.slice(-1)[0]]
       }
