@@ -134,12 +134,12 @@ export default {
             let permission = 'user';
             formdata.append("email", this.form.email);
             formdata.append("password", this.form.senha);
-            formdata.append("agency", this.form.agency);
             if(localStorage.getItem('permission') === 'admin' && !this.form.agency){
                 permission = 'admin';
             } else if(localStorage.getItem('permission') === 'admin' && this.form.agency){
                 permission = 'agencyOwner';
             }
+            formdata.append("agency", (localStorage.getItem('permission')==='agencyOwner' && !this.form.agency)?localStorage.getItem('agency'):this.form.agency);
             formdata.append("permission", permission);
             console.log(permission)
             const requestOptions = {
