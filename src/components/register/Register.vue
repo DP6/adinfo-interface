@@ -131,10 +131,17 @@ export default {
             this.apiError = false;
             const url = `${this.$apiRoute}/register`;
             const formdata = new FormData();
+            let permission = 'user';
             formdata.append("email", this.form.email);
             formdata.append("password", this.form.senha);
             formdata.append("agency", this.form.agency);
-            formdata.append("permission", this.form.agency ? 'user' : 'admin');
+            if(localStorage.getItem('permission') === 'admin' && !this.form.agency){
+                permission = 'admin';
+            } else if(localStorage.getItem('permission') === 'admin' && this.form.agency){
+                permission = 'agencyOwner';
+            }
+            formdata.append("permission", permission);
+            console.log(permission)
             const requestOptions = {
                 method: 'POST',
                 headers: {
