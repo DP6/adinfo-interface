@@ -5,7 +5,7 @@
             <md-card class="md-layout-item md-larger-size">
                 <md-card-content>
                     <div class="md-layout md-gutter">
-                        <div class="md-layout-item md-medium-size-100">
+                        <div v-if=show_field class="md-layout-item md-medium-size-100">
                             <md-field :class="getValidationClass('agency')">
                                 <label for="agency">Agência</label>
                                 <md-input name="agency" id="agency" v-model="form.agency"/>
@@ -87,6 +87,7 @@ export default {
             showAuthAlert: false,
             respostaAPI: '',
             show_load: false,
+            show_field: false,
             apiError: false,
             apiErrorMessage: ''
         }
@@ -109,6 +110,11 @@ export default {
             }
         }
     },
+    created() {
+    if(localStorage.getItem('permission') !== 'agencyOwner'){
+        this.show_field = true;
+    }
+  },
     methods: {
         getValidationClass (fieldName) {
             const field = this.$v.form[fieldName]
@@ -131,10 +137,17 @@ export default {
             this.apiError = false;
             const url = `${this.$apiRoute}/register`;
             const formdata = new FormData();
+            let permission = 'user';
             formdata.append("email", this.form.email);
             formdata.append("password", this.form.senha);
+            if(localStorage.getItem('permission') === 'admin' && !this.form.agency){
+                permission = 'admin';
+            } else if(localStorage.getItem('permission') === 'admin' && this.form.agency){
+                permission = 'agencyOwner';
+            }
             formdata.append("agency", this.form.agency);
-            formdata.append("permission", this.form.agency ? 'user' : 'admin');
+            formdata.append("permission", permission);
+            console.log(permission)
             const requestOptions = {
                 method: 'POST',
                 headers: {
