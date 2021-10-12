@@ -138,6 +138,10 @@ export default {
             const url = `${this.$apiRoute}/register`;
             const formdata = new FormData();
             let permission = 'user';
+<<<<<<< HEAD
+=======
+            let agency = this.form.agency;
+>>>>>>> ee618ee2e192bbcfb1bbef5f22c68dd15a667991
             formdata.append("email", this.form.email);
             formdata.append("password", this.form.senha);
             if(localStorage.getItem('permission') === 'admin' && !this.form.agency){
@@ -145,7 +149,14 @@ export default {
             } else if(localStorage.getItem('permission') === 'admin' && this.form.agency){
                 permission = 'agencyOwner';
             }
+<<<<<<< HEAD
             formdata.append("agency", this.form.agency);
+=======
+            if(localStorage.getItem('permission')==='agencyOwner' && !this.form.agency){
+                agency = localStorage.getItem('agency');
+            }
+            formdata.append("agency", (localStorage.getItem('permission')==='agencyOwner' && !this.form.agency)?localStorage.getItem('agency'):this.form.agency);
+>>>>>>> ee618ee2e192bbcfb1bbef5f22c68dd15a667991
             formdata.append("permission", permission);
             console.log(permission)
             const requestOptions = {
