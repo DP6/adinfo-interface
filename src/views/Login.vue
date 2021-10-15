@@ -74,6 +74,7 @@ export default {
                 body: formdata,
                 redirect: 'follow'
             }).then((response) => {
+                console.log(response)
                 statusCode = response.status;
                 localStorage.setItem('userToken', response.headers.get('Authorization'));
                 localStorage.setItem('email', this.email);

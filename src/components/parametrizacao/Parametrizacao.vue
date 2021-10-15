@@ -205,6 +205,7 @@ export default {
                             type: (key === 'ga' || key === 'adobe') ? 'analytics' : 'media'
                         });
                     }
+                    console.log(this.parametrizers)
                 }
             });
         }).catch((err) => {

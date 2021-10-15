@@ -9,24 +9,24 @@ import AlterarSenha from './components/alterar_senha/AlterarSenha.vue';
 import Register from './components/register/Register.vue';
 import Login from './views/Login.vue';
 import Interface from './views/Interface.vue';
+import CadastroCampaign from './components/cadastro_campaign/CadastroCampaign.vue';
+import GerenciamentoCampaign from './components/gerenciamento_campaign/GerenciamentoCampaign.vue';
+import ConsultaCampaign from './components/consulta_campaign/ConsultaCampaign.vue';
+
 
 export const routes = [
     { path: '/', component: Interface, titulo:'Interface',
     children:[
         { path: 'parametrizacao', component: Parametrizacao, titulo: 'Parametrização', permission: 'admin|owner|agencyOwner|user', group: 'Parametrizar', icon: 'outlined_flag'},
         { path: 'csv', component: Csv, titulo: 'CSV', permission: 'admin|owner|agencyOwner|user', group: '', icon: 'description'},
+        { path: 'listCampaigns', component: ConsultaCampaign, titulo: 'Consultar Campanhas', permission: 'admin|owner|agencyOwner|user', group: 'Campanhas', icon: 'campaign'},
+        { path: 'newCampaign', component: CadastroCampaign, titulo: 'Cadastrar Campanha', permission: 'admin|owner|agencyOwner', group: 'Campanhas', icon: 'campaign'},
+        { path: 'gerenciamentoCampanhas', component: GerenciamentoCampaign, titulo: 'Gerenciar Campanha', permission: 'admin|owner|agencyOwner', group: 'Campanhas', icon: 'campaign'},
         { path: 'template', component: Template, titulo: 'Template', permission: 'admin|owner|agencyOwner|user', group: 'Parametrizar', icon: 'outlined_flag'},
-<<<<<<< HEAD
         { path: 'updateConfig', component: AtualizarConfiguracao, titulo: 'Atualizar Configuração', permission: 'admin|owner|agencyOwner|user', group: 'Configurações', icon: 'settings'},
         { path: 'newConfig', component: NovaConfiguracao, titulo: 'Nova Configuração', permission: 'admin|owner', group: 'Configurações', icon: 'settings'},
         { path: 'register', component: Register, titulo: 'Registrar usuário', permission: 'admin|owner|agencyOwner', group: 'Usuários', icon: 'people'},
-        { path: 'dependencyConfig', component: DependencyConfig, titulo: 'Dependências', permission: 'admin|owner|agencyOwner|user', group: 'Configurações', icon: 'settings'},
-=======
-        { path: 'updateConfig', component: AtualizarConfiguracao, titulo: 'Atualizar Configuração', permission: 'admin|owner|agencyOwner', group: 'Configurações', icon: 'settings'},
-        { path: 'newConfig', component: NovaConfiguracao, titulo: 'Nova Configuração', permission: 'admin|owner|agencyOwner', group: 'Configurações', icon: 'settings'},
-        { path: 'register', component: Register, titulo: 'Registrar usuário', permission: 'admin|owner|agencyOwner', group: 'Usuários', icon: 'people'},
         { path: 'dependencyConfig', component: DependencyConfig, titulo: 'Dependências', permission: 'admin|owner|agencyOwner', group: 'Configurações', icon: 'settings'},
->>>>>>> ee618ee2e192bbcfb1bbef5f22c68dd15a667991
         { path: 'alterarSenha', component: AlterarSenha, titulo: 'Alterar Senha', permission: 'admin|owner|agencyOwner|user', group: '', icon: 'lock'},
         { path: 'gerenciamentoUsuarios', component: GerenciamentoUsuarios, titulo: 'Gerenciamento de Usuários', permission: 'admin|owner|agencyOwner', group: 'Usuários', icon: 'people'}
     ]},
