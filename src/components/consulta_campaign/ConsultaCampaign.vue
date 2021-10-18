@@ -1,26 +1,21 @@
 <template>
     <div>
         <titulo-principal titulo="Consultar Campanhas"></titulo-principal>
+        <span class="titulo_categoria">Agência</span>
         <form class="md-layout">
-            <md-card class="md-layout-item md-larger-size">
+            <md-card class="md-layout-item md-larger-size card">
                 <md-card-content>
-                    <!-- <div class="md-layout md-gutter">
-                        <div class="md-layout-item md-medium-size-100">
-                            <md-field :class="getValidationClass('campaign')">
-                                <label for="campaign">Campanha</label>
-                                <md-input name="campaign" id="campaign" v-model="form.campaign"/>
-                            </md-field>
-                        </div>
-                    </div> -->
                     <div class="md-layout md-gutter">
                         <div class="md-layout-item md-medium-size-100">
                             <md-field>
-                                <label for="campaign">Campanhas</label>
-                                <md-select v-model="campaign" name="campaign" id="campaign">
-                                    <md-optgroup label="Campanhas">
+                                <label for="agency">Agência</label>
+                                <md-select v-model="agency" name="agency" id="agency">
+                                    <md-optgroup label="Agências">
                                         <md-option 
-                                            v-for="campaign in campaigns" :key="campaign.campanha"
-                                        >{{ campaign.campanha }}</md-option>
+                                            v-for="agency in agencies" 
+                                            :key="agency.id"
+                                            :value="agency.agency"
+                                        >{{agency.agency}}</md-option>
                                     </md-optgroup>
                                 </md-select>
                             </md-field>
@@ -28,11 +23,38 @@
                     </div>
                 </md-card-content>
                 <md-card-actions>
-                    <botao-submit nome_do_botao="Consultar" @botaoAtivado="getCsvList()"></botao-submit>
+                    <botao-submit nome_do_botao="Consultar" @botaoAtivado="getCampaigns()"></botao-submit> 
                 </md-card-actions>
             </md-card>
         </form>
 
+        <span class="titulo_categoria" v-if="campaigns.length > 0">Campanha</span>
+        <form class="md-layout">
+            <md-card class="md-layout-item md-larger-size card" v-if="campaigns.length > 0">
+                <md-card-content>
+                    <div class="md-layout md-gutter">
+                        <div class="md-layout-item md-medium-size-100">
+                            <md-field>
+                                <label for="campaign">Campanha</label>
+                                <md-select v-model="campaignId" name="campaign" id="campaign">
+                                    <md-optgroup label="Agências">
+                                        <md-option 
+                                            v-for="campaign in campaigns" 
+                                            :key="campaign.campaignId"
+                                            :value="campaign.campaignId"
+                                        >{{campaign.campaignName}}</md-option>
+                                    </md-optgroup>
+                                </md-select>
+                            </md-field>
+                        </div>
+                    </div>
+                </md-card-content>
+                <md-card-actions>
+                    <botao-submit nome_do_botao="Consultar" @botaoAtivado="getCsvList()"></botao-submit> 
+                    <!--  @botaoAtivado="getCampaigns()" -->
+                </md-card-actions>
+            </md-card>
+        </form>
 
         <div class="load" v-show="show_load">
             <md-progress-spinner md-mode="indeterminate"></md-progress-spinner>
@@ -84,9 +106,6 @@ export default {
     },
     data() {
         return {
-            form: {
-                campaign: '',
-            },
             csvList: [],
             tituloResposta: 'Resposta',
             statusCode: null,
@@ -97,24 +116,49 @@ export default {
             downloadError: false,
             downloadErrorMessage: 'Erro no Download!',
             responseVisibility: false,
-            campaigns: [{campanha:'campanha1'}, {campanha:'campanha2'}]
+            // campaigns: [{campanha:'campanha1'}, {campanha:'campanha2'}],
+            agencies: [],
+            campaigns: [],
+            agency: '',
+            campaignId: '',
         }
     },
-    validations: {
-        form: {
-            agency: {
-                required,
-                minLength: minLength(3)
-            },
-            company: {
-                required,
-                minLength: minLength(3)
-            },
-            campaign: {
-                required,
-                minLength: minLength(3)
-            }
+    created() {
+        if(localStorage.getItem('permission') !== 'agencyOwner'){
+         this.show_field = true;
         }
+        const url = `${this.$apiRoute}/agency/list`;
+        this.show_load = true;
+        fetch(url, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                token: localStorage.getItem('userToken')
+            }
+        }).then((response) => {
+            this.statusCode = response.status;
+            return response.json();
+        }).then((response) => {
+        if(this.statusCode !== 200) {
+            throw new Error(response.responseText || response.errorMessage);
+        }
+        let count = 0;
+        const allAgencies = JSON.parse(response.responseText).map(agency =>{
+            const agencyWithId = {id:count, agency:agency};
+            count++
+            return agencyWithId
+        })
+        if(localStorage.getItem('permission') === 'owner' || localStorage.getItem('permission') === 'admin')
+        allAgencies.push({id:count, agency:'Nenhuma Agência'})
+        this.agencies = allAgencies;
+        }).catch((err) => {
+            this.apiError = true;
+            this.apiErrorMessage = err.message;
+            this.tituloResposta = 'Erro ao recuperar configuração';
+            this.showAuthAlert = this.isAuthError(this.statusCode);
+        }).finally(() => {
+            this.show_load = false;
+        });
     },
     methods: {
         getValidationClass (fieldName) {
@@ -125,20 +169,54 @@ export default {
                 }
             }
         },
-        clearForm () {
-            this.$v.$reset()
-            this.form.campaign = null
+        getCampaigns() {
+            let agencia = this.agency;
+            if((localStorage.getItem('permission') === 'owner' || localStorage.getItem('permission') === 'admin') && this.agency === 'Nenhuma Agência'){
+                agencia = 'CompanyCampaigns';
+            }
+            console.log(agencia)
+            const url = `${this.$apiRoute}/campaign/${agencia}/list`;
+            this.show_load = true;
+            fetch(url, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    token: localStorage.getItem('userToken')
+                }
+            }).then((response) => {
+                this.statusCode = response.status;
+                return response.json();
+            }).then((response) => {
+                if(this.statusCode !== 200) {
+                    throw new Error(response.responseText || response.errorMessage);
+                }
+                const allCampaigns = JSON.parse(response.responseText).filter(campaign => campaign.agency !== agency);
+                this.campaigns = allCampaigns.filter(campaign => campaign.activate === true);
+                console.log(this.campaigns)
+            }).catch((err) => {
+                this.apiError = true;
+                this.apiErrorMessage = err.message;
+                this.tituloResposta = 'Erro ao recuperar configuração';
+                this.showAuthAlert = this.isAuthError(this.statusCode);
+            }).finally(() => {
+                this.show_load = false;
+            });
         },
         getCsvList() {
+            let agencia = this.agency;
+            if((localStorage.getItem('permission') === 'owner' || localStorage.getItem('permission') === 'admin') && this.agency === 'Nenhuma Agência'){
+                agencia = 'CompanyCampaigns';
+            }
             let fetchStatusCode;
             this.show_load = true;
             this.responseVisibility = false;
-            fetch(`${this.$apiRoute}/csv/list`, {
+            console.log("Campanha: " + this.campaignId)
+            console.log("agencia: " + agencia)
+            fetch(`${this.$apiRoute}/${agencia}/${this.campaignId}/csv/list`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
                     token: localStorage.getItem('userToken'),
-                    campaign: document.querySelector('#campaign').value
                 }
             }).then(function(response) {
                fetchStatusCode = response.status;
@@ -150,7 +228,9 @@ export default {
                 this.apiError = false;
                 this.tituloResposta = 'Lista de CSVs';
                 this.csvList = data.responseText.split(',');
+                console.log(this.csvList)
             }).catch((err) => {
+                console.log(err)
                 this.apiError = true;
                 this.apiErrorMessage = err.message;
                 this.showAuthAlert = this.isAuthError(fetchStatusCode);
@@ -162,7 +242,13 @@ export default {
         },
         downloadCSV(csv) {
             const fileName = csv.match(/\/.*\/.*\/(.*)\./) || csv.match(/\/.*\/(.*)\./);
-            let campaign = document.querySelector('#campaign').value;
+            let agencia = this.agency;
+            if((localStorage.getItem('permission') === 'owner' || localStorage.getItem('permission') === 'admin') && this.agency === 'Nenhuma Agência'){
+                agencia = 'CompanyCampaigns';
+            }
+            let campaign = this.campaigns.filter(campanha => campanha.campaignId===this.campaignId)[0].campaignName;
+            console.log(campaign)
+            console.log(fileName[1])
             if(!campaign) {
                 campaign = csv.match(/\/.*\/(.*)\/.*\./) || csv.match(/.*\/(.*)\/.*\./);
                 campaign = campaign[1]
@@ -173,7 +259,8 @@ export default {
                     'Content-Type': 'application/json',
                     file: fileName[1],
                     token: localStorage.getItem('userToken'),
-                    campaign: campaign
+                    campaign: campaign,
+                    agency: agencia
                 }
             }).then(response => {
                 this.statusCode = response.status;
@@ -218,6 +305,14 @@ export default {
 
     form {
         margin-left: 50px;
+    }
+
+    .titulo_categoria {
+        font-size: 20px;
+        margin-left: 60px;
+        padding-bottom: 20px;
+        padding-top: 25px;
+        display: block;
     }
 
     .load {

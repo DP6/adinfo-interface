@@ -5,25 +5,56 @@
             <md-card class="md-layout-item md-larger-size">
                 <md-card-content>
                     <div class="md-layout md-gutter">
-                        <!-- <div class="md-layout-item md-medium-size-100">
-                            <md-field :class="getValidationClass('company')">
-                                <label for="company">Empresa</label>
-                                <md-input disabled=disable name="company" id="company" v-model="form.company"/>
-                            </md-field>
-                        </div>
-                        <div class="md-layout-item md-medium-size-100" v-show="form.agency !== ''">
-                            <md-field :class="getValidationClass('agency')">
-                                <label for="agency">Agência</label>
-                                <md-input disabled=disable name="agency" id="agency" v-model="form.agency"/>
-                            </md-field>
-                        </div> -->
-                        <div class="md-layout-item md-medium-size-100">
-                            <md-field :class="getValidationClass('campaign')">
-                                <label for="campaign">Campanha</label>
-                                <md-input name="campaign" id="campaign" v-model="form.campaign"/>
-                                <span class="md-error" v-if="!$v.form.campaign.required">Campanha é um campo obrigatório</span>
-                            </md-field>
-                        </div>
+                        <form class="md-layout">
+                            <md-card class="md-layout-item md-larger-size card">
+                                <md-card-content>
+                                    <div class="md-layout md-gutter">
+                                        <div class="md-layout-item md-medium-size-100">
+                                            <md-field>
+                                                <label for="agency">Agência</label>
+                                                <md-select v-model="form.agency" name="agency" id="agency">
+                                                    <md-optgroup label="Agências">
+                                                        <md-option 
+                                                            v-for="agency in agencies" 
+                                                            :key="agency.id"
+                                                            :value="agency.agency"
+                                                        >{{agency.agency}}</md-option>
+                                                    </md-optgroup>
+                                                </md-select>
+                                            </md-field>
+                                        </div>
+                                    </div>
+                                </md-card-content>
+                                <md-card-actions>
+                                    <botao-submit nome_do_botao="Confirmar" @botaoAtivado="getCampaigns()"></botao-submit> 
+                                </md-card-actions>
+                            </md-card>
+                        </form>
+                        <form class="md-layout">
+                            <md-card class="md-layout-item md-larger-size card">
+                                <md-card-content>
+                                    <div class="md-layout md-gutter">
+                                        <div class="md-layout-item md-medium-size-100">
+                                            <md-field>
+                                                <label for="campaign">Campanha</label>
+                                                <md-select v-model="campaignId" name="campaign" id="campaign">
+                                                    <md-optgroup label="Campanhas">
+                                                        <md-option 
+                                                            v-for="campaign in campaigns" 
+                                                            :key="campaign.campaignId"
+                                                            :value="campaign.campaignId"
+                                                        >{{campaign.campaignName}}</md-option>
+                                                    </md-optgroup>
+                                                </md-select>
+                                            </md-field>
+                                        </div>
+                                    </div>
+                                </md-card-content>
+                                <md-card-actions>
+                                    <botao-submit nome_do_botao="Confirmar" @botaoAtivado="getCampaignName()"></botao-submit> 
+                                </md-card-actions>
+                            </md-card>
+                        </form>
                         <div class="md-layout-item md-medium-size-100">
                             <md-field>
                                 <label>Upload files</label>
@@ -118,7 +149,7 @@ export default {
     data() {
         return {
             form: {
-                // agency: localStorage.getItem('agency') || '',
+                agency: '',
                 // company: localStorage.getItem('company') || '',
                 campaign: ''
             },
@@ -143,6 +174,9 @@ export default {
             downloadErrorMessage: 'Erro no Download!',
             configVersion: '',
             configDate: '',
+            agencies: [],
+            campaigns: [],
+            campaignId: '',
         }
     },
     validations: {
@@ -166,10 +200,10 @@ export default {
         }
     },
     created() {
-        const url = `${this.$apiRoute}/config`;
+        const urlConfig = `${this.$apiRoute}/config`;
         this.apiError = false;
         this.show_load = true;
-        fetch(url, {
+        fetch(urlConfig, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -217,6 +251,39 @@ export default {
         }).finally(() => {
             this.show_load = false;
         });
+
+        const urlAgencyList = `${this.$apiRoute}/agency/list`;
+        this.show_load = true;
+        fetch(urlAgencyList, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                token: localStorage.getItem('userToken')
+            }
+        }).then((response) => {
+            this.statusCode = response.status;
+            return response.json();
+        }).then((response) => {
+        if(this.statusCode !== 200) {
+            throw new Error(response.responseText || response.errorMessage);
+        }
+        let count = 0;
+        const allAgencies = JSON.parse(response.responseText).map(agency =>{
+            const agencyWithId = {id:count, agency:agency};
+            count++
+            return agencyWithId
+        })
+        if(localStorage.getItem('permission') === 'owner' || localStorage.getItem('permission') === 'admin')
+        allAgencies.push({id:count, agency:'Nenhuma Agência'})
+        this.agencies = allAgencies;
+        }).catch((err) => {
+            this.apiError = true;
+            this.apiErrorMessage = err.message;
+            this.tituloResposta = 'Erro ao recuperar configuração';
+            this.showAuthAlert = this.isAuthError(this.statusCode);
+        }).finally(() => {
+            this.show_load = false;
+        });
     },
     methods: {
         getValidationClass (fieldName) {
@@ -250,11 +317,14 @@ export default {
             formdata.append("data", document.querySelector('#file').files[0]);
             this.apiError = false;
             this.show_load = true;
+            console.log("agencia: " + this.form.agency);
+            console.log("campanha: " + this.form.campaign);
             const requestOptions = {
                 method: 'POST',
                 headers: {
                     token: localStorage.getItem('userToken'),
-                    campaign: document.querySelector('#campaign').value
+                    campaign: this.form.campaign,
+                    agency: this.form.agency
                 },
                 body: formdata,
                 redirect: 'follow'
@@ -318,6 +388,45 @@ export default {
             if(statusCode === 403)
                 return true;
             return false;
+        },
+        getCampaigns() {
+            let agencia = this.form.agency;
+            if((localStorage.getItem('permission') === 'owner' || localStorage.getItem('permission') === 'admin') && this.agency === 'Nenhuma Agência'){
+                agencia = 'CompanyCampaigns';
+            }
+            console.log(agencia)
+            const url = `${this.$apiRoute}/campaign/${agencia}/list`;
+            this.show_load = true;
+            fetch(url, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    token: localStorage.getItem('userToken')
+                }
+            }).then((response) => {
+                this.statusCode = response.status;
+                return response.json();
+            }).then((response) => {
+                if(this.statusCode !== 200) {
+                    throw new Error(response.responseText || response.errorMessage);
+                }
+                const allCampaigns = JSON.parse(response.responseText).filter(campaign => campaign.agency !== agency);
+                this.campaigns = allCampaigns.filter(campaign => campaign.activate === true);
+                console.log(this.campaigns)
+            }).catch((err) => {
+                this.apiError = true;
+                this.apiErrorMessage = err.message;
+                this.tituloResposta = 'Erro ao recuperar configuração';
+                this.showAuthAlert = this.isAuthError(this.statusCode);
+            }).finally(() => {
+                this.show_load = false;
+            });
+        },
+        getCampaignName() {
+                const campaignName = this.campaigns.filter(campanha => campanha.campaignId===this.campaignId)[0].campaignName;
+                this.form.campaign = campaignName;
+                console.log(this.form.campaign)
+                console.log(campaignId)
         }
     }
 }

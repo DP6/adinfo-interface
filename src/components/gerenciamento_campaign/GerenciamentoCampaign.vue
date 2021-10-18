@@ -26,7 +26,6 @@
                 </md-card-content>
                 <md-card-actions>
                     <botao-submit nome_do_botao="Consultar" @botaoAtivado="getCampaigns()"></botao-submit> 
-                    <!-- como passar a agencia selecionada como parametro no botao? -->
                 </md-card-actions>
             </md-card>
         </form>
@@ -117,7 +116,6 @@ export default {
             this.statusCode = response.status;
             return response.json();
         }).then((response) => {
-            console.log(response)
             if(this.statusCode !== 200) {
                 throw new Error(response.responseText || response.errorMessage);
             }
@@ -127,7 +125,6 @@ export default {
                 count++
                 return agencyWithId
             })
-            console.log(allAgencies)
             this.agencies = allAgencies;
         }).catch((err) => {
             this.apiError = true;
@@ -141,9 +138,6 @@ export default {
     methods: {
         getCampaigns() {
             //imagino que tenha como pegar a opcao de agencia do cara. Sera que vem como parametro?
-            console.log('chamei o get campaigns')
-            console.log('Agencia selecionada: ')
-            console.log(this.agency)
             const url = `${this.$apiRoute}/campaign/${this.agency}/list`;
             this.show_load = true;
             fetch(url, {
@@ -160,16 +154,10 @@ export default {
                     throw new Error(response.responseText || response.errorMessage);
                 }
                 const allCampaigns = JSON.parse(response.responseText).filter(campaign => campaign.agency !== agency);
-                console.log(allCampaigns)
                 this.campaign_activates = allCampaigns.filter(campaign => campaign.activate === true);
                 this.campaign_deactivates = allCampaigns.filter(campaign => campaign.activate === false);
 
-                console.log('campanhas ativas:')
-                console.log(this.campaign_activates)
-                console.log('campanhas inativas:')
-                console.log(this.campaign_deactivates)
             }).catch((err) => {
-                console.log(err)
                 this.apiError = true;
                 this.apiErrorMessage = err.message;
                 this.tituloResposta = 'Erro ao recuperar configuração';
@@ -191,8 +179,6 @@ export default {
             } else if(opcao  === 'desativa') {
                 url = `${this.$apiRoute}/campaign/${id}/deactivate`;
             }
-            console.log('ta aqui o id:')
-            console.log(id)
             this.show_load = true;
             fetch(url, {
                 method: 'POST',
@@ -202,7 +188,6 @@ export default {
                 }
             }).then((response) => {
                 this.statusCode = response.status;
-                console.log(this.statusCode)
                 return response.json();
             }).then((response) => {
                 if(this.statusCode !== 200) {
@@ -227,8 +212,6 @@ export default {
                 this.campaign_activates = allUsers.filter(campaign => campaign.activate == true);
                 this.campaign_deactivates = allUsers.filter(campaign => campaign.activate == false);
             }).catch((err) => {
-                console.log('cai no catch')
-                console.log(err)
                 this.showAuthAlert = this.isAuthError(this.statusCode);
                 this.snackbar_message = 'Erro ao mudar status do usuário!';
                 this.showSnackbar = true;

@@ -151,7 +151,6 @@ export default {
             }
             formdata.append("agency", (localStorage.getItem('permission')==='agencyOwner' && !this.form.agency)?localStorage.getItem('agency'):this.form.agency);
             formdata.append("permission", permission);
-            console.log(permission)
             const requestOptions = {
                 method: 'POST',
                 headers: {
