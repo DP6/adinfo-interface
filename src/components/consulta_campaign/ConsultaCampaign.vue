@@ -23,7 +23,7 @@
                     </div>
                 </md-card-content>
                 <md-card-actions>
-                    <botao-submit nome_do_botao="Consultar" @botaoAtivado="getCampaigns()"></botao-submit> 
+                    <botao-submit nome_do_botao="Confirmar" @botaoAtivado="getCampaigns()"></botao-submit> 
                 </md-card-actions>
             </md-card>
         </form>
@@ -51,7 +51,6 @@
                 </md-card-content>
                 <md-card-actions>
                     <botao-submit nome_do_botao="Consultar" @botaoAtivado="getCsvList()"></botao-submit> 
-                    <!--  @botaoAtivado="getCampaigns()" -->
                 </md-card-actions>
             </md-card>
         </form>
@@ -124,9 +123,6 @@ export default {
         }
     },
     created() {
-        if(localStorage.getItem('permission') !== 'agencyOwner'){
-         this.show_field = true;
-        }
         const url = `${this.$apiRoute}/agency/list`;
         this.show_load = true;
         fetch(url, {
@@ -148,8 +144,9 @@ export default {
             count++
             return agencyWithId
         })
-        if(localStorage.getItem('permission') === 'owner' || localStorage.getItem('permission') === 'admin')
-        allAgencies.push({id:count, agency:'Nenhuma Agência'})
+        if(localStorage.getItem('permission') === 'owner' || localStorage.getItem('permission') === 'admin'){
+            allAgencies.push({id:count, agency:'Nenhuma Agência'})
+        }
         this.agencies = allAgencies;
         }).catch((err) => {
             this.apiError = true;
