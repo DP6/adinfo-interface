@@ -156,7 +156,7 @@ export default {
             let statusCode;
             this.visivel = false;
             this.apiError = false;
-            const url = `${this.$apiRoute}/campaign/add`;
+            const url = `${this.$apiRoute}/campaign`;
             const formdata = new FormData();
             formdata.append("agency", this.form.agency==='Nenhuma Agência'?'':this.form.agency);
             formdata.append("campaign", this.form.campaign);
