@@ -5,7 +5,7 @@
             <md-card class="md-layout-item md-larger-size">
                 <md-card-content>
                     <div class="md-layout md-gutter">
-                        <div v-if=show_field class="md-layout-item md-medium-size-100">
+                        <div  class="md-layout-item md-medium-size-100"> 
                             <md-field :class="getValidationClass('agency')">
                             <label for="agency">Agência</label>
                                 <md-select v-model="form.agency" name="agency" id="agency">
@@ -125,7 +125,9 @@ export default {
             count++
             return agencyWithId
         })
-        allAgencies.push({id:count, agency:'Nenhuma Agência'})
+        if(localStorage.getItem('permission') === 'owner' || localStorage.getItem('permission') === 'admin'){
+            allAgencies.push({id:count, agency:'Nenhuma Agência'})
+        }
         this.agencies = allAgencies;
     }).catch((err) => {
         this.apiError = true;
