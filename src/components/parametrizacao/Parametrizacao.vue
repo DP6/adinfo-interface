@@ -273,7 +273,7 @@ export default {
             return agencyWithId
         })
         if(localStorage.getItem('permission') === 'owner' || localStorage.getItem('permission') === 'admin')
-        allAgencies.push({id:count, agency:'Nenhuma Agência'})
+            allAgencies.push({id:count, agency:'Campanhas Internas'})
         this.agencies = allAgencies;
         }).catch((err) => {
             this.apiError = true;
@@ -295,10 +295,11 @@ export default {
         },
         clearForm () {
             this.$v.$reset()
-            this.form.agency = null
-            this.form.company = null
-            this.form.file = null
-            this.form.campaign = null
+            // this.form.agency = null
+            this.form.campaignId = null;
+            this.form.company = null;
+            this.form.file = null;
+            this.form.campaign = null;
         },
         clearResposta() {
             this.tituloResposta = '';
@@ -323,7 +324,7 @@ export default {
                 headers: {
                     token: localStorage.getItem('userToken'),
                     campaign: this.form.campaign,
-                    agency: this.form.agency
+                    agency: this.form.agency === 'Campanhas Internas'? '': this.form.agency
                 },
                 body: formdata,
                 redirect: 'follow'
@@ -389,11 +390,8 @@ export default {
             return false;
         },
         getCampaigns() {
+            this.clearForm();
             let agencia = this.form.agency;
-            if((localStorage.getItem('permission') === 'owner' || localStorage.getItem('permission') === 'admin') && this.agency === 'Nenhuma Agência'){
-                agencia = 'CompanyCampaigns';
-            }
-            console.log(agencia)
             const url = `${this.$apiRoute}/campaign/${agencia}/list`;
             this.show_load = true;
             fetch(url, {
@@ -411,7 +409,6 @@ export default {
                 }
                 const allCampaigns = JSON.parse(response.responseText).filter(campaign => campaign.agency !== agency);
                 this.campaigns = allCampaigns.filter(campaign => campaign.activate === true);
-                console.log(this.campaigns)
             }).catch((err) => {
                 this.apiError = true;
                 this.apiErrorMessage = err.message;
@@ -420,13 +417,6 @@ export default {
             }).finally(() => {
                 this.show_load = false;
             });
-        },
-        getCampaignName() {
-                const campaignName = this.campaigns.filter(campanha => campanha.campaignId===this.form.campaignId)[0].campaignName;
-                this.form.campaign = campaignName;
-                console.log(this.form.campaign)
-                console.log(campaignId)
-                console.log(this.form.campaignId)
         }
     }
 }

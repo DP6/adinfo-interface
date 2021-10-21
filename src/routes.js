@@ -18,8 +18,7 @@ export const routes = [
     { path: '/', component: Interface, titulo:'Interface',
     children:[
         { path: 'parametrizacao', component: Parametrizacao, titulo: 'Parametrização', permission: 'admin|owner|agencyOwner|user', group: 'Parametrizar', icon: 'outlined_flag'},
-        { path: 'csv', component: Csv, titulo: 'CSV', permission: 'admin|owner|agencyOwner|user', group: '', icon: 'description'},
-        { path: 'listCampaigns', component: ConsultaCampaign, titulo: 'Consultar Campanhas', permission: 'admin|owner|agencyOwner|user', group: 'Campanhas', icon: 'campaign'},
+        { path: 'listCampaigns', component: ConsultaCampaign, titulo: 'Consultar CSVs', permission: 'admin|owner|agencyOwner|user', group: 'Campanhas', icon: 'campaign'},
         { path: 'newCampaign', component: CadastroCampaign, titulo: 'Cadastrar Campanha', permission: 'admin|owner|agencyOwner', group: 'Campanhas', icon: 'campaign'},
         { path: 'gerenciamentoCampanhas', component: GerenciamentoCampaign, titulo: 'Gerenciar Campanha', permission: 'admin|owner|agencyOwner', group: 'Campanhas', icon: 'campaign'},
         { path: 'template', component: Template, titulo: 'Template', permission: 'admin|owner|agencyOwner|user', group: 'Parametrizar', icon: 'outlined_flag'},

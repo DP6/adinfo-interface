@@ -1,6 +1,6 @@
 <template>
     <div>
-        <titulo-principal titulo="Consultar Campanhas"></titulo-principal>
+        <titulo-principal titulo="Consultar CSVs"></titulo-principal>
         <span class="titulo_categoria">Agência</span>
         <form class="md-layout">
             <md-card class="md-layout-item md-larger-size card">
@@ -115,7 +115,6 @@ export default {
             downloadError: false,
             downloadErrorMessage: 'Erro no Download!',
             responseVisibility: false,
-            // campaigns: [{campanha:'campanha1'}, {campanha:'campanha2'}],
             agencies: [],
             campaigns: [],
             agency: '',
@@ -145,7 +144,7 @@ export default {
             return agencyWithId
         })
         if(localStorage.getItem('permission') === 'owner' || localStorage.getItem('permission') === 'admin'){
-            allAgencies.push({id:count, agency:'Nenhuma Agência'})
+            allAgencies.push({id:count, agency:'Campanhas Internas'})
         }
         this.agencies = allAgencies;
         }).catch((err) => {
@@ -167,11 +166,8 @@ export default {
             }
         },
         getCampaigns() {
+            this.campaigns=[];
             let agencia = this.agency;
-            if((localStorage.getItem('permission') === 'owner' || localStorage.getItem('permission') === 'admin') && this.agency === 'Nenhuma Agência'){
-                agencia = 'CompanyCampaigns';
-            }
-            console.log(agencia)
             const url = `${this.$apiRoute}/campaign/${agencia}/list`;
             this.show_load = true;
             fetch(url, {
@@ -189,7 +185,6 @@ export default {
                 }
                 const allCampaigns = JSON.parse(response.responseText).filter(campaign => campaign.agency !== agency);
                 this.campaigns = allCampaigns.filter(campaign => campaign.activate === true);
-                console.log(this.campaigns)
             }).catch((err) => {
                 this.apiError = true;
                 this.apiErrorMessage = err.message;
@@ -201,14 +196,9 @@ export default {
         },
         getCsvList() {
             let agencia = this.agency;
-            if((localStorage.getItem('permission') === 'owner' || localStorage.getItem('permission') === 'admin') && this.agency === 'Nenhuma Agência'){
-                agencia = 'CompanyCampaigns';
-            }
             let fetchStatusCode;
             this.show_load = true;
             this.responseVisibility = false;
-            console.log("Campanha: " + this.campaignId)
-            console.log("agencia: " + agencia)
             fetch(`${this.$apiRoute}/${agencia}/${this.campaignId}/csv/list`, {
                 method: 'GET',
                 headers: {
@@ -225,7 +215,6 @@ export default {
                 this.apiError = false;
                 this.tituloResposta = 'Lista de CSVs';
                 this.csvList = data.responseText.split(',');
-                console.log(this.csvList)
             }).catch((err) => {
                 console.log(err)
                 this.apiError = true;
@@ -239,13 +228,7 @@ export default {
         },
         downloadCSV(csv) {
             const fileName = csv.match(/\/.*\/.*\/(.*)\./) || csv.match(/\/.*\/(.*)\./);
-            let agencia = this.agency;
-            if((localStorage.getItem('permission') === 'owner' || localStorage.getItem('permission') === 'admin') && this.agency === 'Nenhuma Agência'){
-                agencia = 'CompanyCampaigns';
-            }
             let campaign = this.campaigns.filter(campanha => campanha.campaignId===this.campaignId)[0].campaignName;
-            console.log(campaign)
-            console.log(fileName[1])
             if(!campaign) {
                 campaign = csv.match(/\/.*\/(.*)\/.*\./) || csv.match(/.*\/(.*)\/.*\./);
                 campaign = campaign[1]
@@ -257,7 +240,7 @@ export default {
                     file: fileName[1],
                     token: localStorage.getItem('userToken'),
                     campaign: campaign,
-                    agency: agencia
+                    agency: this.agency === 'Campanhas Internas'? '': this.form.agency
                 }
             }).then(response => {
                 this.statusCode = response.status;

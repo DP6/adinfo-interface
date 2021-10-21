@@ -125,6 +125,9 @@ export default {
                 count++
                 return agencyWithId
             })
+            if(localStorage.getItem('permission') === 'owner' || localStorage.getItem('permission') === 'admin'){
+                allAgencies.push({id:count, agency:'Campanhas Internas'})
+            }
             this.agencies = allAgencies;
         }).catch((err) => {
             this.apiError = true;
@@ -136,9 +139,14 @@ export default {
         });
     },
     methods: {
+        resetCampaigns(){
+            this.campaign_activates = [];
+            this.campaign_deactivates = [];
+        },
         getCampaigns() {
-            //imagino que tenha como pegar a opcao de agencia do cara. Sera que vem como parametro?
-            const url = `${this.$apiRoute}/campaign/${this.agency}/list`;
+            this.resetCampaigns();
+            let agencia = this.agency;
+            const url = `${this.$apiRoute}/campaign/${agencia}/list`;
             this.show_load = true;
             fetch(url, {
                 method: 'GET',

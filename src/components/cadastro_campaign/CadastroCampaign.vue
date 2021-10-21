@@ -126,7 +126,7 @@ export default {
             return agencyWithId
         })
         if(localStorage.getItem('permission') === 'owner' || localStorage.getItem('permission') === 'admin'){
-            allAgencies.push({id:count, agency:'Nenhuma Agência'})
+            allAgencies.push({id:count, agency:'Campanhas Internas'})
         }
         this.agencies = allAgencies;
     }).catch((err) => {
@@ -149,7 +149,7 @@ export default {
         },
         clearForm () {
             this.$v.$reset()
-            this.form.agency = null
+            // this.form.agency = null
             this.form.campaign = null
         },
         createCampaign() {
@@ -158,7 +158,7 @@ export default {
             this.apiError = false;
             const url = `${this.$apiRoute}/campaign`;
             const formdata = new FormData();
-            formdata.append("agency", this.form.agency==='Nenhuma Agência'?'':this.form.agency);
+            formdata.append("agency", this.form.agency === 'Campanhas Internas'? '': this.form.agency);
             formdata.append("campaign", this.form.campaign);
             const requestOptions = {
                 method: 'POST',
