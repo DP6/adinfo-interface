@@ -69,7 +69,6 @@ export default {
         }
     },
     created() {
-        console.log(this.interfaceChildren)
         this.interfaceChildren.forEach(interfaceChild => {
             if(interfaceChild.group) {
                 const grupoJaExiste = this.menus.filter(menu => menu.nome === interfaceChild.group).length > 0;
