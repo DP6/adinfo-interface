@@ -74,7 +74,7 @@ export default {
         }
     },
     created() {
-        const url = `${this.$apiRoute}/users`;
+        const url = localStorage.getItem('permission') === 'agencyOwner'?`${this.$apiRoute}/agency/users`:`${this.$apiRoute}/users`;
         this.show_load = true;
         fetch(url, {
             method: 'GET',
@@ -116,6 +116,7 @@ export default {
                 url = `${this.$apiRoute}/user/${id}/deactivate`;
             }
             this.show_load = true;
+            const urlUsers = localStorage.getItem('permission') === 'agencyOwner'?`${this.$apiRoute}/agency/users`:`${this.$apiRoute}/users`;
             fetch(url, {
                 method: 'POST',
                 headers: {
@@ -130,7 +131,7 @@ export default {
                     throw new Error(response.responseText || response.errorMessage);
                 }
                 this.show_load = true;
-                return fetch(`${this.$apiRoute}/users`, {
+                return fetch(urlUsers, {
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json',
