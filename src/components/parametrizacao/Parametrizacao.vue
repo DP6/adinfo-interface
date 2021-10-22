@@ -6,7 +6,7 @@
                 <md-card-content>
                     <div class="md-layout md-gutter">
                         <form class="md-layout">
-                            <md-card class="md-layout-item md-larger-size card">
+                            <md-card class="md-layout-item md-larger-size card agency-select">
                                 <md-card-content>
                                     <div class="md-layout md-gutter">
                                         <div class="md-layout-item md-medium-size-100">
@@ -31,7 +31,7 @@
                             </md-card>
                         </form>
                         <form class="md-layout">
-                            <md-card class="md-layout-item md-larger-size card">
+                            <md-card class="md-layout-item md-larger-size card campaign-select">
                                 <md-card-content>
                                     <div class="md-layout md-gutter">
                                         <div class="md-layout-item md-medium-size-100">
@@ -53,17 +53,17 @@
                             </md-card>
                         </form>
                         <div class="md-layout-item md-medium-size-100">
-                            <!-- <md-card class="md-layout-item md-larger-size card"> -->
+                            <md-card class="md-layout-item md-larger-size card upload-file">
                                 <md-field>
                                     <label>Upload files</label>
                                     <md-file v-model="file" id="file" placeholder="Anexar Arquivo" />
                                 </md-field>
-                            <!-- </md-card> -->
+                            </md-card>
                         </div>
                     </div>
                     <div class="md-layout md-gutter">
                         <div class="md-layout-item md-medium-size-100">
-                            <!-- <md-card class="md-layout-item md-larger-size card"> -->
+                            <md-card class="md-layout-item md-larger-size card midia-select">
                                 <md-field>
                                     <label for="tool">Mídia</label>
                                     <md-select v-model="tool" name="tool" id="tool">
@@ -84,7 +84,7 @@
                                         </md-optgroup>
                                     </md-select>
                                 </md-field>
-                            <!-- </md-card> -->
+                            </md-card>
                         </div>
                     </div>
                 </md-card-content>
@@ -389,6 +389,14 @@ export default {
                 return true;
             return false;
         },
+        getAllCampaigns(){
+            this.clearForm();
+            this.agencies.forEach(agencia =>{
+                const url = `${this.$apiRoute}/campaign/${agencia}/list`;
+                
+            })
+
+        },
         getCampaigns() {
             this.clearForm();
             let agencia = this.form.agency;
@@ -407,8 +415,9 @@ export default {
                 if(this.statusCode !== 200) {
                     throw new Error(response.responseText || response.errorMessage);
                 }
-                const allCampaigns = JSON.parse(response.responseText).filter(campaign => campaign.agency !== agency);
+                const allCampaigns = JSON.parse(response.responseText);
                 this.campaigns = allCampaigns.filter(campaign => campaign.activate === true);
+                console.log(this.campaigns)
             }).catch((err) => {
                 this.apiError = true;
                 this.apiErrorMessage = err.message;
@@ -449,5 +458,56 @@ export default {
     p.md-body-1 {
         margin-left: 50px;
     }
+
+    .agency-select {
+        margin-right: 30px;
+        margin-bottom: 10px;
+        margin-left: -30px;
+        border: 40px solid white;
+    }
+
+    .campaign-select {
+        margin-right: 30px;
+        margin-left: -30px;
+        margin-bottom: 10px;
+        border: 40px solid white;
+    }
+
+    .upload-file {
+        margin-right: 20px;
+        margin-left: 10px;
+        margin-top: 10px;
+        border: 40px solid white;
+    }
+
+    .midia-select {
+        margin-right: 20px;
+        margin-left: 10px;
+        margin-top: 10px;
+        border: 40px solid white;
+    }
+    /* .agency-select {
+        margin-right: 30px;
+        margin-bottom: 10px;
+        margin-left: -30px;
+        width: 200px;
+        border: 40px solid white;
+    }
+
+    .campaign-select {
+        margin-right: 10px;
+        margin-left: -30px;
+        margin-bottom: 10px;
+        width: 200px;
+        border: 40px solid white;
+    }
+
+    .upload-file {
+        margin-right: 20px;
+        width: 250px;
+        margin-left: 10px;
+        margin-top: 10px;
+        border: 40px solid white;
+    } */
 
 </style>
