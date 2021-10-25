@@ -417,7 +417,6 @@ export default {
                 }
                 const allCampaigns = JSON.parse(response.responseText);
                 this.campaigns = allCampaigns.filter(campaign => campaign.activate === true);
-                console.log(this.campaigns)
             }).catch((err) => {
                 this.apiError = true;
                 this.apiErrorMessage = err.message;
