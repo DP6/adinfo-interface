@@ -5,54 +5,85 @@
             <md-card class="md-layout-item md-larger-size">
                 <md-card-content>
                     <div class="md-layout md-gutter">
-                        <!-- <div class="md-layout-item md-medium-size-100">
-                            <md-field :class="getValidationClass('company')">
-                                <label for="company">Empresa</label>
-                                <md-input disabled=disable name="company" id="company" v-model="form.company"/>
-                            </md-field>
-                        </div>
-                        <div class="md-layout-item md-medium-size-100" v-show="form.agency !== ''">
-                            <md-field :class="getValidationClass('agency')">
-                                <label for="agency">Agência</label>
-                                <md-input disabled=disable name="agency" id="agency" v-model="form.agency"/>
-                            </md-field>
-                        </div> -->
+                        <form class="md-layout">
+                            <md-card class="md-layout-item md-larger-size card agency-select">
+                                <md-card-content>
+                                    <div class="md-layout md-gutter">
+                                        <div class="md-layout-item md-medium-size-100">
+                                            <md-field>
+                                                <label for="agency">Agência</label>
+                                                <md-select v-model="selected_agency" name="agency" id="agency" @md-selected="getCampaigns()">
+                                                    <md-optgroup label="Agências" @mouseover="getCampaigns()">
+                                                        <md-option 
+                                                            @mouseover="getCampaigns()"
+                                                            v-for="agency in agencies" 
+                                                            :key="agency.id"
+                                                            :value="agency.agency"
+                                                            
+                                                        >{{agency.agency}}</md-option>
+                                                    </md-optgroup>
+                                                </md-select>
+                                            </md-field>
+                                        </div>
+                                    </div>
+                                </md-card-content>
+                            </md-card>
+                        </form>
+                        <form class="md-layout">
+                            <md-card class="md-layout-item md-larger-size card campaign-select">
+                                <md-card-content>
+                                    <div class="md-layout md-gutter">
+                                        <div class="md-layout-item md-medium-size-100">
+                                            <md-field>
+                                                <label for="campaign">Campanha</label>
+                                                <md-select v-model="form.campaignId" name="campaign" id="campaign">
+                                                    <md-optgroup label="Campanhas">
+                                                        <md-option 
+                                                            v-for="campaign in elegible_campaigns" 
+                                                            :key="campaign.campaignId"
+                                                            :value="campaign.campaignId"
+                                                        >{{campaign.campaignName}}</md-option>
+                                                    </md-optgroup>
+                                                </md-select>
+                                            </md-field>
+                                        </div>
+                                    </div>
+                                </md-card-content>
+                            </md-card>
+                        </form>
                         <div class="md-layout-item md-medium-size-100">
-                            <md-field :class="getValidationClass('campaign')">
-                                <label for="campaign">Campanha</label>
-                                <md-input name="campaign" id="campaign" v-model="form.campaign"/>
-                                <span class="md-error" v-if="!$v.form.campaign.required">Campanha é um campo obrigatório</span>
-                            </md-field>
-                        </div>
-                        <div class="md-layout-item md-medium-size-100">
-                            <md-field>
-                                <label>Upload files</label>
-                                <md-file v-model="file" id="file" placeholder="Anexar Arquivo" />
-                            </md-field>
+                            <md-card class="md-layout-item md-larger-size card upload-file">
+                                <md-field>
+                                    <label>Upload files</label>
+                                    <md-file v-model="file" id="file" placeholder="Anexar Arquivo" />
+                                </md-field>
+                            </md-card>
                         </div>
                     </div>
                     <div class="md-layout md-gutter">
                         <div class="md-layout-item md-medium-size-100">
-                            <md-field>
-                                <label for="tool">Mídia</label>
-                                <md-select v-model="tool" name="tool" id="tool">
-                                    <md-optgroup v-if="parametrizers.filter(parametrizer => parametrizer.type === 'analytics')" label="Ferramentas">
-                                        <md-option 
-                                            v-for="tool in parametrizers.filter(parametrizer => parametrizer.type === 'analytics')" 
-                                            :value="tool.value"
-                                            :key="tool.title"
-                                        >{{ tool.title }}</md-option>
-                                    </md-optgroup>
+                            <md-card class="md-layout-item md-larger-size card midia-select">
+                                <md-field>
+                                    <label for="tool">Mídia</label>
+                                    <md-select v-model="tool" name="tool" id="tool">
+                                        <md-optgroup v-if="parametrizers.filter(parametrizer => parametrizer.type === 'analytics')" label="Ferramentas">
+                                            <md-option 
+                                                v-for="tool in parametrizers.filter(parametrizer => parametrizer.type === 'analytics')" 
+                                                :value="tool.value"
+                                                :key="tool.title"
+                                            >{{ tool.title }}</md-option>
+                                        </md-optgroup>
 
-                                    <md-optgroup v-if="parametrizers.filter(parametrizer => parametrizer.type === 'media')" label="Mídias">
-                                        <md-option 
-                                            v-for="vehicle in parametrizers.filter(parametrizer => parametrizer.type === 'media')" 
-                                            :value="vehicle.value"
-                                            :key="vehicle.value"
-                                        >{{ vehicle.title }}</md-option>
-                                    </md-optgroup>
-                                </md-select>
-                            </md-field>
+                                        <md-optgroup v-if="parametrizers.filter(parametrizer => parametrizer.type === 'media')" label="Mídias">
+                                            <md-option 
+                                                v-for="vehicle in parametrizers.filter(parametrizer => parametrizer.type === 'media')" 
+                                                :value="vehicle.value"
+                                                :key="vehicle.value"
+                                            >{{ vehicle.title }}</md-option>
+                                        </md-optgroup>
+                                    </md-select>
+                                </md-field>
+                            </md-card>
                         </div>
                     </div>
                 </md-card-content>
@@ -118,8 +149,8 @@ export default {
     data() {
         return {
             form: {
-                // agency: localStorage.getItem('agency') || '',
-                // company: localStorage.getItem('company') || '',
+                agency: '',
+                campaignId: '',
                 campaign: ''
             },
             tool: null,
@@ -143,6 +174,10 @@ export default {
             downloadErrorMessage: 'Erro no Download!',
             configVersion: '',
             configDate: '',
+            agencies: [],
+            campaigns: [],
+            elegible_campaigns: [],
+            selected_agency:'',
         }
     },
     validations: {
@@ -166,10 +201,10 @@ export default {
         }
     },
     created() {
-        const url = `${this.$apiRoute}/config`;
+        const urlConfig = `${this.$apiRoute}/config`;
         this.apiError = false;
         this.show_load = true;
-        fetch(url, {
+        fetch(urlConfig, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -213,6 +248,55 @@ export default {
             this.showAuthAlert = this.isAuthError(this.statusCode);
             this.apiError = true;
             this.apiErrorMessage = err.message;
+        });
+
+        const urlAgencyList = `${this.$apiRoute}/agencies/campaigns`;
+        fetch(urlAgencyList, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                token: localStorage.getItem('userToken')
+            }
+        }).then((response) => {
+            this.statusCode = response.status;
+            return response.json();
+        }).then((response) => {
+        if(this.statusCode !== 200) {
+            throw new Error(response.responseText || response.errorMessage);
+        }
+
+        let count = 0;
+        response.forEach(agency => {
+            Object.keys(agency).forEach(agencyName => {
+                this.agencies.push({id:count, agency: agencyName});
+                count++
+            })
+        });
+       
+        const nestedCampaigns = []
+
+        response.forEach(agencyObject => {
+            Object.values(agencyObject).forEach(agencyCampaigns => {
+                nestedCampaigns.push(agencyCampaigns);
+            })
+        });
+
+        console.log('agencias:',this.agencies)
+        console.log('objetos das campanhas:', nestedCampaigns)
+
+        nestedCampaigns.forEach(campaign => {
+            campaign.forEach(campaignObject => {
+                this.campaigns.push(campaignObject)
+            })
+        })
+
+        console.log('todas as campanhas:', this.campaigns)
+        
+        }).catch((err) => {
+            this.apiError = true;
+            this.apiErrorMessage = err.message;
+            this.tituloResposta = 'Erro ao recuperar configuração';
+            this.showAuthAlert = this.isAuthError(this.statusCode);
         }).finally(() => {
             this.show_load = false;
         });
@@ -228,10 +312,12 @@ export default {
         },
         clearForm () {
             this.$v.$reset()
-            this.form.agency = null
-            this.form.company = null
-            this.form.file = null
-            this.form.campaign = null
+            // this.form.agency = null
+            this.form.campaignId = null;
+            this.form.company = null;
+            this.form.file = null;
+            this.form.campaign = null;
+            this.elegible_campaigns = null;
         },
         clearResposta() {
             this.tituloResposta = '';
@@ -249,11 +335,14 @@ export default {
             formdata.append("data", document.querySelector('#file').files[0]);
             this.apiError = false;
             this.show_load = true;
+            const campaignName = this.campaigns.filter(campanha => campanha.campaignId===this.form.campaignId)[0].campaignName;
+            this.form.campaign = campaignName;
             const requestOptions = {
                 method: 'POST',
                 headers: {
                     token: localStorage.getItem('userToken'),
-                    campaign: document.querySelector('#campaign').value
+                    campaign: this.form.campaign,
+                    agency: this.form.agency === 'Campanhas Internas'? '': this.form.agency
                 },
                 body: formdata,
                 redirect: 'follow'
@@ -317,6 +406,18 @@ export default {
             if(statusCode === 403)
                 return true;
             return false;
+        },
+        getCampaigns() {
+            let selectedCampaigns = [];
+            this.selected_agency === 'Campanhas Internas'? this.form.agency = 'CompanyCampaigns': this.form.agency = this.selected_agency;
+            console.log('agencia selecionada:', this.form.agency)
+
+            this.campaigns.forEach(campaignObject => {
+                if(campaignObject.agency === this.form.agency && campaignObject.activate === true){
+                    selectedCampaigns.push({campaignId:campaignObject.campaignId, campaignName: campaignObject.campaignName})
+                }
+            })
+            this.elegible_campaigns = selectedCampaigns;
         }
     }
 }
@@ -349,5 +450,56 @@ export default {
     p.md-body-1 {
         margin-left: 50px;
     }
+
+    .agency-select {
+        margin-right: 30px;
+        margin-bottom: 10px;
+        margin-left: -30px;
+        border: 40px solid white;
+    }
+
+    .campaign-select {
+        margin-right: 30px;
+        margin-left: -30px;
+        margin-bottom: 10px;
+        border: 40px solid white;
+    }
+
+    .upload-file {
+        margin-right: 20px;
+        margin-left: 10px;
+        margin-top: 10px;
+        border: 40px solid white;
+    }
+
+    .midia-select {
+        margin-right: 20px;
+        margin-left: 10px;
+        margin-top: 10px;
+        border: 40px solid white;
+    }
+    /* .agency-select {
+        margin-right: 30px;
+        margin-bottom: 10px;
+        margin-left: -30px;
+        width: 200px;
+        border: 40px solid white;
+    }
+
+    .campaign-select {
+        margin-right: 10px;
+        margin-left: -30px;
+        margin-bottom: 10px;
+        width: 200px;
+        border: 40px solid white;
+    }
+
+    .upload-file {
+        margin-right: 20px;
+        width: 250px;
+        margin-left: 10px;
+        margin-top: 10px;
+        border: 40px solid white;
+    } */
 
 </style>
