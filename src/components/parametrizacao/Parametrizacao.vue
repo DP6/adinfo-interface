@@ -261,37 +261,31 @@ export default {
             this.statusCode = response.status;
             return response.json();
         }).then((response) => {
-        if(this.statusCode !== 200) {
-            throw new Error(response.responseText || response.errorMessage);
-        }
+            if(this.statusCode !== 200) {
+                throw new Error(response.responseText || response.errorMessage);
+            }
 
-        let count = 0;
-        response.forEach(agency => {
-            Object.keys(agency).forEach(agencyName => {
-                this.agencies.push({id:count, agency: agencyName});
-                count++
-            })
-        });
-       
-        const nestedCampaigns = []
-
-        response.forEach(agencyObject => {
-            Object.values(agencyObject).forEach(agencyCampaigns => {
-                nestedCampaigns.push(agencyCampaigns);
-            })
-        });
-
-        console.log('agencias:',this.agencies)
-        console.log('objetos das campanhas:', nestedCampaigns)
-
-        nestedCampaigns.forEach(campaign => {
-            campaign.forEach(campaignObject => {
-                this.campaigns.push(campaignObject)
-            })
-        })
-
-        console.log('todas as campanhas:', this.campaigns)
+            let count = 0;
+            response.forEach(agency => {
+                Object.keys(agency).forEach(agencyName => {
+                    this.agencies.push({id:count, agency: agencyName});
+                    count++
+                })
+            });
         
+            const nestedCampaigns = []
+
+            response.forEach(agencyObject => {
+                Object.values(agencyObject).forEach(agencyCampaigns => {
+                    nestedCampaigns.push(agencyCampaigns);
+                })
+            });
+
+            nestedCampaigns.forEach(campaign => {
+                campaign.forEach(campaignObject => {
+                    this.campaigns.push(campaignObject)
+                })
+            })      
         }).catch((err) => {
             this.apiError = true;
             this.apiErrorMessage = err.message;
@@ -410,7 +404,6 @@ export default {
         getCampaigns() {
             let selectedCampaigns = [];
             this.selected_agency === 'Campanhas Internas'? this.form.agency = 'CompanyCampaigns': this.form.agency = this.selected_agency;
-            console.log('agencia selecionada:', this.form.agency)
 
             this.campaigns.forEach(campaignObject => {
                 if(campaignObject.agency === this.form.agency && campaignObject.activate === true){

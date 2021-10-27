@@ -150,7 +150,6 @@ export default {
                 return configPromise.json();
             }).then(response => {
                 if(this.statusCode !== 200) {
-                    console.log(response.errorMessage);
                     throw new Error(response.responseText);
                 }
                 this.apiError = false;
