@@ -12,12 +12,14 @@
                                         <div class="md-layout-item md-medium-size-100">
                                             <md-field>
                                                 <label for="agency">Agência</label>
-                                                <md-select v-model="form.agency" name="agency" id="agency">
-                                                    <md-optgroup label="Agências">
+                                                <md-select v-model="selected_agency" name="agency" id="agency" @md-selected="getCampaigns()">
+                                                    <md-optgroup label="Agências" @mouseover="getCampaigns()">
                                                         <md-option 
+                                                            @mouseover="getCampaigns()"
                                                             v-for="agency in agencies" 
                                                             :key="agency.id"
                                                             :value="agency.agency"
+                                                            
                                                         >{{agency.agency}}</md-option>
                                                     </md-optgroup>
                                                 </md-select>
@@ -25,9 +27,6 @@
                                         </div>
                                     </div>
                                 </md-card-content>
-                                <md-card-actions>
-                                    <botao-submit nome_do_botao="Confirmar" @botaoAtivado="getCampaigns()"></botao-submit> 
-                                </md-card-actions>
                             </md-card>
                         </form>
                         <form class="md-layout">
@@ -40,7 +39,7 @@
                                                 <md-select v-model="form.campaignId" name="campaign" id="campaign">
                                                     <md-optgroup label="Campanhas">
                                                         <md-option 
-                                                            v-for="campaign in campaigns" 
+                                                            v-for="campaign in elegible_campaigns" 
                                                             :key="campaign.campaignId"
                                                             :value="campaign.campaignId"
                                                         >{{campaign.campaignName}}</md-option>
@@ -177,6 +176,8 @@ export default {
             configDate: '',
             agencies: [],
             campaigns: [],
+            elegible_campaigns: [],
+            selected_agency:'',
         }
     },
     validations: {
@@ -247,12 +248,9 @@ export default {
             this.showAuthAlert = this.isAuthError(this.statusCode);
             this.apiError = true;
             this.apiErrorMessage = err.message;
-        }).finally(() => {
-            this.show_load = false;
         });
 
-        const urlAgencyList = `${this.$apiRoute}/agency/list`;
-        this.show_load = true;
+        const urlAgencyList = `${this.$apiRoute}/agencies/campaigns`;
         fetch(urlAgencyList, {
             method: 'GET',
             headers: {
@@ -266,15 +264,34 @@ export default {
         if(this.statusCode !== 200) {
             throw new Error(response.responseText || response.errorMessage);
         }
+
         let count = 0;
-        const allAgencies = JSON.parse(response.responseText).map(agency =>{
-            const agencyWithId = {id:count, agency:agency};
-            count++
-            return agencyWithId
+        response.forEach(agency => {
+            Object.keys(agency).forEach(agencyName => {
+                this.agencies.push({id:count, agency: agencyName});
+                count++
+            })
+        });
+       
+        const nestedCampaigns = []
+
+        response.forEach(agencyObject => {
+            Object.values(agencyObject).forEach(agencyCampaigns => {
+                nestedCampaigns.push(agencyCampaigns);
+            })
+        });
+
+        console.log('agencias:',this.agencies)
+        console.log('objetos das campanhas:', nestedCampaigns)
+
+        nestedCampaigns.forEach(campaign => {
+            campaign.forEach(campaignObject => {
+                this.campaigns.push(campaignObject)
+            })
         })
-        if(localStorage.getItem('permission') === 'owner' || localStorage.getItem('permission') === 'admin')
-            allAgencies.push({id:count, agency:'Campanhas Internas'})
-        this.agencies = allAgencies;
+
+        console.log('todas as campanhas:', this.campaigns)
+        
         }).catch((err) => {
             this.apiError = true;
             this.apiErrorMessage = err.message;
@@ -300,6 +317,7 @@ export default {
             this.form.company = null;
             this.form.file = null;
             this.form.campaign = null;
+            this.elegible_campaigns = null;
         },
         clearResposta() {
             this.tituloResposta = '';
@@ -389,42 +407,17 @@ export default {
                 return true;
             return false;
         },
-        getAllCampaigns(){
-            this.clearForm();
-            this.agencies.forEach(agencia =>{
-                const url = `${this.$apiRoute}/campaign/${agencia}/list`;
-                
-            })
-
-        },
         getCampaigns() {
-            this.clearForm();
-            let agencia = this.form.agency;
-            const url = `${this.$apiRoute}/campaign/${agencia}/list`;
-            this.show_load = true;
-            fetch(url, {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json',
-                    token: localStorage.getItem('userToken')
+            let selectedCampaigns = [];
+            this.selected_agency === 'Campanhas Internas'? this.form.agency = 'CompanyCampaigns': this.form.agency = this.selected_agency;
+            console.log('agencia selecionada:', this.form.agency)
+
+            this.campaigns.forEach(campaignObject => {
+                if(campaignObject.agency === this.form.agency && campaignObject.activate === true){
+                    selectedCampaigns.push({campaignId:campaignObject.campaignId, campaignName: campaignObject.campaignName})
                 }
-            }).then((response) => {
-                this.statusCode = response.status;
-                return response.json();
-            }).then((response) => {
-                if(this.statusCode !== 200) {
-                    throw new Error(response.responseText || response.errorMessage);
-                }
-                const allCampaigns = JSON.parse(response.responseText);
-                this.campaigns = allCampaigns.filter(campaign => campaign.activate === true);
-            }).catch((err) => {
-                this.apiError = true;
-                this.apiErrorMessage = err.message;
-                this.tituloResposta = 'Erro ao recuperar configuração';
-                this.showAuthAlert = this.isAuthError(this.statusCode);
-            }).finally(() => {
-                this.show_load = false;
-            });
+            })
+            this.elegible_campaigns = selectedCampaigns;
         }
     }
 }
