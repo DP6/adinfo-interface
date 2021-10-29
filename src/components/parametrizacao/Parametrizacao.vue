@@ -5,85 +5,67 @@
             <md-card class="md-layout-item md-larger-size">
                 <md-card-content>
                     <div class="md-layout md-gutter">
-                        <form class="md-layout">
-                            <md-card class="md-layout-item md-larger-size card agency-select">
-                                <md-card-content>
-                                    <div class="md-layout md-gutter">
-                                        <div class="md-layout-item md-medium-size-100">
-                                            <md-field>
-                                                <label for="agency">Agência</label>
-                                                <md-select v-model="selected_agency" name="agency" id="agency" @md-selected="getCampaigns()">
-                                                    <md-optgroup label="Agências" @mouseover="getCampaigns()">
-                                                        <md-option 
-                                                            @mouseover="getCampaigns()"
-                                                            v-for="agency in agencies" 
-                                                            :key="agency.id"
-                                                            :value="agency.agency"
-                                                            
-                                                        >{{agency.agency}}</md-option>
-                                                    </md-optgroup>
-                                                </md-select>
-                                            </md-field>
-                                        </div>
-                                    </div>
-                                </md-card-content>
-                            </md-card>
-                        </form>
-                        <form class="md-layout">
-                            <md-card class="md-layout-item md-larger-size card campaign-select">
-                                <md-card-content>
-                                    <div class="md-layout md-gutter">
-                                        <div class="md-layout-item md-medium-size-100">
-                                            <md-field>
-                                                <label for="campaign">Campanha</label>
-                                                <md-select v-model="form.campaignId" name="campaign" id="campaign">
-                                                    <md-optgroup label="Campanhas">
-                                                        <md-option 
-                                                            v-for="campaign in elegible_campaigns" 
-                                                            :key="campaign.campaignId"
-                                                            :value="campaign.campaignId"
-                                                        >{{campaign.campaignName}}</md-option>
-                                                    </md-optgroup>
-                                                </md-select>
-                                            </md-field>
-                                        </div>
-                                    </div>
-                                </md-card-content>
-                            </md-card>
-                        </form>
-                        <div class="md-layout-item md-medium-size-100">
-                            <md-card class="md-layout-item md-larger-size card upload-file">
-                                <md-field>
-                                    <label>Upload files</label>
-                                    <md-file v-model="file" id="file" placeholder="Anexar Arquivo" />
-                                </md-field>
-                            </md-card>
+                        <div class="md-layout-item md-layout md-gutter">
+                            <md-field>
+                                <label for="agency">Agência</label>
+                                <md-select v-model="selected_agency" name="agency" id="agency" @md-selected="getCampaigns()">
+                                    <md-optgroup label="Agências" @mouseover="getCampaigns()">
+                                        <md-option 
+                                            @mouseover="getCampaigns()"
+                                            v-for="agency in agencies" 
+                                            :key="agency.id"
+                                            :value="agency.agency"
+                                            
+                                        >{{agency.agency}}</md-option>
+                                    </md-optgroup>
+                                </md-select>
+                            </md-field>
+                        </div>
+                        <div class="md-layout-item md-layout md-gutter">
+                            <md-field>
+                                <label for="campaign">Campanha</label>
+                                <md-select v-model="form.campaignId" name="campaign" id="campaign">
+                                    <md-optgroup label="Campanhas">
+                                        <md-option 
+                                            v-for="campaign in elegible_campaigns" 
+                                            :key="campaign.campaignId"
+                                            :value="campaign.campaignId"
+                                        >{{campaign.campaignName}}</md-option>
+                                    </md-optgroup>
+                                </md-select>
+                            </md-field>
+                        </div>
+                        <div class="md-layout-item md-layout md-gutter">
+                            <md-field>
+                                <label>Upload files</label>
+                                <md-file v-model="file" id="file" placeholder="Anexar Arquivo" />
+                            </md-field>
                         </div>
                     </div>
                     <div class="md-layout md-gutter">
-                        <div class="md-layout-item md-medium-size-100">
-                            <md-card class="md-layout-item md-larger-size card midia-select">
-                                <md-field>
-                                    <label for="tool">Mídia</label>
-                                    <md-select v-model="tool" name="tool" id="tool">
-                                        <md-optgroup v-if="parametrizers.filter(parametrizer => parametrizer.type === 'analytics')" label="Ferramentas">
-                                            <md-option 
-                                                v-for="tool in parametrizers.filter(parametrizer => parametrizer.type === 'analytics')" 
-                                                :value="tool.value"
-                                                :key="tool.title"
-                                            >{{ tool.title }}</md-option>
-                                        </md-optgroup>
-
-                                        <md-optgroup v-if="parametrizers.filter(parametrizer => parametrizer.type === 'media')" label="Mídias">
-                                            <md-option 
-                                                v-for="vehicle in parametrizers.filter(parametrizer => parametrizer.type === 'media')" 
-                                                :value="vehicle.value"
-                                                :key="vehicle.value"
-                                            >{{ vehicle.title }}</md-option>
-                                        </md-optgroup>
-                                    </md-select>
-                                </md-field>
-                            </md-card>
+                        <div class="md-layout-item md-layout md-gutter">
+                            <md-field>
+                                <label for="tool">Ferramenta de Analytics</label>
+                                <md-select v-model="tool" name="tool" id="tool">
+                                    <md-option 
+                                        v-for="tool in parametrizers.filter(parametrizer => parametrizer.type === 'analytics')" 
+                                        :value="tool.value"
+                                        :key="tool.title"
+                                    >{{ tool.title }}</md-option>
+                                </md-select>
+                            </md-field>
+                        </div>
+                        <div class="md-layout-item md-layout md-gutter">
+                            <md-field>
+                                <label for="vehicle">Mídia</label>
+                                <md-select v-model="vehicle" name="vehicle" id="vehicle">
+                                    <md-option 
+                                        v-for="vehicle in parametrizers.filter(parametrizer => parametrizer.type === 'media')" 
+                                        :value="vehicle.value"
+                                        :key="vehicle.value"
+                                    >{{ vehicle.title }}</md-option>
+                                </md-select>
+                            </md-field>
                         </div>
                     </div>
                 </md-card-content>
@@ -133,8 +115,7 @@ import InvalidUserAlert from '../shared/login/InvalidUser.vue';
 import { validationMixin } from 'vuelidate'
 import {
     required,
-    minLength,
-    maxLength
+    minLength
 } from 'vuelidate/lib/validators'
 import BotaoSubmitForm from '../shared/botao_submit_form/BotaoSubmitForm.vue';
 
@@ -154,6 +135,7 @@ export default {
                 campaign: ''
             },
             tool: null,
+            vehicle: null,
             tituloResposta: '',
             visibilidadeResposta: false,
             visibilidadePrevia: false,
@@ -324,7 +306,8 @@ export default {
         },
         build() {
             this.clearResposta();
-            const url = `${this.$apiRoute}/build/${this.tool}`;
+            let url = `${this.$apiRoute}/build/${this.tool}`;
+            if(this.vehicle) url += `/${this.vehicle}`
             const formdata = new FormData();
             formdata.append("data", document.querySelector('#file').files[0]);
             this.apiError = false;

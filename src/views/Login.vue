@@ -80,7 +80,7 @@ export default {
                 return statusCode === 204 ? undefined : response.json();
             }).then((response) => {
                 if(statusCode !== 204) {
-                throw new Error(response.responseText);
+                    throw new Error(response.responseText);
                 }
                 return fetch(`${this.$apiRoute}/user`, {
                 method: 'GET',
