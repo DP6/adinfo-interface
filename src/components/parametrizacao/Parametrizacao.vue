@@ -9,13 +9,11 @@
                             <md-field>
                                 <label for="agency">Agência</label>
                                 <md-select v-model="selected_agency" name="agency" id="agency" @md-selected="getCampaigns()">
-                                    <md-optgroup label="Agências" @mouseover="getCampaigns()">
-                                        <md-option 
-                                            @mouseover="getCampaigns()"
-                                            v-for="agency in agencies" 
+                                    <md-optgroup label="Agências">
+                                        <md-option
+                                            v-for="agency in agencies"
                                             :key="agency.id"
                                             :value="agency.agency"
-                                            
                                         >{{agency.agency}}</md-option>
                                     </md-optgroup>
                                 </md-select>
@@ -250,11 +248,15 @@ export default {
             let count = 0;
             response.forEach(agency => {
                 Object.keys(agency).forEach(agencyName => {
-                    this.agencies.push({id:count, agency: agencyName});
+                    if(agencyName === 'CompanyCampaigns'){
+                        this.agencies.push({id:count, agency: 'Campanhas Internas'});
+                    }else{
+                        this.agencies.push({id:count, agency: agencyName});
+                    }
                     count++
                 })
             });
-        
+
             const nestedCampaigns = []
 
             response.forEach(agencyObject => {
@@ -267,7 +269,7 @@ export default {
                 campaign.forEach(campaignObject => {
                     this.campaigns.push(campaignObject)
                 })
-            })      
+            })
         }).catch((err) => {
             this.apiError = true;
             this.apiErrorMessage = err.message;
@@ -319,7 +321,7 @@ export default {
                 headers: {
                     token: localStorage.getItem('userToken'),
                     campaign: this.form.campaign,
-                    agency: this.form.agency === 'Campanhas Internas'? '': this.form.agency
+                    agency: this.form.agency === 'CompanyCampaigns'? '': this.form.agency
                 },
                 body: formdata,
                 redirect: 'follow'
