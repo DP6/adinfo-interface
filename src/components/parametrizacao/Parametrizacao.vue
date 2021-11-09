@@ -24,8 +24,8 @@
                                 <label for="campaign">Campanha</label>
                                 <md-select v-model="form.campaignId" name="campaign" id="campaign">
                                     <md-optgroup label="Campanhas">
-                                        <md-option 
-                                            v-for="campaign in elegible_campaigns" 
+                                        <md-option
+                                            v-for="campaign in elegible_campaigns"
                                             :key="campaign.campaignId"
                                             :value="campaign.campaignId"
                                         >{{campaign.campaignName}}</md-option>
@@ -45,8 +45,8 @@
                             <md-field>
                                 <label for="tool">Ferramenta de Analytics</label>
                                 <md-select v-model="tool" name="tool" id="tool">
-                                    <md-option 
-                                        v-for="tool in parametrizers.filter(parametrizer => parametrizer.type === 'analytics')" 
+                                    <md-option
+                                        v-for="tool in parametrizers.filter(parametrizer => parametrizer.type === 'analytics')"
                                         :value="tool.value"
                                         :key="tool.title"
                                     >{{ tool.title }}</md-option>
@@ -57,8 +57,8 @@
                             <md-field>
                                 <label for="vehicle">Mídia</label>
                                 <md-select v-model="vehicle" name="vehicle" id="vehicle">
-                                    <md-option 
-                                        v-for="vehicle in parametrizers.filter(parametrizer => parametrizer.type === 'media')" 
+                                    <md-option
+                                        v-for="vehicle in parametrizers.filter(parametrizer => parametrizer.type === 'media')"
                                         :value="vehicle.value"
                                         :key="vehicle.value"
                                     >{{ vehicle.title }}</md-option>
@@ -200,7 +200,6 @@ export default {
                 throw new Error(response.responseText || response.errorMessage);
             }
             const data = JSON.parse(response.responseText);
-            this.show_load = false;
             this.configVersion = data.version;
             this.configDate = `${data.insertTime.substring(6, 8)}/${data.insertTime.substring(4, 6)}/${data.insertTime.substring(0, 4)}`;
             delete data.insertTime;
@@ -387,6 +386,7 @@ export default {
             return false;
         },
         getCampaigns() {
+            this.form.campaignId = null;
             let selectedCampaigns = [];
             this.selected_agency === 'Campanhas Internas'? this.form.agency = 'CompanyCampaigns': this.form.agency = this.selected_agency;
 
