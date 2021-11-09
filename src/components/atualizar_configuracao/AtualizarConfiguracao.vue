@@ -296,6 +296,9 @@ export default {
       this.generalConfig = Object.keys(data);
       this.columns = Object.keys(data.columns);
       this.updateToolFields();
+      if(localStorage.getItem('permission') !== 'user' && localStorage.getItem('permission') !== 'agencyOwner'){
+        this.show_icon = true;
+      }
     }).catch((err) => {
       this.apiError = true;
       this.apiErrorMessage = err.message;
@@ -304,9 +307,6 @@ export default {
       console.log(err);
     }).finally(() => {
       this.show_load = false;
-      if(localStorage.getItem('permission') !== 'user'){
-        this.show_icon = true;
-      }
     });
   },
   methods: {

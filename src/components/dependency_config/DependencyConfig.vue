@@ -5,8 +5,8 @@
         <md-card class="md-layout-item md-larger-size card">
             <md-list>
 
-                <md-list-item v-if=show_icon>
-                    <md-icon  @click.native="adicionarItem($event)" class="adicionar">add</md-icon>
+                <md-list-item>
+                    <md-icon  v-if=show_icon @click.native="adicionarItem($event)" class="adicionar">add</md-icon>
 
                     <div class="md-layout md-gutter campo-adicionar">
                         <div class="md-layout-item">
@@ -118,7 +118,6 @@
             {{ apiErrorMessage }}
         </p>
     </div>
-    
     <div class="load" v-show="show_load">
         <md-progress-spinner md-mode="indeterminate"></md-progress-spinner>
     </div>
@@ -282,6 +281,9 @@ export default {
             this.dependenciesConfig = !!data.dependenciesConfig ? data.dependenciesConfig : [];
             delete data.dependenciesConfig;
             this.configJson = data;
+            if(localStorage.getItem('permission') !== 'user' && localStorage.getItem('permission') !== 'agencyOwner'){
+                this.show_icon = true;
+            }
         }).catch((err) => {
             this.apiError = true;
             this.tituloResposta = 'Erro ao recuperar configuração';
@@ -289,9 +291,6 @@ export default {
             this.showAuthAlert = this.isAuthError(this.statusCode);
         }).finally(() => {
             this.show_load = false;
-            if(localStorage.getItem('permission') !== 'user'){
-                this.show_icon = true;
-            }
         });
     },
 }
