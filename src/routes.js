@@ -1,5 +1,4 @@
 import Parametrizacao from './components/parametrizacao/Parametrizacao.vue';
-import Csv from './components/csv/Csv.vue';
 import Template from './components/template/Template.vue';
 import AtualizarConfiguracao from './components/atualizar_configuracao/AtualizarConfiguracao.vue';
 import NovaConfiguracao from './components/nova_configuracao/NovaConfiguracao.vue';
@@ -11,14 +10,14 @@ import Login from './views/Login.vue';
 import Interface from './views/Interface.vue';
 import CadastroCampaign from './components/cadastro_campaign/CadastroCampaign.vue';
 import GerenciamentoCampaign from './components/gerenciamento_campaign/GerenciamentoCampaign.vue';
-import ConsultaCampaign from './components/consulta_campaign/ConsultaCampaign.vue';
+import ConsultaCsv from './components/consulta_csv/ConsultaCsv.vue';
 
 
 export const routes = [
     { path: '/', component: Interface, titulo:'Interface',
     children:[
         { path: 'parametrizacao', component: Parametrizacao, titulo: 'Parametrização', permission: 'admin|owner|agencyOwner|user', group: 'Parametrizar', icon: 'outlined_flag'},
-        { path: 'listCampaigns', component: ConsultaCampaign, titulo: 'Consultar CSVs', permission: 'admin|owner|agencyOwner|user', group: 'Campanhas', icon: 'campaign'},
+        { path: 'campaignCsv', component: ConsultaCsv, titulo: 'Consultar CSVs', permission: 'admin|owner|agencyOwner|user', group: 'Campanhas', icon: 'campaign'},
         { path: 'newCampaign', component: CadastroCampaign, titulo: 'Cadastrar Campanha', permission: 'admin|owner|agencyOwner', group: 'Campanhas', icon: 'campaign'},
         { path: 'gerenciamentoCampanhas', component: GerenciamentoCampaign, titulo: 'Gerenciar Campanha', permission: 'admin|owner|agencyOwner', group: 'Campanhas', icon: 'campaign'},
         { path: 'template', component: Template, titulo: 'Template', permission: 'admin|owner|agencyOwner|user', group: 'Parametrizar', icon: 'outlined_flag'},
