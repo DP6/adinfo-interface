@@ -1,7 +1,6 @@
 <template>
     <div>
         <titulo-principal titulo="Gerencimaneto de Campanhas"></titulo-principal>
-        
         <span class="titulo_categoria">Agência</span>
 
         <form class="md-layout">
@@ -11,10 +10,10 @@
                         <div class="md-layout-item md-medium-size-100">
                             <md-field>
                                 <label for="agency">Agência</label>
-                                <md-select v-model="agency" name="agency" id="agency">
+                                <md-select v-model="agency" name="agency" id="agency" @md-selected="getFilteredCampaigns()">
                                     <md-optgroup label="Agências">
-                                        <md-option 
-                                            v-for="agency in agencies" 
+                                        <md-option
+                                            v-for="agency in agencies"
                                             :key="agency.id"
                                             :value="agency.agency"
                                         >{{agency.agency}}</md-option>
@@ -24,17 +23,14 @@
                         </div>
                     </div>
                 </md-card-content>
-                <md-card-actions>
-                    <botao-submit nome_do_botao="Consultar" @botaoAtivado="getCampaigns()"></botao-submit> 
-                </md-card-actions>
             </md-card>
         </form>
 
-        <span class="titulo_categoria" v-if="agency">Campanhas Ativas</span>
+        <span class="titulo_categoria" v-if="campaign_activates.length > 0">Campanhas Ativas</span>
         <md-card class="md-layout-item md-larger-size card" v-if="agency">
             <md-list class="lista_campanhas">
                 <md-list-item v-for="campaign in campaign_activates" :key="campaign.id" class="campaign">
-                    {{campaign.campaignName}} 
+                    {{campaign.campaignName}}
                 <md-icon class="md-size-2x desativar_campaign" @click.native="gerenciaCampanha(campaign.campaignId, 'desativa')">toggle_on</md-icon>
                 </md-list-item>
             </md-list>
@@ -97,6 +93,7 @@ export default {
             campaign_activates: [],
             campaign_deactivates: [],
             agencies: [],
+            campaigns: [],
             selected_agency:  '',
             snackbar_message: '',
             position: 'center',
@@ -104,9 +101,9 @@ export default {
         }
     },
     created() {
-        const url = `${this.$apiRoute}/agency/list`;
         this.show_load = true;
-        fetch(url, {
+        const urlAgencyList = `${this.$apiRoute}/agencies/campaigns`;
+        fetch(urlAgencyList, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -119,16 +116,32 @@ export default {
             if(this.statusCode !== 200) {
                 throw new Error(response.responseText || response.errorMessage);
             }
+
             let count = 0;
-            const allAgencies = JSON.parse(response.responseText).map(agency =>{
-                const agencyWithId = {id:count, agency:agency};
-                count++
-                return agencyWithId
+            response.forEach(agency => {
+                Object.keys(agency).forEach(agencyName => {
+                    if(agencyName === 'CompanyCampaigns'){
+                        this.agencies.push({id:count, agency: 'Campanhas Internas'});
+                    }else{
+                        this.agencies.push({id:count, agency: agencyName});
+                    }
+                    count++
+                })
+            });
+
+            const nestedCampaigns = []
+
+            response.forEach(agencyObject => {
+                Object.values(agencyObject).forEach(agencyCampaigns => {
+                    nestedCampaigns.push(agencyCampaigns);
+                })
+            });
+
+            nestedCampaigns.forEach(campaign => {
+                campaign.forEach(campaignObject => {
+                    this.campaigns.push(campaignObject)
+                })
             })
-            if(localStorage.getItem('permission') === 'owner' || localStorage.getItem('permission') === 'admin'){
-                allAgencies.push({id:count, agency:'Campanhas Internas'})
-            }
-            this.agencies = allAgencies;
         }).catch((err) => {
             this.apiError = true;
             this.apiErrorMessage = err.message;
@@ -143,36 +156,17 @@ export default {
             this.campaign_activates = [];
             this.campaign_deactivates = [];
         },
-        getCampaigns() {
+        getFilteredCampaigns() {
             this.resetCampaigns();
-            let agencia = this.agency;
-            const url = `${this.$apiRoute}/campaign/${agencia}/list`;
-            this.show_load = true;
-            fetch(url, {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json',
-                    token: localStorage.getItem('userToken')
+            let agencia = this.agency === 'Campanhas Internas'? 'CompanyCampaigns': this.agency;
+            const allCampaigns = this.campaigns.filter(campaign => campaign.agency === agencia);
+            allCampaigns.forEach(campanha => {
+                if(campanha.activate){
+                    this.campaign_activates.push(campanha)
+                }else {
+                    this.campaign_deactivates.push(campanha)
                 }
-            }).then((response) => {
-                this.statusCode = response.status;
-                return response.json();
-            }).then((response) => {
-                if(this.statusCode !== 200) {
-                    throw new Error(response.responseText || response.errorMessage);
-                }
-                const allCampaigns = JSON.parse(response.responseText).filter(campaign => campaign.agency !== agency);
-                this.campaign_activates = allCampaigns.filter(campaign => campaign.activate === true);
-                this.campaign_deactivates = allCampaigns.filter(campaign => campaign.activate === false);
-
-            }).catch((err) => {
-                this.apiError = true;
-                this.apiErrorMessage = err.message;
-                this.tituloResposta = 'Erro ao recuperar configuração';
-                this.showAuthAlert = this.isAuthError(this.statusCode);
-            }).finally(() => {
-                this.show_load = false;
-            });
+            })
         },
         isAuthError(statusCode) {
             if(statusCode === 403)
@@ -182,12 +176,21 @@ export default {
         },
         gerenciaCampanha(id, opcao) {
             let url;
+
+            this.show_load = true;
+
             if(opcao === 'ativa') {
                 url = `${this.$apiRoute}/campaign/${id}/reactivate`;
+                const campanhaAtivada = this.campaign_deactivates.filter(campaign => campaign.campaignId === id);
+                this.campaign_activates.push(campanhaAtivada[0]);
+                this.campaign_deactivates = this.campaign_deactivates.filter(campaign => campaign.campaignId !== id);
             } else if(opcao  === 'desativa') {
                 url = `${this.$apiRoute}/campaign/${id}/deactivate`;
+                const campanhaDesativada = this.campaign_activates.filter(campaign => campaign.campaignId === id);
+                this.campaign_deactivates.push(campanhaDesativada[0]);
+                this.campaign_activates = this.campaign_activates.filter(campaign => campaign.campaignId !== id);
             }
-            this.show_load = true;
+
             fetch(url, {
                 method: 'POST',
                 headers: {
@@ -201,24 +204,6 @@ export default {
                 if(this.statusCode !== 200) {
                     throw new Error(response.responseText || response.errorMessage);
                 }
-                this.show_load = true;
-                return fetch( `${this.$apiRoute}/campaign/${this.agency}/list`, {
-                    method: 'GET',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        token: localStorage.getItem('userToken')
-                    }
-                });
-            }).then((response) => {
-                this.statusCode = response.status;
-                return response.json();
-            }).then((response) => {
-                if(this.statusCode !== 200) {
-                    throw new Error(response.responseText || response.errorMessage);
-                }
-                const allUsers = JSON.parse(response.responseText);
-                this.campaign_activates = allUsers.filter(campaign => campaign.activate == true);
-                this.campaign_deactivates = allUsers.filter(campaign => campaign.activate == false);
             }).catch((err) => {
                 this.showAuthAlert = this.isAuthError(this.statusCode);
                 this.snackbar_message = 'Erro ao mudar status do usuário!';
