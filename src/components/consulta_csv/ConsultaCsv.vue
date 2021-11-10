@@ -243,7 +243,7 @@ export default {
                     file: fileName[1],
                     token: localStorage.getItem('userToken'),
                     campaign: campaign,
-                    agency: this.agency === 'Campanhas Internas'? '': this.form.agency
+                    agency: this.agency === 'Campanhas Internas' ? '' : this.agency
                 }
             }).then(response => {
                 this.statusCode = response.status;
