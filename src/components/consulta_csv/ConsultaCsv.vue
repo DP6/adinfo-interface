@@ -121,7 +121,6 @@ export default {
     created() {
         this.show_load = true;
         const urlAgencyList = `${this.$apiRoute}/agencies/campaigns`;
-        console.log('primeiro request', urlAgencyList)
         fetch(urlAgencyList, {
             method: 'GET',
             headers: {
@@ -161,8 +160,6 @@ export default {
                     this.campaigns.push(campaignObject)
                 })
             })
-            console.log('agencias', this.agencies)
-            console.log('campanhas', this.campaigns)
         }).catch((err) => {
             this.apiError = true;
             this.apiErrorMessage = err.message;
