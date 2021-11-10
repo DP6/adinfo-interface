@@ -26,6 +26,7 @@ export default {
   #app {
     display: flex;
     flex-wrap: wrap;
+    height: 100vh;
   }
 
   .area-principal {

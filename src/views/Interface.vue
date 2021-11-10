@@ -14,7 +14,7 @@ import MenuLateral from '../components/shared/menu_lateral/MenuLateral.vue';
 import { routes } from '../routes';
 export default {
   components: {
-    'menu-lateral': MenuLateral
+    'menu-lateral': MenuLateral,
   },
   data() {
     return {
@@ -22,17 +22,13 @@ export default {
     }
   },
   created() {
-    this.redirectIfHasNoToken ()
-  },
-  methods: {
-        redirectIfHasNoToken (){
-          if (!localStorage.getItem('userToken')){
-            this.redirectLogin();
-          }
-        },
-        redirectLogin (){
-          this.$router.push('login');
-        },
+    if(localStorage.getItem('userToken')) {
+     if(this.$router.currentRoute.fullPath !== '/parametrizacao') {
+      this.$router.push('parametrizacao');
+     }
+    } else {
+      this.$router.push('login');
+    }
   }
 }
 </script>

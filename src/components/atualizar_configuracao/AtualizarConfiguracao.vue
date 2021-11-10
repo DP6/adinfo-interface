@@ -3,9 +3,8 @@
     <titulo-principal titulo="Configuração Atual"></titulo-principal>
     <md-card class="md-layout-item md-larger-size card">
       <md-list>
-        <md-list-item>
+        <md-list-item v-if=show_icon>
           <md-icon @click.native="adicionarItem($event)" class="adicionar">add</md-icon>
-
           <div class="md-layout md-gutter campo-adicionar">
             <div class="md-layout-item">
               <md-field>
@@ -50,7 +49,7 @@
           :key="item"
           :id="item"
         >
-          <md-icon class="excluir" @click.native="excluirItem(item)">delete</md-icon>
+          <md-icon v-if=show_icon class="excluir" @click.native="excluirItem(item)">delete</md-icon>
           <span class="md-list-item-text">{{item}} : {{ configJson[item] }}</span>
         </md-list-item>
 
@@ -59,12 +58,11 @@
           :key="item"
           :id="item"
         >
-          <md-icon class="excluir" @click.native="excluirItem(item)">delete</md-icon>
+          <md-icon v-if=show_icon class="excluir" @click.native="excluirItem(item)">delete</md-icon>
           <span class="md-list-item-text">{{ item }}</span>
 
           <md-list slot="md-expand">
-
-            <md-list-item v-if="['ga', 'adobe', 'googleads', 'facebookads'].indexOf(item) > -1" class="nivel2">
+            <md-list-item v-if="['ga', 'adobe', 'googleads', 'facebookads'].indexOf(item) > -1 && show_icon" class="nivel2">
               <md-icon v-show="toolFields[item].length !== 0" @click.native="adicionarItem($event, item)" class="adicionar">add</md-icon>
               <div class="md-layout md-gutter campo-adicionar">
                 <div class="md-layout-item">
@@ -84,8 +82,8 @@
               <md-button class="md-raised md-accent botao-cancelar" @click="cancelar($event)">Cancelar</md-button>
             </md-list-item>
 
-            <md-list-item v-else class="nivel2">
-              <md-icon @click.native="adicionarItem($event, item)" class="adicionar">add</md-icon>
+            <md-list-item v-else-if=show_icon class="nivel2">
+              <md-icon v-if=show_icon @click.native="adicionarItem($event, item)" class="adicionar">add</md-icon>
               <div class="md-layout md-gutter campo-adicionar">
                 <div class="md-layout-item">
                   <md-field>
@@ -104,7 +102,7 @@
               :id="concatId(item, param)" 
               class="nivel2"
             >
-              <md-icon class="excluir" @click.native="excluirItem(item, param)">delete</md-icon>
+              <md-icon v-if=show_icon class="excluir" @click.native="excluirItem(item, param)">delete</md-icon>
               <span class="md-list-item-text">{{param}} : {{ configJson[item][param] }}</span>
             </md-list-item>
 
@@ -114,11 +112,11 @@
               :id="concatId(item, param)" 
               class="nivel2"
             >
-              <md-icon class="excluir" @click.native="excluirItem(item, param)">delete</md-icon>
+              <md-icon v-if=show_icon class="excluir" @click.native="excluirItem(item, param)">delete</md-icon>
               <span class="md-list-item-text">{{param}}</span>
 
               <md-list slot="md-expand">
-                <md-list-item v-if="item === 'columns'" class="nivel3">
+                <md-list-item v-if="(item === 'columns') && show_icon" class="nivel3">
                   <md-icon @click.native="adicionarItem($event, item, param)" class="adicionar">add</md-icon>
                   <div class="md-layout md-gutter campo-adicionar">
                     <div class="md-layout-item">
@@ -132,8 +130,8 @@
                   <md-button class="md-raised md-accent botao-cancelar" @click="cancelar($event)">Cancelar</md-button>
                 </md-list-item>
                 
-                <md-list-item v-else class="nivel3">
-                  <md-icon v-if="columns.filter(c => configJson[item][param].indexOf(c) === -1).length > 0" @click.native="adicionarItem($event, item, param)" class="adicionar">add</md-icon>
+                <md-list-item v-else-if=show_icon class="nivel3">
+                  <md-icon v-if="(columns.filter(c => configJson[item][param].indexOf(c) === -1).length > 0)" @click.native="adicionarItem($event, item, param)" class="adicionar">add</md-icon>
                   <div class="md-layout md-gutter campo-adicionar">
                     <div class="md-layout-item">
                       <md-field>
@@ -158,7 +156,7 @@
                   :id="concatId(item, param, t)" 
                   class="nivel4"
                 >
-                  <md-icon class="excluir" @click.native="excluirItem(item, param, t)">delete</md-icon>
+                  <md-icon v-if=show_icon class="excluir" @click.native="excluirItem(item, param, t)">delete</md-icon>
                   <span class="md-list-item-text">{{t}}</span>
                 </md-list-item>
                 
@@ -170,7 +168,7 @@
 
         </md-list-item>
       </md-list>
-      <md-card-actions>
+      <md-card-actions v-if=show_icon>
         <botao-submit @botaoAtivado="updateConfig()" nome_do_botao="Atualizar Configuração" :disabled="disable_button"></botao-submit>
       </md-card-actions>
     </md-card>
@@ -237,6 +235,7 @@ export default {
       show_field: false,
       disable_button: true,
       show_field_message: false,
+      show_icon: false,
       apiError: false,
       apiErrorMessage: '',
       tituloResposta: '',
@@ -297,6 +296,9 @@ export default {
       this.generalConfig = Object.keys(data);
       this.columns = Object.keys(data.columns);
       this.updateToolFields();
+      if(localStorage.getItem('permission') !== 'user' && localStorage.getItem('permission') !== 'agencyOwner'){
+        this.show_icon = true;
+      }
     }).catch((err) => {
       this.apiError = true;
       this.apiErrorMessage = err.message;
@@ -349,7 +351,6 @@ export default {
       }).then((response) => {
         return response.json();
       }).then(response => {
-        console.log(response);
         this.snackbar_message = response.responseText || response.errorMessage;
         this.showSnackbar = true;
         this.statusCode = response.status;
@@ -402,8 +403,11 @@ export default {
         if(!inputValue) {
           inputValue = this.toolConfigValues[ids[0]];
         }
-        if(inputValue) {
+        if(inputValue && ids[0] !== 'csvSeparator') {
           this.configJson[ids[0]][inputValue] = [];
+        }
+        else if(inputValue && ids[0] === 'csvSeparator'){
+          this.configJson[ids[0]].push(inputValue);
         }
         this.toolConfigValues[ids[0]] = undefined;
       } else if(ids.length === 2) {
@@ -441,6 +445,8 @@ export default {
         delete t[exclude];
       } else if(typeof(keyToExcludeValue) === 'undefined') {
         objectKey.splice(objectKey.indexOf(ids.slice(-1)[0]), 1);
+      } else if(ids[0] === 'csvSeparator') {
+        objectKey.splice(ids[1], 1);
       } else {
         delete objectKey[ids.slice(-1)[0]]
       }

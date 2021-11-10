@@ -1,35 +1,34 @@
 <template>
     <div>
-        <titulo-principal titulo="Registrar usuário"></titulo-principal>
+        <titulo-principal titulo="Cadastrar Campanha"></titulo-principal>
         <form class="md-layout">
             <md-card class="md-layout-item md-larger-size">
                 <md-card-content>
                     <div class="md-layout md-gutter">
-                        <div v-if=show_field class="md-layout-item md-medium-size-100">
+                        <div  class="md-layout-item md-medium-size-100"> 
                             <md-field :class="getValidationClass('agency')">
-                                <label for="agency">Agência</label>
-                                <md-input name="agency" id="agency" v-model="form.agency"/>
-                                <span class="md-error" v-if="!$v.form.agency.required">The agency name is required</span>
+                            <label for="agency">Agência</label>
+                                <md-select v-model="form.agency" name="agency" id="agency">
+                                    <md-optgroup label="Agências">
+                                        <md-option 
+                                            v-for="agency in agencies" 
+                                            :key="agency.id"
+                                            :value="agency.agency"
+                                        >{{agency.agency}}</md-option>
+                                    </md-optgroup>
+                                </md-select>
                             </md-field>
                         </div>
                         <div class="md-layout-item md-medium-size-100">
-                            <md-field :class="getValidationClass('email')">
-                                <label for="email">E-mail</label>
-                                <md-input name="email" id="email" v-model="form.email"/>
-                                <span class="md-error" v-if="!$v.form.email.required">The email is required</span>
-                            </md-field>
-                        </div>
-                        <div class="md-layout-item md-medium-size-100">
-                            <md-field :class="getValidationClass('senha')">
-                                <label for="senha">Senha</label>
-                                <md-input name="senha" id="senha" v-model="form.senha" type="password"/>
-                                <span class="md-error" v-if="!$v.form.senha.required">The senha is required</span>
+                            <md-field :class="getValidationClass('campaign')">
+                                <label for="campaign">Campanha</label>
+                                <md-input name="campaign" id="campaign" v-model="form.campaign"/>
                             </md-field>
                         </div>
                     </div>
                 </md-card-content>
                 <md-card-actions>
-                    <botao-submit nome_do_botao="Criar" @botaoAtivado="createUser()"></botao-submit>
+                    <botao-submit nome_do_botao="Criar" @botaoAtivado="createCampaign()"></botao-submit>
                 </md-card-actions>
             </md-card>
         </form>
@@ -76,10 +75,8 @@ export default {
     data() {
         return {
             form: {
-                // company: localStorage.getItem('company') || '',
                 agency: null,
-                email: null,
-                senha: null,
+                campaign: null,
             },
             visivel: false,
             tituloResposta: 'Resposta',
@@ -89,24 +86,17 @@ export default {
             show_load: false,
             show_field: false,
             apiError: false,
-            apiErrorMessage: ''
+            apiErrorMessage: '',
+            agencies: [],
         }
     },
     validations: {
         form: {
             agency: {
             },
-            company: {
+            campaign: {
                 required,
-                minLength: minLength(3)
-            },
-            email: {
-                required,
-                email
-            },
-            senha: {
-                required,
-                minLength: minLength(5)
+                minLength: minLength(2)
             }
         }
     },
@@ -114,6 +104,39 @@ export default {
     if(localStorage.getItem('permission') !== 'agencyOwner'){
         this.show_field = true;
     }
+    const url = `${this.$apiRoute}/agency/list`;
+    this.show_load = true;
+    fetch(url, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+            token: localStorage.getItem('userToken')
+        }
+    }).then((response) => {
+        this.statusCode = response.status;
+        return response.json();
+    }).then((response) => {
+        if(this.statusCode !== 200) {
+            throw new Error(response.responseText || response.errorMessage);
+        }
+        let count = 0;
+        const allAgencies = JSON.parse(response.responseText).map(agency =>{
+            const agencyWithId = {id:count, agency:agency};
+            count++
+            return agencyWithId
+        })
+        if(localStorage.getItem('permission') === 'owner' || localStorage.getItem('permission') === 'admin'){
+            allAgencies.push({id:count, agency:'Campanhas Internas'})
+        }
+        this.agencies = allAgencies;
+    }).catch((err) => {
+        this.apiError = true;
+        this.apiErrorMessage = err.message;
+        this.tituloResposta = 'Erro ao recuperar configuração';
+        this.showAuthAlert = this.isAuthError(this.statusCode);
+    }).finally(() => {
+        this.show_load = false;
+    });
   },
     methods: {
         getValidationClass (fieldName) {
@@ -126,31 +149,17 @@ export default {
         },
         clearForm () {
             this.$v.$reset()
-            this.form.agency = null
-            this.form.company = null
-            this.form.email = null
-            this.form.senha = null
+            // this.form.agency = null
+            this.form.campaign = null
         },
-        createUser() {
+        createCampaign() {
             let statusCode;
             this.visivel = false;
             this.apiError = false;
-            const url = `${this.$apiRoute}/register`;
+            const url = `${this.$apiRoute}/campaign`;
             const formdata = new FormData();
-            let permission = 'user';
-            let agency = this.form.agency;
-            formdata.append("email", this.form.email);
-            formdata.append("password", this.form.senha);
-            if(localStorage.getItem('permission') === 'admin' && !this.form.agency){
-                permission = 'admin';
-            } else if(localStorage.getItem('permission') === 'admin' && this.form.agency){
-                permission = 'agencyOwner';
-            }
-            if(localStorage.getItem('permission')==='agencyOwner' && !this.form.agency){
-                agency = localStorage.getItem('agency');
-            }
-            formdata.append("agency", (localStorage.getItem('permission')==='agencyOwner' && !this.form.agency)?localStorage.getItem('agency'):this.form.agency);
-            formdata.append("permission", permission);
+            formdata.append("agency", this.form.agency === 'Campanhas Internas'? '': this.form.agency);
+            formdata.append("campaign", this.form.campaign);
             const requestOptions = {
                 method: 'POST',
                 headers: {

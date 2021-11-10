@@ -6,7 +6,7 @@
             <md-list>
 
                 <md-list-item>
-                    <md-icon @click.native="adicionarItem($event)" class="adicionar">add</md-icon>
+                    <md-icon  v-if=show_icon @click.native="adicionarItem($event)" class="adicionar">add</md-icon>
 
                     <div class="md-layout md-gutter campo-adicionar">
                         <div class="md-layout-item">
@@ -58,13 +58,13 @@
 
                 <md-list-item md-expand v-for="item in dependenciesConfig" :key="item.columnDestiny" :id="item.columnDestiny">
                     <span class="md-list-item-text">Referência: {{ item.columnReference }}<br>Destino: {{ item.columnDestiny }}</span>
-                    <md-icon class="excluir" @click.native="excluirItem(item)">delete</md-icon>
+                    <md-icon v-if=show_icon class="excluir" @click.native="excluirItem(item)">delete</md-icon>
 
                     <md-list slot="md-expand">
                         <md-list-item>
                             Coluna de Referência: {{ item.columnReference }}
                         </md-list-item>
-                        <md-list-item>
+                        <md-list-item v-if=show_icon >
                             Valores de Referência: {{ item.valuesReference }}
                             <md-icon class="modificar" @click.native="adicionarItem($event)">edit</md-icon>
                             <div class="md-layout md-gutter campo-adicionar">
@@ -86,7 +86,7 @@
                         </md-list-item>
                         <md-list-item>
                             Valores de Destino: {{ item.matches }}
-                            <md-icon class="modificar" @click.native="adicionarItem($event)">edit</md-icon>
+                            <md-icon v-if=show_icon class="modificar" @click.native="adicionarItem($event)">edit</md-icon>
                             <div class="md-layout md-gutter campo-adicionar">
                                 <div class="md-layout-item">
                                     <md-field>
@@ -105,7 +105,7 @@
 
             </md-list>
 
-            <md-card-actions>
+            <md-card-actions v-if=show_icon>
                 <botao-submit @botaoAtivado="updateConfig()" nome_do_botao="Atualizar Dependências"></botao-submit>
             </md-card-actions>
 
@@ -118,7 +118,6 @@
             {{ apiErrorMessage }}
         </p>
     </div>
-    
     <div class="load" v-show="show_load">
         <md-progress-spinner md-mode="indeterminate"></md-progress-spinner>
     </div>
@@ -157,9 +156,14 @@ export default {
             add_dependency_select_columnDestiny: '',
             add_hasMatch: '',
             show_load: false,
+            show_icon: false,
             showSnackbar: false,
             apiError: false,
             apiErrorMessage: '',
+            duration: 4000,
+            snackbar_message: '',
+            isInfinity: false,
+            position: 'center',
         }
     },
     methods: {
@@ -174,7 +178,7 @@ export default {
                 columnDestiny: this.add_dependency_select_columnDestiny,
                 matches: matches,
                 valuesReference: valuesReference,
-                hasMatch: this.add_hasMatch === "True" ? true : false
+                hasMatch: this.add_hasMatch === "true" ? true : false
             });
             this.add_dependency_select_columnReference = '';
             this.add_dependency_select_columnDestiny = '';
@@ -190,7 +194,7 @@ export default {
         adicionarItem(event) {
             const addField = event.target.parentNode;
             addField.querySelectorAll('.campo-adicionar').forEach(field => {
-                field.style.display = 'inline-flex';
+                field.style.display = 'inline-flex';    
             });
             addField.querySelector('.botao-adicionar').style.display = 'inline-flex';
             addField.querySelector('.botao-cancelar').style.display = 'inline-flex';
@@ -274,9 +278,12 @@ export default {
             }
             const data = JSON.parse(response.responseText);
             delete data.insertTime;
-            this.dependenciesConfig = data.dependenciesConfig;
+            this.dependenciesConfig = !!data.dependenciesConfig ? data.dependenciesConfig : [];
             delete data.dependenciesConfig;
             this.configJson = data;
+            if(localStorage.getItem('permission') !== 'user' && localStorage.getItem('permission') !== 'agencyOwner'){
+                this.show_icon = true;
+            }
         }).catch((err) => {
             this.apiError = true;
             this.tituloResposta = 'Erro ao recuperar configuração';
