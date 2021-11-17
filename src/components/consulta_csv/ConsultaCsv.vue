@@ -60,13 +60,25 @@
                 {{ apiErrorMessage }}
             </p>
             <div v-show="!apiError">
-                <p v-if="csvList.length === 1 && csvList[0] === ''" class="response">
+                <p v-if="show_error" class="response">
                     Nenhum arquivo foi encontrado!
                 </p>
-                <ul v-if="csvList.length > 0">
-                    <li v-for="csv in csvList" class="csv" :key="csv">
+                <ul v-if="!show_error">
+                    <!-- <li v-for="csv in csvList" class="csv" :key="csv">
                         <p @click="downloadCSV(csv)">{{ csv }}</p>
-                    </li>
+                    </li> -->
+                    <!-- <div v-if="csvList.length > 0"> -->
+                        <md-button class="md-dense md-raised md-primary" @click="downloadCSV(selected_csvs)">Baixar Csvs</md-button>
+                        <br>
+                        <md-checkbox v-model="selected_csvs"
+                            v-for="csv in csvList"
+                            class="csv"
+                            :key="csv.id"
+                            :value="csv.csvName">
+                            {{ csv.csvName }}
+                            <br>
+                        </md-checkbox>
+                    <!-- </div> -->
                 </ul>
             </div>
         </div>
@@ -89,6 +101,8 @@ import {
     minLength
 } from 'vuelidate/lib/validators'
 import BotaoSubmitForm from '../shared/botao_submit_form/BotaoSubmitForm.vue';
+import JZip from 'jszip'
+import JSZip from 'jszip';
 
 export default {
     name: 'Campaign',
@@ -116,6 +130,8 @@ export default {
             campaignId: '',
             // novas variaveis
             elegible_campaigns: [],
+            selected_csvs: [],
+            show_error: false,
         }
     },
     created() {
@@ -193,6 +209,8 @@ export default {
             this.elegible_campaigns = selectedCampaigns;
         },
         getCsvList() {
+            this.csvList = [];
+            this.selected_csvs=[];
             let agencia = this.agency;
             if(this.campaignId){
                 let fetchStatusCode;
@@ -213,7 +231,25 @@ export default {
                     }
                     this.apiError = false;
                     this.tituloResposta = 'Lista de CSVs';
-                    this.csvList = data.responseText.split(',');
+                    // this.csvList = data.responseText.split(','); legado
+
+                    const listCsv = data.responseText.split(',');
+
+                    let count = 0;
+                    console.log('listCsv:', listCsv)
+                    if(listCsv.length === 1 && listCsv[0] === ''){
+                        this.show_error = true;
+                    }else{
+                        this.show_error = false;
+                        console.log('fiz o push')
+                        listCsv.forEach(csv => {
+                        this.csvList.push({id:count, csvName: csv});
+                            count++
+                        });
+                    }
+
+                    console.log('csvlist length === 1', this.csvList.length)
+                    console.log('csvlist[0]', this.csvList[0])
                 }).catch((err) => {
                     console.log(err)
                     this.apiError = true;
@@ -226,45 +262,48 @@ export default {
                 });
             }
         },
-        downloadCSV(csv) {
-            const fileName = csv.match(/\/.*\/.*\/(.*)\./) || csv.match(/\/.*\/(.*)\./);
-            let campaign = this.campaigns.filter(campanha => campanha.campaignId===this.campaignId)[0].campaignName;
-            if(!campaign) {
-                campaign = csv.match(/\/.*\/(.*)\/.*\./) || csv.match(/.*\/(.*)\/.*\./);
-                campaign = campaign[1]
+        async downloadCSV(csvs) {
+            var zip = new JSZip();
+
+            for await (const csv of csvs){
+                console.log('entrei no for')
+                const fileName = csv.match(/\/.*\/.*\/(.*)\./) || csv.match(/\/.*\/(.*)\./);
+                let campaign = this.campaigns.filter(campanha => campanha.campaignId===this.campaignId)[0].campaignName;
+                if(!campaign) {
+                    campaign = csv.match(/\/.*\/(.*)\/.*\./) || csv.match(/.*\/(.*)\/.*\./);
+                    campaign = campaign[1]
+                }
+                fetch(`${this.$apiRoute}/csv`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        file: fileName[1],
+                        token: localStorage.getItem('userToken'),
+                        campaign: campaign,
+                        agency: this.agency === 'Campanhas Internas' ? '' : this.agency
+                    }
+                }).then(response => {
+                    this.statusCode = response.status;
+                    if(response.status !== 200) {
+                        return response.json();
+                    }
+                    console.log('entao isso eh um blob', response.blob());
+                    return response.blob();
+                }).then(response => {
+                    if(response instanceof Blob) {
+                        zip.file(filename, response)
+                    } else {
+                        throw new Error(response.responseText);
+                    }
+                }).catch(err => {
+                    this.downloadError = true;
+                    this.downloadErrorMessage = err.message;
+                    this.showAuthAlert = this.isAuthError(this.statusCode);
+                });
             }
-            fetch(`${this.$apiRoute}/csv`, {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json',
-                    file: fileName[1],
-                    token: localStorage.getItem('userToken'),
-                    campaign: campaign,
-                    agency: this.agency === 'Campanhas Internas' ? '' : this.agency
-                }
-            }).then(response => {
-                this.statusCode = response.status;
-                if(response.status !== 200) {
-                    return response.json();
-                }
-                return response.blob();
-            }).then(response => {
-                if(response instanceof Blob) {
-                    const fileBlob = response;
-                    const url = window.URL.createObjectURL(fileBlob);
-                    const a = document.createElement('a');
-                    a.href = url;
-                    a.download = `${csv}`;
-                    document.body.appendChild(a);
-                    a.click();
-                    a.remove();
-                } else {
-                    throw new Error(response.responseText);
-                }
-            }).catch(err => {
-                this.downloadError = true;
-                this.downloadErrorMessage = err.message;
-                this.showAuthAlert = this.isAuthError(this.statusCode);
+
+            zip.generateAsync({type:"blob"}).then((content) => {
+                saveAs(content, "parametrizacoes.zip");
             });
         },
         isAuthError(statusCode){
@@ -274,6 +313,13 @@ export default {
         },
         setShowAlertFalse(){
             this.showAuthAlert = false;
+        },
+        downloadAllCsvs(){
+            this.selected_csvs.forEach(csv => {
+                console.log('csvs da lista:', csv)
+                this.downloadCSV(csv);
+            })
+            this.selected_csvs = [];
         }
     }
 }
@@ -319,6 +365,9 @@ export default {
 
     .csv p:hover {
         color: #3f2b96;
+    }
+    .md-checkbox {
+    display: flex;
     }
 
 </style>
