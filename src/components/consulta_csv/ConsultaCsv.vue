@@ -68,7 +68,7 @@
                         <p @click="downloadCSV(csv)">{{ csv }}</p>
                     </li> -->
                     <!-- <div v-if="csvList.length > 0"> -->
-                        <md-button class="md-dense md-raised md-primary" @click="downloadCSV(selected_csvs)">Baixar Csvs</md-button>
+                        <md-button class="md-dense md-raised md-primary" @click="downloadAllCsvs()">Baixar Csvs</md-button>
                         <br>
                         <md-checkbox v-model="selected_csvs"
                             v-for="csv in csvList"
@@ -101,8 +101,6 @@ import {
     minLength
 } from 'vuelidate/lib/validators'
 import BotaoSubmitForm from '../shared/botao_submit_form/BotaoSubmitForm.vue';
-import JZip from 'jszip'
-import JSZip from 'jszip';
 
 export default {
     name: 'Campaign',
@@ -262,48 +260,47 @@ export default {
                 });
             }
         },
-        async downloadCSV(csvs) {
-            var zip = new JSZip();
-
-            for await (const csv of csvs){
-                console.log('entrei no for')
-                const fileName = csv.match(/\/.*\/.*\/(.*)\./) || csv.match(/\/.*\/(.*)\./);
-                let campaign = this.campaigns.filter(campanha => campanha.campaignId===this.campaignId)[0].campaignName;
-                if(!campaign) {
-                    campaign = csv.match(/\/.*\/(.*)\/.*\./) || csv.match(/.*\/(.*)\/.*\./);
-                    campaign = campaign[1]
-                }
-                fetch(`${this.$apiRoute}/csv`, {
-                    method: 'GET',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        file: fileName[1],
-                        token: localStorage.getItem('userToken'),
-                        campaign: campaign,
-                        agency: this.agency === 'Campanhas Internas' ? '' : this.agency
-                    }
-                }).then(response => {
-                    this.statusCode = response.status;
-                    if(response.status !== 200) {
-                        return response.json();
-                    }
-                    console.log('entao isso eh um blob', response.blob());
-                    return response.blob();
-                }).then(response => {
-                    if(response instanceof Blob) {
-                        zip.file(filename, response)
-                    } else {
-                        throw new Error(response.responseText);
-                    }
-                }).catch(err => {
-                    this.downloadError = true;
-                    this.downloadErrorMessage = err.message;
-                    this.showAuthAlert = this.isAuthError(this.statusCode);
-                });
+        downloadCSV(csv) {
+            const fileName = csv.match(/\/.*\/.*\/(.*)\./) || csv.match(/\/.*\/(.*)\./);
+            let campaign = this.campaigns.filter(campanha => campanha.campaignId===this.campaignId).campaignName;
+            if(!campaign) {
+                campaign = csv.match(/\/.*\/(.*)\/.*\./) || csv.match(/.*\/(.*)\/.*\./);
+                campaign = campaign[1]
             }
-
-            zip.generateAsync({type:"blob"}).then((content) => {
-                saveAs(content, "parametrizacoes.zip");
+            fetch(`${this.$apiRoute}/csv`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    file: fileName[1],
+                    token: localStorage.getItem('userToken'),
+                    campaign: campaign,
+                    agency: this.agency === 'Campanhas Internas' ? '' : this.agency
+                }
+            }).then(response => {
+                this.statusCode = response.status;
+                if(response.status !== 200) {
+                    return response.json();
+                }
+                return response.blob();
+            })
+            .then(response => {
+                if(response instanceof Blob) {
+                    const fileBlob = response;
+                    const url = window.URL.createObjectURL(fileBlob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `${csv}`;
+                    document.body.appendChild(a);
+                    a.click();
+                    a.remove();
+                } else {
+                    throw new Error(response.responseText);
+                }
+            })
+            .catch(err => {
+                this.downloadError = true;
+                this.downloadErrorMessage = err.message;
+                this.showAuthAlert = this.isAuthError(this.statusCode);
             });
         },
         isAuthError(statusCode){
