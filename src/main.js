@@ -13,7 +13,6 @@ Vue.use(VueRouter);
 Vue.use(VueMaterial);
 Vue.use(Vuelidate);
 
-// Vue.prototype.$apiRoute = 'https://api-dot-adinfo-diageo.uc.r.appspot.com/';
 Vue.prototype.$apiRoute = 'https://adinfo-diageo.uc.r.appspot.com/';
 // Vue.prototype.$apiRoute = 'http://localhost:8000';
 

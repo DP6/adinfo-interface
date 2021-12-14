@@ -1,12 +1,11 @@
-runtime: node10
-api_version: 1
-threadsafe: true
-
+runtime: nodejs10
+service: interface-adinfo
 handlers:
 - url: /
-  static_files: www/index.html
-  upload: www/index.html
-
+  static_files: index.html
+  require_matching_file: false
+  upload: index.html
 - url: /(.*)
-  static_files: www/\1
-  upload: www/(.*)
+  static_files: \1
+  require_matching_file: false
+  upload: (.*)
