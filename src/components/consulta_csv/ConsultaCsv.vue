@@ -64,10 +64,6 @@
                     Nenhum arquivo foi encontrado!
                 </p>
                 <ul v-if="!show_error">
-                    <!-- <li v-for="csv in csvList" class="csv" :key="csv">
-                        <p @click="downloadCSV(csv)">{{ csv }}</p>
-                    </li> -->
-                    <!-- <div v-if="csvList.length > 0"> -->
                         <md-button class="md-dense md-raised md-primary" @click="downloadAllCsvs()">Baixar Csvs</md-button>
                         <br>
                         <md-checkbox v-model="selected_csvs"
