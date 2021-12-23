@@ -1,6 +1,6 @@
 <template>
     <div>
-        <titulo-principal titulo="Gerencimaneto de Campanhas"></titulo-principal>
+        <titulo-principal titulo="Gerenciamento de Campanhas"></titulo-principal>
         <span class="titulo_categoria">Agência</span>
 
         <form class="md-layout">
