@@ -6,16 +6,16 @@
                 <md-card-content>
                     <div class="md-layout md-gutter">
                         <!-- <div class="md-layout-item md-medium-size-100">
-                            <md-field :class="getValidationClass('company')">
-                                <label for="company">Empresa</label>
-                                <md-input disabled=disable name="company" id="company" v-model="form.company"/>
-                                <span class="md-error" v-if="!$v.form.company.required">Empresa é um campo obrigatório</span>
+                            <md-field :class="getValidationClass('advertiser')">
+                                <label for="advertiser">Empresa</label>
+                                <md-input disabled=disable name="advertiser" id="advertiser" v-model="form.advertiser"/>
+                                <span class="md-error" v-if="!$v.form.advertiser.required">Empresa é um campo obrigatório</span>
                             </md-field>
                         </div>
-                        <div class="md-layout-item md-medium-size-100" v-show="form.agency !== ''">
-                            <md-field :class="getValidationClass('agency')">
-                                <label for="agency">Agência</label>
-                                <md-input disabled=disable name="agency" id="agency" v-model="form.agency"/>
+                        <div class="md-layout-item md-medium-size-100" v-show="form.adOpsTeam !== ''">
+                            <md-field :class="getValidationClass('adOpsTeam')">
+                                <label for="adOpsTeam">Agência</label>
+                                <md-input disabled=disable name="adOpsTeam" id="adOpsTeam" v-model="form.adOpsTeam"/>
                             </md-field>
                         </div> -->
                         <div class="md-layout-item md-medium-size-100">
@@ -84,8 +84,8 @@ export default {
     data() {
         return {
             form: {
-                // agency: localStorage.getItem('agency') || '',
-                // company: localStorage.getItem('company') || '',
+                // adOpsTeam: localStorage.getItem('adOpsTeam') || '',
+                // advertiser: localStorage.getItem('advertiser') || '',
                 campaign: '',
             },
             csvList: [],
@@ -102,11 +102,11 @@ export default {
     },
     validations: {
         form: {
-            agency: {
+            adOpsTeam: {
                 required,
                 minLength: minLength(3)
             },
-            company: {
+            advertiser: {
                 required,
                 minLength: minLength(3)
             },
@@ -127,8 +127,8 @@ export default {
         },
         clearForm () {
             this.$v.$reset()
-            // this.form.agency = null
-            // this.form.company = null
+            // this.form.adOpsTeam = null
+            // this.form.advertiser = null
             this.form.campaign = null
         },
         getCsvList() {

@@ -281,7 +281,7 @@ export default {
             this.dependenciesConfig = !!data.dependenciesConfig ? data.dependenciesConfig : [];
             delete data.dependenciesConfig;
             this.configJson = data;
-            if(localStorage.getItem('permission') !== 'user' && localStorage.getItem('permission') !== 'agencyOwner'){
+            if(localStorage.getItem('permission') !== 'user' && localStorage.getItem('permission') !== 'adOpsTeamLeader'){
                 this.show_icon = true;
             }
         }).catch((err) => {

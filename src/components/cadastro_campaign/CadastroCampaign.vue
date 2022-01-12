@@ -6,15 +6,15 @@
                 <md-card-content>
                     <div class="md-layout md-gutter">
                         <div  class="md-layout-item md-medium-size-100"> 
-                            <md-field :class="getValidationClass('agency')">
-                            <label for="agency">Agência</label>
-                                <md-select v-model="form.agency" name="agency" id="agency">
-                                    <md-optgroup label="Agências">
+                            <md-field :class="getValidationClass('adOpsTeam')">
+                            <label for="adOpsTeam">AdOpsTeam</label>
+                                <md-select v-model="form.adOpsTeam" name="adOpsTeam" id="adOpsTeam">
+                                    <md-optgroup label="AdOpsTeams">
                                         <md-option 
-                                            v-for="agency in agencies" 
-                                            :key="agency.id"
-                                            :value="agency.agency"
-                                        >{{agency.agency}}</md-option>
+                                            v-for="adOpsTeam in adOpsTeams" 
+                                            :key="adOpsTeam.id"
+                                            :value="adOpsTeam.adOpsTeam"
+                                        >{{adOpsTeam.adOpsTeam}}</md-option>
                                     </md-optgroup>
                                 </md-select>
                             </md-field>
@@ -75,7 +75,7 @@ export default {
     data() {
         return {
             form: {
-                agency: null,
+                adOpsTeam: null,
                 campaign: null,
             },
             visivel: false,
@@ -87,12 +87,12 @@ export default {
             show_field: false,
             apiError: false,
             apiErrorMessage: '',
-            agencies: [],
+            adOpsTeams: [],
         }
     },
     validations: {
         form: {
-            agency: {
+            adOpsTeam: {
             },
             campaign: {
                 required,
@@ -101,10 +101,10 @@ export default {
         }
     },
     created() {
-    if(localStorage.getItem('permission') !== 'agencyOwner'){
+    if(localStorage.getItem('permission') !== 'adOpsTeamLeader'){
         this.show_field = true;
     }
-    const url = `${this.$apiRoute}/agency/list`;
+    const url = `${this.$apiRoute}/adOpsTeam/list`;
     this.show_load = true;
     fetch(url, {
         method: 'GET',
@@ -120,15 +120,15 @@ export default {
             throw new Error(response.responseText || response.errorMessage);
         }
         let count = 0;
-        const allAgencies = JSON.parse(response.responseText).map(agency =>{
-            const agencyWithId = {id:count, agency:agency};
+        const alladOpsTeams = JSON.parse(response.responseText).map(adOpsTeam =>{
+            const adOpsTeamWithId = {id:count, adOpsTeam:adOpsTeam};
             count++
-            return agencyWithId
+            return adOpsTeamWithId
         })
         if(localStorage.getItem('permission') === 'owner' || localStorage.getItem('permission') === 'admin'){
-            allAgencies.push({id:count, agency:'Campanhas Internas'})
+            alladOpsTeams.push({id:count, adOpsTeam:'Campanhas Internas'})
         }
-        this.agencies = allAgencies;
+        this.adOpsTeams = alladOpsTeams;
     }).catch((err) => {
         this.apiError = true;
         this.apiErrorMessage = err.message;
@@ -149,7 +149,7 @@ export default {
         },
         clearForm () {
             this.$v.$reset()
-            // this.form.agency = null
+            // this.form.adOpsTeam = null
             this.form.campaign = null
         },
         createCampaign() {
@@ -158,7 +158,7 @@ export default {
             this.apiError = false;
             const url = `${this.$apiRoute}/campaign`;
             const formdata = new FormData();
-            formdata.append("agency", this.form.agency === 'Campanhas Internas'? '': this.form.agency);
+            formdata.append("adOpsTeam", this.form.adOpsTeam === 'Campanhas Internas'? '': this.form.adOpsTeam);
             formdata.append("campaign", this.form.campaign);
             const requestOptions = {
                 method: 'POST',

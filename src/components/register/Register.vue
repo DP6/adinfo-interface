@@ -6,10 +6,10 @@
                 <md-card-content>
                     <div class="md-layout md-gutter">
                         <div v-if=show_field class="md-layout-item md-medium-size-100">
-                            <md-field :class="getValidationClass('agency')">
-                                <label for="agency">Agência</label>
-                                <md-input name="agency" id="agency" v-model="form.agency"/>
-                                <span class="md-error" v-if="!$v.form.agency.required">The agency name is required</span>
+                            <md-field :class="getValidationClass('adOpsTeam')">
+                                <label for="adOpsTeam">AdOpsTeam</label>
+                                <md-input name="adOpsTeam" id="adOpsTeam" v-model="form.adOpsTeam"/>
+                                <span class="md-error" v-if="!$v.form.adOpsTeam.required">The adOpsTeam name is required</span>
                             </md-field>
                         </div>
                         <div class="md-layout-item md-medium-size-100">
@@ -76,8 +76,8 @@ export default {
     data() {
         return {
             form: {
-                // company: localStorage.getItem('company') || '',
-                agency: null,
+                // advertiser: localStorage.getItem('advertiser') || '',
+                adOpsTeam: null,
                 email: null,
                 senha: null,
             },
@@ -94,9 +94,9 @@ export default {
     },
     validations: {
         form: {
-            agency: {
+            adOpsTeam: {
             },
-            company: {
+            advertiser: {
                 required,
                 minLength: minLength(3)
             },
@@ -111,7 +111,7 @@ export default {
         }
     },
     created() {
-    if(localStorage.getItem('permission') !== 'agencyOwner'){
+    if(localStorage.getItem('permission') !== 'adOpsTeamLeader'){
         this.show_field = true;
     }
   },
@@ -126,8 +126,8 @@ export default {
         },
         clearForm () {
             this.$v.$reset()
-            this.form.agency = null
-            this.form.company = null
+            this.form.adOpsTeam = null
+            this.form.advertiser = null
             this.form.email = null
             this.form.senha = null
         },
@@ -138,18 +138,18 @@ export default {
             const url = `${this.$apiRoute}/register`;
             const formdata = new FormData();
             let permission = 'user';
-            let agency = this.form.agency;
+            let adOpsTeam = this.form.adOpsTeam;
             formdata.append("email", this.form.email);
             formdata.append("password", this.form.senha);
-            if(localStorage.getItem('permission') === 'admin' && !this.form.agency){
+            if(localStorage.getItem('permission') === 'admin' && !this.form.adOpsTeam){
                 permission = 'admin';
-            } else if(localStorage.getItem('permission') === 'admin' && this.form.agency){
-                permission = 'agencyOwner';
+            } else if(localStorage.getItem('permission') === 'admin' && this.form.adOpsTeam){
+                permission = 'adOpsTeamLeader';
             }
-            if(localStorage.getItem('permission')==='agencyOwner' && !this.form.agency){
-                agency = localStorage.getItem('agency');
+            if(localStorage.getItem('permission')==='adOpsTeamLeader' && !this.form.adOpsTeam){
+                adOpsTeam = localStorage.getItem('adOpsTeam');
             }
-            formdata.append("agency", (localStorage.getItem('permission')==='agencyOwner' && !this.form.agency)?localStorage.getItem('agency'):this.form.agency);
+            formdata.append("adOpsTeam", (localStorage.getItem('permission')==='adOpsTeamLeader' && !this.form.adOpsTeam)?localStorage.getItem('adOpsTeam'):this.form.adOpsTeam);
             formdata.append("permission", permission);
             const requestOptions = {
                 method: 'POST',

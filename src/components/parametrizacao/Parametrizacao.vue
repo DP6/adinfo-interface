@@ -7,14 +7,14 @@
                     <div class="md-layout md-gutter">
                         <div class="md-layout-item md-layout md-gutter">
                             <md-field>
-                                <label for="agency">Agência</label>
-                                <md-select v-model="selected_agency" name="agency" id="agency" @md-selected="getCampaigns()">
-                                    <md-optgroup label="Agências">
+                                <label for="adOpsTeam">AdOpsTeam</label>
+                                <md-select v-model="selected_adOpsTeam" name="adOpsTeam" id="adOpsTeam" @md-selected="getCampaigns()">
+                                    <md-optgroup label="AdOpsTeams">
                                         <md-option
-                                            v-for="agency in agencies"
-                                            :key="agency.id"
-                                            :value="agency.agency"
-                                        >{{agency.agency}}</md-option>
+                                            v-for="adOpsTeam in adOpsTeams"
+                                            :key="adOpsTeam.id"
+                                            :value="adOpsTeam.adOpsTeam"
+                                        >{{adOpsTeam.adOpsTeam}}</md-option>
                                     </md-optgroup>
                                 </md-select>
                             </md-field>
@@ -128,7 +128,7 @@ export default {
     data() {
         return {
             form: {
-                agency: '',
+                adOpsTeam: '',
                 campaignId: '',
                 campaign: ''
             },
@@ -154,19 +154,19 @@ export default {
             downloadErrorMessage: 'Erro no Download!',
             configVersion: '',
             configDate: '',
-            agencies: [],
+            adOpsTeams: [],
             campaigns: [],
             elegible_campaigns: [],
-            selected_agency:'',
+            selected_adOpsTeam:'',
         }
     },
     validations: {
         form: {
-            agency: {
+            adOpsTeam: {
                 required,
                 minLength: minLength(3)
             },
-            company: {
+            advertiser: {
                 required,
                 minLength: minLength(3)
             },
@@ -229,8 +229,8 @@ export default {
             this.apiErrorMessage = err.message;
         });
 
-        const urlAgencyList = `${this.$apiRoute}/agencies/campaigns`;
-        fetch(urlAgencyList, {
+        const urlAdOpsTeamList = `${this.$apiRoute}/adOpsTeams/campaigns`;
+        fetch(urlAdOpsTeamList, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -245,12 +245,15 @@ export default {
             }
 
             let count = 0;
-            response.forEach(agency => {
-                Object.keys(agency).forEach(agencyName => {
-                    if (agencyName === 'CompanyCampaigns') {
-                        this.agencies.push({id:count, agency: 'Campanhas Internas'});
-                    } else if(agencyName) {
-                        this.agencies.push({id:count, agency: agencyName});
+            console.log('nao ta vindo nada?',response)
+            response.forEach(adOpsTeam => {
+                Object.keys(adOpsTeam).forEach(adOpsTeamName => {
+                    console.log('adopsteams names', adOpsTeamName)
+                    if(adOpsTeamName === 'AdvertiserCampaigns'){
+                        console.log('entrei no if')
+                        this.adOpsTeams.push({id:count, adOpsTeam: 'Campanhas Internas'});
+                    }else{
+                        this.adOpsTeams.push({id:count, adOpsTeam: adOpsTeamName});
                     }
                     count++
                 })
@@ -258,9 +261,9 @@ export default {
 
             const nestedCampaigns = []
 
-            response.forEach(agencyObject => {
-                Object.values(agencyObject).forEach(agencyCampaigns => {
-                    nestedCampaigns.push(agencyCampaigns);
+            response.forEach(adOpsTeamObject => {
+                Object.values(adOpsTeamObject).forEach(adOpsTeamCampaigns => {
+                    nestedCampaigns.push(adOpsTeamCampaigns);
                 })
             });
 
@@ -289,9 +292,9 @@ export default {
         },
         clearForm () {
             this.$v.$reset()
-            // this.form.agency = null
+            // this.form.adOpsTeam = null
             this.form.campaignId = null;
-            this.form.company = null;
+            this.form.advertiser = null;
             this.form.file = null;
             this.form.campaign = null;
             this.elegible_campaigns = null;
@@ -320,7 +323,7 @@ export default {
                 headers: {
                     token: localStorage.getItem('userToken'),
                     campaign: this.form.campaign,
-                    agency: this.form.agency === 'CompanyCampaigns'? '': this.form.agency
+                    adOpsTeam: this.form.adOpsTeam === 'AdvertiserCampaigns'? '': this.form.adOpsTeam
                 },
                 body: formdata,
                 redirect: 'follow'
@@ -388,10 +391,10 @@ export default {
         getCampaigns() {
             this.form.campaignId = null;
             let selectedCampaigns = [];
-            this.selected_agency === 'Campanhas Internas'? this.form.agency = 'CompanyCampaigns': this.form.agency = this.selected_agency;
+            this.selected_adOpsTeam === 'Campanhas Internas'? this.form.adOpsTeam = 'AdvertiserCampaigns': this.form.adOpsTeam = this.selected_adOpsTeam;
 
             this.campaigns.forEach(campaignObject => {
-                if(campaignObject.agency === this.form.agency && campaignObject.activate === true){
+                if(campaignObject.adOpsTeam === this.form.adOpsTeam && campaignObject.active === true){
                     selectedCampaigns.push({campaignId:campaignObject.campaignId, campaignName: campaignObject.campaignName})
                 }
             })
@@ -429,7 +432,7 @@ export default {
         margin-left: 50px;
     }
 
-    .agency-select {
+    .adOpsTeam-select {
         margin-right: 30px;
         margin-bottom: 10px;
         margin-left: -30px;
@@ -456,7 +459,7 @@ export default {
         margin-top: 10px;
         border: 40px solid white;
     }
-    /* .agency-select {
+    /* .adOpsTeam-select {
         margin-right: 30px;
         margin-bottom: 10px;
         margin-left: -30px;
