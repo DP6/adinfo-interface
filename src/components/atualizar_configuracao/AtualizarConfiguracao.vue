@@ -296,7 +296,7 @@ export default {
       this.generalConfig = Object.keys(data);
       this.columns = Object.keys(data.columns);
       this.updateToolFields();
-      if(localStorage.getItem('permission') !== 'user' && localStorage.getItem('permission') !== 'adOpsTeamLeader'){
+      if(localStorage.getItem('permission') !== 'user' && localStorage.getItem('permission') !== 'adOpsManager'){
         this.show_icon = true;
       }
     }).catch((err) => {

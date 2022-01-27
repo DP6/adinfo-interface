@@ -111,7 +111,7 @@ export default {
         }
     },
     created() {
-    if(localStorage.getItem('permission') !== 'adOpsTeamLeader'){
+    if(localStorage.getItem('permission') !== 'adOpsManager'){
         this.show_field = true;
     }
   },
@@ -144,12 +144,12 @@ export default {
             if(localStorage.getItem('permission') === 'admin' && !this.form.adOpsTeam){
                 permission = 'admin';
             } else if(localStorage.getItem('permission') === 'admin' && this.form.adOpsTeam){
-                permission = 'adOpsTeamLeader';
+                permission = 'adOpsManager';
             }
-            if(localStorage.getItem('permission')==='adOpsTeamLeader' && !this.form.adOpsTeam){
+            if(localStorage.getItem('permission')==='adOpsManager' && !this.form.adOpsTeam){
                 adOpsTeam = localStorage.getItem('adOpsTeam');
             }
-            formdata.append("adOpsTeam", (localStorage.getItem('permission')==='adOpsTeamLeader' && !this.form.adOpsTeam)?localStorage.getItem('adOpsTeam'):this.form.adOpsTeam);
+            formdata.append("adOpsTeam", (localStorage.getItem('permission')==='adOpsManager' && !this.form.adOpsTeam)?localStorage.getItem('adOpsTeam'):this.form.adOpsTeam);
             formdata.append("permission", permission);
             const requestOptions = {
                 method: 'POST',

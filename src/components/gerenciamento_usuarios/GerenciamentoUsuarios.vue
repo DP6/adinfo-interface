@@ -74,7 +74,7 @@ export default {
         }
     },
     created() {
-        const url = localStorage.getItem('permission') === 'adOpsTeamLeader'?`${this.$apiRoute}/adOpsTeam/users`:`${this.$apiRoute}/users`;
+        const url = localStorage.getItem('permission') === 'adOpsManager'?`${this.$apiRoute}/adOpsTeam/users`:`${this.$apiRoute}/users`;
         this.show_load = true;
         fetch(url, {
             method: 'GET',
@@ -116,7 +116,7 @@ export default {
                 url = `${this.$apiRoute}/user/${id}/deactivate`;
             }
             this.show_load = true;
-            const urlUsers = localStorage.getItem('permission') === 'adOpsTeamLeader'?`${this.$apiRoute}/adOpsTeam/users`:`${this.$apiRoute}/users`;
+            const urlUsers = localStorage.getItem('permission') === 'adOpsManager'?`${this.$apiRoute}/adOpsTeam/users`:`${this.$apiRoute}/users`;
             fetch(url, {
                 method: 'POST',
                 headers: {

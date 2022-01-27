@@ -16,17 +16,17 @@ import ConsultaCsv from './components/consulta_csv/ConsultaCsv.vue';
 export const routes = [
     { path: '/', component: Interface, titulo:'Interface',
     children:[
-        { path: 'parametrizacao', component: Parametrizacao, titulo: 'Parametrização', permission: 'admin|owner|adOpsTeamLeader|user', group: 'Parametrizar', icon: 'outlined_flag'},
-        { path: 'campaignCsv', component: ConsultaCsv, titulo: 'Consultar CSVs', permission: 'admin|owner|adOpsTeamLeader|user', group: 'Campanhas', icon: 'campaign'},
-        { path: 'newCampaign', component: CadastroCampaign, titulo: 'Cadastrar Campanha', permission: 'admin|owner|adOpsTeamLeader', group: 'Campanhas', icon: 'campaign'},
-        { path: 'gerenciamentoCampanhas', component: GerenciamentoCampaign, titulo: 'Gerenciar Campanha', permission: 'admin|owner|adOpsTeamLeader', group: 'Campanhas', icon: 'campaign'},
-        { path: 'template', component: Template, titulo: 'Template', permission: 'admin|owner|adOpsTeamLeader|user', group: 'Parametrizar', icon: 'outlined_flag'},
-        { path: 'updateConfig', component: AtualizarConfiguracao, titulo: 'Atualizar Configuração', permission: 'admin|owner|adOpsTeamLeader|user', group: 'Configurações', icon: 'settings'},
+        { path: 'parametrizacao', component: Parametrizacao, titulo: 'Parametrização', permission: 'admin|owner|adOpsManager|user', group: 'Parametrizar', icon: 'outlined_flag'},
+        { path: 'campaignCsv', component: ConsultaCsv, titulo: 'Consultar CSVs', permission: 'admin|owner|adOpsManager|user', group: 'Campanhas', icon: 'campaign'},
+        { path: 'newCampaign', component: CadastroCampaign, titulo: 'Cadastrar Campanha', permission: 'admin|owner|adOpsManager', group: 'Campanhas', icon: 'campaign'},
+        { path: 'gerenciamentoCampanhas', component: GerenciamentoCampaign, titulo: 'Gerenciar Campanha', permission: 'admin|owner|adOpsManager', group: 'Campanhas', icon: 'campaign'},
+        { path: 'template', component: Template, titulo: 'Template', permission: 'admin|owner|adOpsManager|user', group: 'Parametrizar', icon: 'outlined_flag'},
+        { path: 'updateConfig', component: AtualizarConfiguracao, titulo: 'Atualizar Configuração', permission: 'admin|owner|adOpsManager|user', group: 'Configurações', icon: 'settings'},
         { path: 'newConfig', component: NovaConfiguracao, titulo: 'Nova Configuração', permission: 'admin|owner', group: 'Configurações', icon: 'settings'},
-        { path: 'register', component: Register, titulo: 'Registrar usuário', permission: 'admin|owner|adOpsTeamLeader', group: 'Usuários', icon: 'people'},
-        { path: 'dependencyConfig', component: DependencyConfig, titulo: 'Dependências', permission: 'admin|owner|adOpsTeamLeader|user', group: 'Configurações', icon: 'settings'},
-        { path: 'alterarSenha', component: AlterarSenha, titulo: 'Alterar Senha', permission: 'admin|owner|adOpsTeamLeader|user', group: '', icon: 'lock'},
-        { path: 'gerenciamentoUsuarios', component: GerenciamentoUsuarios, titulo: 'Gerenciamento de Usuários', permission: 'admin|owner|adOpsTeamLeader', group: 'Usuários', icon: 'people'}
+        { path: 'register', component: Register, titulo: 'Registrar usuário', permission: 'admin|owner|adOpsManager', group: 'Usuários', icon: 'people'},
+        { path: 'dependencyConfig', component: DependencyConfig, titulo: 'Dependências', permission: 'admin|owner|adOpsManager|user', group: 'Configurações', icon: 'settings'},
+        { path: 'alterarSenha', component: AlterarSenha, titulo: 'Alterar Senha', permission: 'admin|owner|adOpsManager|user', group: '', icon: 'lock'},
+        { path: 'gerenciamentoUsuarios', component: GerenciamentoUsuarios, titulo: 'Gerenciamento de Usuários', permission: 'admin|owner|adOpsManager', group: 'Usuários', icon: 'people'}
     ]},
     { path: '/login', component: Login, titulo:'Login'},
 ];

@@ -101,7 +101,7 @@ export default {
         }
     },
     created() {
-    if(localStorage.getItem('permission') !== 'adOpsTeamLeader'){
+    if(localStorage.getItem('permission') !== 'adOpsManager'){
         this.show_field = true;
     }
     const url = `${this.$apiRoute}/adOpsTeam/list`;
