@@ -247,9 +247,9 @@ export default {
             let count = 0;
             response.forEach(agency => {
                 Object.keys(agency).forEach(agencyName => {
-                    if(agencyName === 'CompanyCampaigns'){
+                    if (agencyName === 'CompanyCampaigns') {
                         this.agencies.push({id:count, agency: 'Campanhas Internas'});
-                    }else{
+                    } else if(agencyName) {
                         this.agencies.push({id:count, agency: agencyName});
                     }
                     count++

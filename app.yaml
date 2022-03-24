@@ -1,6 +1,5 @@
-runtime: node10
-api_version: 1
-threadsafe: true
+runtime: nodejs16
+service: adinfo-interface-estable
 
 handlers:
 - url: /
