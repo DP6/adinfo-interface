@@ -11,10 +11,10 @@
                                 </div>
                                 <div class="card-body">
                                     <span class="input-group-text">
-                                        <input type="text" v-model="email" class="form-control" placeholder="Email">
+                                        <input type="text" v-model="email" class="form-control" placeholder="Email" @keydown.enter.prevent= "getFocus()">
                                     </span>
                                     <span class="input-group-text">
-                                        <input type="password" v-model="senha" class="form-control" placeholder="Senha" @keydown.enter.stop.prevent="getUserInfos()">
+                                        <input type="password" v-model="senha" class="form-control" id="senha" placeholder="Senha" @keydown.enter.stop.prevent="getUserInfos()">
                                     </span>
                                 </div>
                                 <div class="text-center">
@@ -114,6 +114,9 @@ export default {
         },
         setShowAlertFalse(){
             this.showAuthAlert = false;
+        },
+        getFocus: function () {
+        document.getElementById("senha").focus();
         }
     },
     destroyed() {
