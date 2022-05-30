@@ -204,22 +204,55 @@ export default {
             this.configDate = `${data.insertTime.substring(6, 8)}/${data.insertTime.substring(4, 6)}/${data.insertTime.substring(0, 4)}`;
             delete data.insertTime;
             this.configJson = data;
+            console.log(this.configJson)
             const titles = {
                 'ga': 'Google Analytics',
                 'adobe': 'Adobe Analytics',
                 'facebookads': 'Facebook Ads',
                 'googleads': 'Google Ads'
             };
-            Object.keys(this.configJson).forEach(key => {
-                if(typeof this.configJson[key] === 'object' && key !== 'columns') {
-                    if(key != 'dependenciesConfig' && key.charAt(0).toUpperCase() + key.slice(1) !== 'CsvSeparator') {
-                        this.parametrizers.push({
-                            title: titles[key] ? titles[key] : key.charAt(0).toUpperCase() + key.slice(1),
-                            value: key,
-                            type: (key === 'ga' || key === 'adobe') ? 'analytics' : 'media'
-                        });
-                    }
-                }
+            // Object.keys(this.configJson).forEach(key => {
+            //     if(typeof this.configJson[key] === 'object' && key !== 'columns') {
+            //         if(key != 'dependenciesConfig' && key.charAt(0).toUpperCase() + key.slice(1) !== 'CsvSeparator') {
+            //             this.parametrizers.push({
+            //                 title: titles[key] ? titles[key] : key.charAt(0).toUpperCase() + key.slice(1),
+            //                 value: key,
+            //                 type: (key === 'ga' || key === 'adobe') ? 'analytics' : 'media'
+            //             });
+            //         }
+            //     }
+            // });
+
+            // Object.keys(this.configJson).forEach(key => {
+            //     if(key === 'analyticsTools' || key === 'mediaTaxonomy') {
+            //         // if(key != 'dependenciesConfig' && key.charAt(0).toUpperCase() + key.slice(1) !== 'CsvSeparator') {
+            //         //     this.parametrizers.push({
+            //         //         title: titles[key] ? titles[key] : key.charAt(0).toUpperCase() + key.slice(1),
+            //         //         value: key,
+            //         //         type: (key === 'ga' || key === 'adobe') ? 'analytics' : 'media'
+            //         //     });
+            //         // }
+            //         this.parametrizers.push({
+            //             title: key === 'analyticsTools'? 'Ferramenta de Analytics': 'Mídia',
+            //             value: key === 'analyticsTools'? this.configJson.analyticsTools: this.configJson.mediaTaxonomy,
+            //             type: key === 'analyticsTools'? 'analytics': 'media',
+            //         })
+            //     }
+            // });
+
+            Object.keys(this.configJson.analyticsTools).forEach(key => {
+                this.parametrizers.push({
+                    title: key === 'ga'? 'Google Analytics': 'Adobe',
+                    value: key,
+                    type: 'analytics',
+                })
+            });
+            Object.keys(this.configJson.mediaTaxonomy).forEach(key => {
+                this.parametrizers.push({
+                    title: key,
+                    value: key,
+                    type: 'media',
+                })
             });
         }).catch((err) => {
             this.visibilidadeResposta = true;
@@ -312,6 +345,8 @@ export default {
             this.clearResposta();
             let url = `${this.$apiRoute}/build/${this.tool}`;
             if(this.vehicle) url += `/${this.vehicle}`
+            console.log('tool: ', this.tool);
+            console.log('vehicle: ', this.vehicle);
             const formdata = new FormData();
             formdata.append("data", document.querySelector('#file').files[0]);
             this.apiError = false;
