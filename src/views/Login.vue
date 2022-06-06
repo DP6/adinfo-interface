@@ -11,7 +11,7 @@
                                 </div>
                                 <div class="card-body">
                                     <span class="input-group-text">
-                                        <input type="text" v-model="email" class="form-control" placeholder="Email" @keydown.enter.prevent= "getFocus()">
+                                        <input type="text" v-model="email" class="form-control" placeholder="Email" @keydown.enter.prevent="enterLogin()">
                                     </span>
                                     <span class="input-group-text">
                                         <input type="password" v-model="senha" class="form-control" id="senha" placeholder="Senha" @keydown.enter.stop.prevent="getUserInfos()">
@@ -115,8 +115,8 @@ export default {
         setShowAlertFalse(){
             this.showAuthAlert = false;
         },
-        getFocus: function () {
-        document.getElementById("senha").focus();
+        enterLogin(){
+            this.senha ? this.getUserInfos() : document.getElementById("senha").focus();
         }
     },
     destroyed() {
