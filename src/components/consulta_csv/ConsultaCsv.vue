@@ -60,13 +60,21 @@
                 {{ apiErrorMessage }}
             </p>
             <div v-show="!apiError">
-                <p v-if="csvList.length === 1 && csvList[0] === ''" class="response">
+                <p v-if="show_error" class="response">
                     Nenhum arquivo foi encontrado!
                 </p>
-                <ul v-if="csvList.length > 0">
-                    <li v-for="csv in csvList" class="csv" :key="csv">
-                        <p @click="downloadCSV(csv)">{{ csv }}</p>
-                    </li>
+                <ul v-if="!show_error">
+                        <md-button class="md-dense md-raised md-primary" @click="downloadAllCsvs()">Baixar Csvs</md-button>
+                        <br>
+                        <md-checkbox v-model="selected_csvs"
+                            v-for="csv in csvList"
+                            class="csv"
+                            :key="csv.id"
+                            :value="csv.csvName">
+                            {{ csv.csvName }}
+                            <br>
+                        </md-checkbox>
+                    <!-- </div> -->
                 </ul>
             </div>
         </div>
@@ -116,6 +124,8 @@ export default {
             campaignId: '',
             // novas variaveis
             elegible_campaigns: [],
+            selected_csvs: [],
+            show_error: false,
         }
     },
     created() {
@@ -193,6 +203,8 @@ export default {
             this.elegible_campaigns = selectedCampaigns;
         },
         getCsvList() {
+            this.csvList = [];
+            this.selected_csvs=[];
             let agencia = this.agency;
             if(this.campaignId){
                 let fetchStatusCode;
@@ -213,7 +225,25 @@ export default {
                     }
                     this.apiError = false;
                     this.tituloResposta = 'Lista de CSVs';
-                    this.csvList = data.responseText.split(',');
+                    // this.csvList = data.responseText.split(','); legado
+
+                    const listCsv = data.responseText.split(',');
+
+                    let count = 0;
+                    console.log('listCsv:', listCsv)
+                    if(listCsv.length === 1 && listCsv[0] === ''){
+                        this.show_error = true;
+                    }else{
+                        this.show_error = false;
+                        console.log('fiz o push')
+                        listCsv.forEach(csv => {
+                        this.csvList.push({id:count, csvName: csv});
+                            count++
+                        });
+                    }
+
+                    console.log('csvlist length === 1', this.csvList.length)
+                    console.log('csvlist[0]', this.csvList[0])
                 }).catch((err) => {
                     console.log(err)
                     this.apiError = true;
@@ -228,7 +258,7 @@ export default {
         },
         downloadCSV(csv) {
             const fileName = csv.match(/\/.*\/.*\/(.*)\./) || csv.match(/\/.*\/(.*)\./);
-            let campaign = this.campaigns.filter(campanha => campanha.campaignId===this.campaignId)[0].campaignName;
+            let campaign = this.campaigns.filter(campanha => campanha.campaignId===this.campaignId).campaignName;
             if(!campaign) {
                 campaign = csv.match(/\/.*\/(.*)\/.*\./) || csv.match(/.*\/(.*)\/.*\./);
                 campaign = campaign[1]
@@ -248,7 +278,8 @@ export default {
                     return response.json();
                 }
                 return response.blob();
-            }).then(response => {
+            })
+            .then(response => {
                 if(response instanceof Blob) {
                     const fileBlob = response;
                     const url = window.URL.createObjectURL(fileBlob);
@@ -261,7 +292,8 @@ export default {
                 } else {
                     throw new Error(response.responseText);
                 }
-            }).catch(err => {
+            })
+            .catch(err => {
                 this.downloadError = true;
                 this.downloadErrorMessage = err.message;
                 this.showAuthAlert = this.isAuthError(this.statusCode);
@@ -274,6 +306,13 @@ export default {
         },
         setShowAlertFalse(){
             this.showAuthAlert = false;
+        },
+        downloadAllCsvs(){
+            this.selected_csvs.forEach(csv => {
+                console.log('csvs da lista:', csv)
+                this.downloadCSV(csv);
+            })
+            this.selected_csvs = [];
         }
     }
 }
@@ -319,6 +358,9 @@ export default {
 
     .csv p:hover {
         color: #3f2b96;
+    }
+    .md-checkbox {
+    display: flex;
     }
 
 </style>
