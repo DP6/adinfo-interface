@@ -74,7 +74,7 @@ export default {
         }
     },
     created() {
-        const url = localStorage.getItem('permission') === 'agencyOwner'?`${this.$apiRoute}/agency/users`:`${this.$apiRoute}/users`;
+        const url = localStorage.getItem('permission') === 'adOpsManager'?`${this.$apiRoute}/adOpsTeam/users`:`${this.$apiRoute}/users`;
         this.show_load = true;
         fetch(url, {
             method: 'GET',
@@ -90,8 +90,8 @@ export default {
                 throw new Error(response.responseText || response.errorMessage);
             }
             const allUsers = JSON.parse(response.responseText).filter(user => user.email !== localStorage.getItem('email'));
-            this.users_activates = allUsers.filter(user => user.activate == true);
-            this.users_deactivates = allUsers.filter(user => user.activate == false);
+            this.users_activates = allUsers.filter(user => user.active == true);
+            this.users_deactivates = allUsers.filter(user => user.active == false);
         }).catch((err) => {
             this.apiError = true;
             this.apiErrorMessage = err.message;
@@ -116,7 +116,7 @@ export default {
                 url = `${this.$apiRoute}/user/${id}/deactivate`;
             }
             this.show_load = true;
-            const urlUsers = localStorage.getItem('permission') === 'agencyOwner'?`${this.$apiRoute}/agency/users`:`${this.$apiRoute}/users`;
+            const urlUsers = localStorage.getItem('permission') === 'adOpsManager'?`${this.$apiRoute}/adOpsTeam/users`:`${this.$apiRoute}/users`;
             fetch(url, {
                 method: 'POST',
                 headers: {
@@ -146,8 +146,8 @@ export default {
                     throw new Error(response.responseText || response.errorMessage);
                 }
                 const allUsers = JSON.parse(response.responseText).filter(user => user.email !== localStorage.getItem('email'));
-                this.users_activates = allUsers.filter(user => user.activate == true);
-                this.users_deactivates = allUsers.filter(user => user.activate == false);
+                this.users_activates = allUsers.filter(user => user.active == true);
+                this.users_deactivates = allUsers.filter(user => user.active == false);
             }).catch((err) => {
                 this.showAuthAlert = this.isAuthError(this.statusCode);
                 this.snackbar_message = 'Erro ao mudar status do usuário!';

@@ -217,7 +217,7 @@ export default {
   data() {
     return {
       form: {
-        company: null
+        advertiser: null
       },
       generalConfig: [],
       configJson: {},
@@ -265,7 +265,7 @@ export default {
   },
   validations: {
     form: {
-      company: {
+      advertiser: {
         required,
         minLength: minLength(3)
       }
@@ -296,7 +296,7 @@ export default {
       this.generalConfig = Object.keys(data);
       this.columns = Object.keys(data.columns);
       this.updateToolFields();
-      if(localStorage.getItem('permission') !== 'user' && localStorage.getItem('permission') !== 'agencyOwner'){
+      if(localStorage.getItem('permission') !== 'user' && localStorage.getItem('permission') !== 'adOpsManager'){
         this.show_icon = true;
       }
     }).catch((err) => {

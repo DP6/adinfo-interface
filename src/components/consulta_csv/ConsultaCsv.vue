@@ -1,21 +1,21 @@
 <template>
     <div>
         <titulo-principal titulo="Consultar CSVs"></titulo-principal>
-        <span class="titulo_categoria">Agência</span>
+        <span class="titulo_categoria">AdOpsTeam</span>
         <form class="md-layout">
             <md-card class="md-layout-item md-larger-size card">
                 <md-card-content>
                     <div class="md-layout md-gutter">
                         <div class="md-layout-item md-medium-size-100">
                             <md-field>
-                                <label for="agency">Agência</label>
-                                <md-select v-model="agency" name="agency" id="agency" @md-selected="getCampaigns()">
-                                    <md-optgroup label="Agências">
+                                <label for="adOpsTeam">AdOpsTeam</label>
+                                <md-select v-model="adOpsTeam" name="adOpsTeam" id="adOpsTeam" @md-selected="getCampaigns()">
+                                    <md-optgroup label="AdOpsTeams">
                                         <md-option
-                                            v-for="agency in agencies"
-                                            :key="agency.id"
-                                            :value="agency.agency"
-                                        >{{agency.agency}}</md-option>
+                                            v-for="adOpsTeam in adOpsTeam"
+                                            :key="adOpsTeam.id"
+                                            :value="adOpsTeam.adOpsTeam"
+                                        >{{adOpsTeam.adOpsTeam}}</md-option>
                                     </md-optgroup>
                                 </md-select>
                             </md-field>
@@ -34,7 +34,7 @@
                             <md-field>
                                 <label for="campaign">Campanha</label>
                                 <md-select v-model="campaignId" name="campaign" id="campaign" @md-selected="getCsvList()">
-                                    <md-optgroup label="Agências">
+                                    <md-optgroup label="AdOpsTeams">
                                         <md-option
                                             class="campaign-displayed"
                                             v-for="campaign in elegible_campaigns"
@@ -110,9 +110,9 @@ export default {
             downloadError: false,
             downloadErrorMessage: 'Erro no Download!',
             responseVisibility: false,
-            agencies: [],
+            adOpsTeam: [],
             campaigns: [],
-            agency: '',
+            adOpsTeam: '',
             campaignId: '',
             // novas variaveis
             elegible_campaigns: [],
@@ -120,8 +120,8 @@ export default {
     },
     created() {
         this.show_load = true;
-        const urlAgencyList = `${this.$apiRoute}/agencies/campaigns`;
-        fetch(urlAgencyList, {
+        const urlAdOpsTeamList = `${this.$apiRoute}/adOpsTeam/campaigns`;
+        fetch(urlAdOpsTeamList, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -136,12 +136,12 @@ export default {
             }
 
             let count = 0;
-            response.forEach(agency => {
-                Object.keys(agency).forEach(agencyName => {
-                    if(agencyName === 'CompanyCampaigns'){
-                        this.agencies.push({id:count, agency: 'Campanhas Internas'});
+            response.forEach(adOpsTeam => {
+                Object.keys(adOpsTeam).forEach(adOpsTeamName => {
+                    if(adOpsTeamName === 'AdvertiserCampaigns'){
+                        this.adOpsTeam.push({id:count, adOpsTeam: 'Campanhas Internas'});
                     }else{
-                        this.agencies.push({id:count, agency: agencyName});
+                        this.adOpsTeam.push({id:count, adOpsTeam: adOpsTeamName});
                     }
                     count++
                 })
@@ -149,9 +149,9 @@ export default {
 
             const nestedCampaigns = []
 
-            response.forEach(agencyObject => {
-                Object.values(agencyObject).forEach(agencyCampaigns => {
-                    nestedCampaigns.push(agencyCampaigns);
+            response.forEach(adOpsTeamObject => {
+                Object.values(adOpsTeamObject).forEach(adOpsTeamCampaigns => {
+                    nestedCampaigns.push(adOpsTeamCampaigns);
                 })
             });
 
@@ -182,23 +182,23 @@ export default {
             this.responseVisibility = false;
             this.campaignId = null;
             let selectedCampaigns = [];
-            let selected_agency = '';
-            this.agency === 'Campanhas Internas'? selected_agency = 'CompanyCampaigns': selected_agency = this.agency
+            let selected_adOpsTeam = '';
+            this.adOpsTeam === 'Campanhas Internas'? selected_adOpsTeam = 'AdvertiserCampaigns': selected_adOpsTeam = this.adOpsTeam
 
             this.campaigns.forEach(campaignObject => {
-                if(campaignObject.agency === selected_agency && campaignObject.activate === true){
+                if(campaignObject.adOpsTeam === selected_adOpsTeam && campaignObject.active === true){
                     selectedCampaigns.push({campaignId:campaignObject.campaignId, campaignName: campaignObject.campaignName})
                 }
             })
             this.elegible_campaigns = selectedCampaigns;
         },
         getCsvList() {
-            let agencia = this.agency;
+            let adOpsTeam = this.adOpsTeam;
             if(this.campaignId){
                 let fetchStatusCode;
                 this.show_load = true;
                 this.responseVisibility = false;
-                fetch(`${this.$apiRoute}/${agencia}/${this.campaignId}/csv/list`, {
+                fetch(`${this.$apiRoute}/${adOpsTeam}/${this.campaignId}/csv/list`, {
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json',
@@ -240,7 +240,7 @@ export default {
                     file: fileName[1],
                     token: localStorage.getItem('userToken'),
                     campaign: campaign,
-                    agency: this.agency === 'Campanhas Internas' ? '' : this.agency
+                    adOpsTeam: this.adOpsTeam === 'Campanhas Internas' ? '' : this.adOpsTeam
                 }
             }).then(response => {
                 this.statusCode = response.status;

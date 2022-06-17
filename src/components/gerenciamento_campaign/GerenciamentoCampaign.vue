@@ -1,7 +1,7 @@
 <template>
     <div>
         <titulo-principal titulo="Gerencimaneto de Campanhas"></titulo-principal>
-        <span class="titulo_categoria">Agência</span>
+        <span class="titulo_categoria">AdOpsTeam</span>
 
         <form class="md-layout">
             <md-card class="md-layout-item md-larger-size card">
@@ -9,14 +9,14 @@
                     <div class="md-layout md-gutter">
                         <div class="md-layout-item md-medium-size-100">
                             <md-field>
-                                <label for="agency">Agência</label>
-                                <md-select v-model="agency" name="agency" id="agency" @md-selected="getFilteredCampaigns()">
-                                    <md-optgroup label="Agências">
+                                <label for="adOpsTeam">AdOpsTeam</label>
+                                <md-select v-model="adOpsTeam" name="adOpsTeam" id="adOpsTeam" @md-selected="getFilteredCampaigns()">
+                                    <md-optgroup label="AdOpsTeams">
                                         <md-option
-                                            v-for="agency in agencies"
-                                            :key="agency.id"
-                                            :value="agency.agency"
-                                        >{{agency.agency}}</md-option>
+                                            v-for="adOpsTeam in adOpsTeams"
+                                            :key="adOpsTeam.id"
+                                            :value="adOpsTeam.adOpsTeam"
+                                        >{{adOpsTeam.adOpsTeam}}</md-option>
                                     </md-optgroup>
                                 </md-select>
                             </md-field>
@@ -27,7 +27,7 @@
         </form>
 
         <span class="titulo_categoria" v-if="campaign_activates.length > 0">Campanhas Ativas</span>
-        <md-card class="md-layout-item md-larger-size card" v-if="agency">
+        <md-card class="md-layout-item md-larger-size card" v-if="adOpsTeam">
             <md-list class="lista_campanhas">
                 <md-list-item v-for="campaign in campaign_activates" :key="campaign.id" class="campaign">
                     {{campaign.campaignName}}
@@ -92,9 +92,9 @@ export default {
             responseVisibility: false,
             campaign_activates: [],
             campaign_deactivates: [],
-            agencies: [],
+            adOpsTeams: [],
             campaigns: [],
-            selected_agency:  '',
+            selected_adOpsTeam:  '',
             snackbar_message: '',
             position: 'center',
             showSnackbar: false
@@ -102,8 +102,8 @@ export default {
     },
     created() {
         this.show_load = true;
-        const urlAgencyList = `${this.$apiRoute}/agencies/campaigns`;
-        fetch(urlAgencyList, {
+        const urlAdOpsTeamList = `${this.$apiRoute}/adOpsTeams/campaigns`;
+        fetch(urlAdOpsTeamList, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -118,12 +118,12 @@ export default {
             }
 
             let count = 0;
-            response.forEach(agency => {
-                Object.keys(agency).forEach(agencyName => {
-                    if(agencyName === 'CompanyCampaigns'){
-                        this.agencies.push({id:count, agency: 'Campanhas Internas'});
+            response.forEach(adOpsTeam => {
+                Object.keys(adOpsTeam).forEach(adOpsTeamName => {
+                    if(adOpsTeamName === 'AdvertiserCampaigns'){
+                        this.adOpsTeams.push({id:count, adOpsTeam: 'Campanhas Internas'});
                     }else{
-                        this.agencies.push({id:count, agency: agencyName});
+                        this.adOpsTeams.push({id:count, adOpsTeam: adOpsTeamName});
                     }
                     count++
                 })
@@ -131,9 +131,9 @@ export default {
 
             const nestedCampaigns = []
 
-            response.forEach(agencyObject => {
-                Object.values(agencyObject).forEach(agencyCampaigns => {
-                    nestedCampaigns.push(agencyCampaigns);
+            response.forEach(adOpsTeamObject => {
+                Object.values(adOpsTeamObject).forEach(adOpsTeamCampaigns => {
+                    nestedCampaigns.push(adOpsTeamCampaigns);
                 })
             });
 
@@ -158,10 +158,10 @@ export default {
         },
         getFilteredCampaigns() {
             this.resetCampaigns();
-            let agencia = this.agency === 'Campanhas Internas'? 'CompanyCampaigns': this.agency;
-            const allCampaigns = this.campaigns.filter(campaign => campaign.agency === agencia);
+            let adOpsTeam = this.adOpsTeam === 'Campanhas Internas'? 'AdvertiserCampaigns': this.adOpsTeam;
+            const allCampaigns = this.campaigns.filter(campaign => campaign.adOpsTeam === adOpsTeam);
             allCampaigns.forEach(campanha => {
-                if(campanha.activate){
+                if(campanha.active){
                     this.campaign_activates.push(campanha)
                 }else {
                     this.campaign_deactivates.push(campanha)
