@@ -194,7 +194,6 @@ export default {
                     a.click();
                     a.remove();
                 } else {
-                    console.log(response.errorMessage);
                     throw new Error(response.responseText);
                 }
             }).catch(err => {

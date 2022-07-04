@@ -119,16 +119,11 @@ export default {
         if(this.statusCode !== 200) {
             throw new Error(response.responseText || response.errorMessage);
         }
-        let count = 0;
-        const alladOpsTeams = JSON.parse(response.responseText).map(adOpsTeam =>{
-            const adOpsTeamWithId = {id:count, adOpsTeam:adOpsTeam};
-            count++
-            return adOpsTeamWithId
+        const adOpsTeamsObjects = JSON.parse(response.responseText);
+
+        adOpsTeamsObjects.forEach((adOpsTeam, index) =>{
+            this.adOpsTeams.push({id:index, adOpsTeam:adOpsTeam.name})
         })
-        if(localStorage.getItem('permission') === 'owner' || localStorage.getItem('permission') === 'admin'){
-            alladOpsTeams.push({id:count, adOpsTeam:'Campanhas Internas'})
-        }
-        this.adOpsTeams = alladOpsTeams;
     }).catch((err) => {
         this.apiError = true;
         this.apiErrorMessage = err.message;

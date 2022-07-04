@@ -12,7 +12,7 @@
                                 <md-select v-model="adOpsTeam" name="adOpsTeam" id="adOpsTeam" @md-selected="getCampaigns()">
                                     <md-optgroup label="AdOpsTeams">
                                         <md-option
-                                            v-for="adOpsTeam in adOpsTeam"
+                                            v-for="adOpsTeam in adOpsTeams"
                                             :key="adOpsTeam.id"
                                             :value="adOpsTeam.adOpsTeam"
                                         >{{adOpsTeam.adOpsTeam}}</md-option>
@@ -110,7 +110,7 @@ export default {
             downloadError: false,
             downloadErrorMessage: 'Erro no Download!',
             responseVisibility: false,
-            adOpsTeam: [],
+            adOpsTeams: [],
             campaigns: [],
             adOpsTeam: '',
             campaignId: '',
@@ -120,7 +120,7 @@ export default {
     },
     created() {
         this.show_load = true;
-        const urlAdOpsTeamList = `${this.$apiRoute}/adOpsTeam/campaigns`;
+        const urlAdOpsTeamList = `${this.$apiRoute}/adOpsTeam/list`;
         fetch(urlAdOpsTeamList, {
             method: 'GET',
             headers: {
@@ -135,31 +135,40 @@ export default {
                 throw new Error(response.responseText || response.errorMessage);
             }
 
-            let count = 0;
-            response.forEach(adOpsTeam => {
-                Object.keys(adOpsTeam).forEach(adOpsTeamName => {
-                    if(adOpsTeamName === 'AdvertiserCampaigns'){
-                        this.adOpsTeam.push({id:count, adOpsTeam: 'Campanhas Internas'});
-                    }else{
-                        this.adOpsTeam.push({id:count, adOpsTeam: adOpsTeamName});
+            const adOpsTeams = JSON.parse(response.responseText)
+
+            adOpsTeams.forEach((adOpsTeam, index) => {
+                this.adOpsTeams.push({id:index, adOpsTeam: adOpsTeam.name});
+            });
+        }).then(()=>{
+            this.adOpsTeams.forEach(adOpsTeam => {
+                const urlCampaignList = `${this.$apiRoute}/campaign/${adOpsTeam.adOpsTeam}/list`;
+                fetch(urlCampaignList, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        token: localStorage.getItem('userToken')
                     }
-                    count++
-                })
+                }).then((response) => {
+                    this.statusCode = response.status;
+                    return response.json();
+                }).then((response) => {
+                    if(this.statusCode !== 200) {
+                        throw new Error(response.responseText || response.errorMessage);
+                    }
+
+                    const campaigns = JSON.parse(response.responseText);
+
+                    campaigns.forEach(campaign => this.campaigns.push(campaign))
+                }).catch((err) => {
+                    this.apiError = true;
+                    this.apiErrorMessage = err.message;
+                    this.tituloResposta = 'Erro ao recuperar configuração';
+                    this.showAuthAlert = this.isAuthError(this.statusCode);
+                }).finally(() => {
+                    this.show_load = false;
+                });
             });
-
-            const nestedCampaigns = []
-
-            response.forEach(adOpsTeamObject => {
-                Object.values(adOpsTeamObject).forEach(adOpsTeamCampaigns => {
-                    nestedCampaigns.push(adOpsTeamCampaigns);
-                })
-            });
-
-            nestedCampaigns.forEach(campaign => {
-                campaign.forEach(campaignObject => {
-                    this.campaigns.push(campaignObject)
-                })
-            })
         }).catch((err) => {
             this.apiError = true;
             this.apiErrorMessage = err.message;
@@ -168,6 +177,54 @@ export default {
         }).finally(() => {
             this.show_load = false;
         });
+        // const urlAdOpsTeamList = `${this.$apiRoute}/adOpsTeam/campaigns`;
+        // fetch(urlAdOpsTeamList, {
+        //     method: 'GET',
+        //     headers: {
+        //         'Content-Type': 'application/json',
+        //         token: localStorage.getItem('userToken')
+        //     }
+        // }).then((response) => {
+        //     this.statusCode = response.status;
+        //     return response.json();
+        // }).then((response) => {
+        //     if(this.statusCode !== 200) {
+        //         throw new Error(response.responseText || response.errorMessage);
+        //     }
+
+        //     let count = 0;
+        //     response.forEach(adOpsTeam => {
+        //         Object.keys(adOpsTeam).forEach(adOpsTeamName => {
+        //             if(adOpsTeamName === 'AdvertiserCampaigns'){
+        //                 this.adOpsTeam.push({id:count, adOpsTeam: 'Campanhas Internas'});
+        //             }else{
+        //                 this.adOpsTeam.push({id:count, adOpsTeam: adOpsTeamName});
+        //             }
+        //             count++
+        //         })
+        //     });
+
+        //     const nestedCampaigns = []
+
+        //     response.forEach(adOpsTeamObject => {
+        //         Object.values(adOpsTeamObject).forEach(adOpsTeamCampaigns => {
+        //             nestedCampaigns.push(adOpsTeamCampaigns);
+        //         })
+        //     });
+
+        //     nestedCampaigns.forEach(campaign => {
+        //         campaign.forEach(campaignObject => {
+        //             this.campaigns.push(campaignObject)
+        //         })
+        //     })
+        // }).catch((err) => {
+        //     this.apiError = true;
+        //     this.apiErrorMessage = err.message;
+        //     this.tituloResposta = 'Erro ao recuperar configuração';
+        //     this.showAuthAlert = this.isAuthError(this.statusCode);
+        // }).finally(() => {
+        //     this.show_load = false;
+        // });
     },
     methods: {
         getValidationClass (fieldName) {
