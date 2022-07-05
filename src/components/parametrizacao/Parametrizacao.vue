@@ -204,12 +204,6 @@ export default {
             this.configDate = `${data.insertTime.substring(6, 8)}/${data.insertTime.substring(4, 6)}/${data.insertTime.substring(0, 4)}`;
             delete data.insertTime;
             this.configJson = data;
-            const titles = {
-                'ga': 'Google Analytics',
-                'adobe': 'Adobe Analytics',
-                'facebookads': 'Facebook Ads',
-                'googleads': 'Google Ads'
-            };
 
             Object.keys(this.configJson.analyticsTools).forEach(key => {
                 this.parametrizers.push({
@@ -251,7 +245,9 @@ export default {
             const adOpsTeams = JSON.parse(response.responseText)
 
             adOpsTeams.forEach((adOpsTeam, index) => {
-                this.adOpsTeams.push({id:index, adOpsTeam: adOpsTeam.name});
+                if(adOpsTeam.active){
+                    this.adOpsTeams.push({id:index, adOpsTeam: adOpsTeam.name});
+                }
             });
         }).then(()=>{
             this.adOpsTeams.forEach(adOpsTeam => {

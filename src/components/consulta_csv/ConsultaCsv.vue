@@ -138,7 +138,9 @@ export default {
             const adOpsTeams = JSON.parse(response.responseText)
 
             adOpsTeams.forEach((adOpsTeam, index) => {
-                this.adOpsTeams.push({id:index, adOpsTeam: adOpsTeam.name});
+                if(adOpsTeam.active){
+                    this.adOpsTeams.push({id:index, adOpsTeam: adOpsTeam.name});
+                }
             });
         }).then(()=>{
             this.adOpsTeams.forEach(adOpsTeam => {
@@ -177,54 +179,6 @@ export default {
         }).finally(() => {
             this.show_load = false;
         });
-        // const urlAdOpsTeamList = `${this.$apiRoute}/adOpsTeam/campaigns`;
-        // fetch(urlAdOpsTeamList, {
-        //     method: 'GET',
-        //     headers: {
-        //         'Content-Type': 'application/json',
-        //         token: localStorage.getItem('userToken')
-        //     }
-        // }).then((response) => {
-        //     this.statusCode = response.status;
-        //     return response.json();
-        // }).then((response) => {
-        //     if(this.statusCode !== 200) {
-        //         throw new Error(response.responseText || response.errorMessage);
-        //     }
-
-        //     let count = 0;
-        //     response.forEach(adOpsTeam => {
-        //         Object.keys(adOpsTeam).forEach(adOpsTeamName => {
-        //             if(adOpsTeamName === 'AdvertiserCampaigns'){
-        //                 this.adOpsTeam.push({id:count, adOpsTeam: 'Campanhas Internas'});
-        //             }else{
-        //                 this.adOpsTeam.push({id:count, adOpsTeam: adOpsTeamName});
-        //             }
-        //             count++
-        //         })
-        //     });
-
-        //     const nestedCampaigns = []
-
-        //     response.forEach(adOpsTeamObject => {
-        //         Object.values(adOpsTeamObject).forEach(adOpsTeamCampaigns => {
-        //             nestedCampaigns.push(adOpsTeamCampaigns);
-        //         })
-        //     });
-
-        //     nestedCampaigns.forEach(campaign => {
-        //         campaign.forEach(campaignObject => {
-        //             this.campaigns.push(campaignObject)
-        //         })
-        //     })
-        // }).catch((err) => {
-        //     this.apiError = true;
-        //     this.apiErrorMessage = err.message;
-        //     this.tituloResposta = 'Erro ao recuperar configuração';
-        //     this.showAuthAlert = this.isAuthError(this.statusCode);
-        // }).finally(() => {
-        //     this.show_load = false;
-        // });
     },
     methods: {
         getValidationClass (fieldName) {

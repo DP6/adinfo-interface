@@ -1,34 +1,20 @@
 <template>
     <div>
-        <titulo-principal titulo="Cadastrar Campanha"></titulo-principal>
+        <titulo-principal titulo="Cadastrar AdOpsTeam"></titulo-principal>
         <form class="md-layout">
             <md-card class="md-layout-item md-larger-size">
                 <md-card-content>
                     <div class="md-layout md-gutter">
-                        <div  class="md-layout-item md-medium-size-100"> 
-                            <md-field :class="getValidationClass('adOpsTeam')">
-                            <label for="adOpsTeam">AdOpsTeam</label>
-                                <md-select v-model="form.adOpsTeam" name="adOpsTeam" id="adOpsTeam">
-                                    <md-optgroup label="AdOpsTeams">
-                                        <md-option 
-                                            v-for="adOpsTeam in adOpsTeams" 
-                                            :key="adOpsTeam.id"
-                                            :value="adOpsTeam.adOpsTeam"
-                                        >{{adOpsTeam.adOpsTeam}}</md-option>
-                                    </md-optgroup>
-                                </md-select>
-                            </md-field>
-                        </div>
                         <div class="md-layout-item md-medium-size-100">
                             <md-field :class="getValidationClass('campaign')">
-                                <label for="campaign">Campanha</label>
-                                <md-input name="campaign" id="campaign" v-model="form.campaign"/>
+                                <label for="campaign">AdOpsTeam</label>
+                                <md-input name="adopsteam" id="adopsteam" v-model="form.adOpsTeam"/>
                             </md-field>
                         </div>
                     </div>
                 </md-card-content>
                 <md-card-actions>
-                    <botao-submit nome_do_botao="Criar" @botaoAtivado="createCampaign()"></botao-submit>
+                    <botao-submit nome_do_botao="Criar" @botaoAtivado="createAdOpsTeam()"></botao-submit>
                 </md-card-actions>
             </md-card>
         </form>
@@ -76,7 +62,6 @@ export default {
         return {
             form: {
                 adOpsTeam: null,
-                campaign: null,
             },
             visivel: false,
             tituloResposta: 'Resposta',
@@ -87,7 +72,6 @@ export default {
             show_field: false,
             apiError: false,
             apiErrorMessage: '',
-            adOpsTeams: [],
         }
     },
     validations: {
@@ -100,41 +84,6 @@ export default {
             }
         }
     },
-    created() {
-    if(localStorage.getItem('permission') !== 'adOpsManager'){
-        this.show_field = true;
-    }
-    const url = `${this.$apiRoute}/adOpsTeam/list`;
-    this.show_load = true;
-    fetch(url, {
-        method: 'GET',
-        headers: {
-            'Content-Type': 'application/json',
-            token: localStorage.getItem('userToken')
-        }
-    }).then((response) => {
-        this.statusCode = response.status;
-        return response.json();
-    }).then((response) => {
-        if(this.statusCode !== 200) {
-            throw new Error(response.responseText || response.errorMessage);
-        }
-        const adOpsTeamsObjects = JSON.parse(response.responseText);
-
-        adOpsTeamsObjects.forEach((adOpsTeam, index) =>{
-            if(adOpsTeam.active){
-                this.adOpsTeams.push({id:index, adOpsTeam:adOpsTeam.name})
-            }
-        })
-    }).catch((err) => {
-        this.apiError = true;
-        this.apiErrorMessage = err.message;
-        this.tituloResposta = 'Erro ao recuperar configuração';
-        this.showAuthAlert = this.isAuthError(this.statusCode);
-    }).finally(() => {
-        this.show_load = false;
-    });
-  },
     methods: {
         getValidationClass (fieldName) {
             const field = this.$v.form[fieldName]
@@ -144,19 +93,18 @@ export default {
                 }
             }
         },
-        clearForm () {
+        clearForm() {
             this.$v.$reset()
-            // this.form.adOpsTeam = null
-            this.form.campaign = null
+            this.form.adOpsTeam = null
         },
-        createCampaign() {
+        createAdOpsTeam() {
             let statusCode;
             this.visivel = false;
             this.apiError = false;
-            const url = `${this.$apiRoute}/campaign`;
+            const url = `${this.$apiRoute}/adOpsTeam`;
             const formdata = new FormData();
-            formdata.append("adOpsTeam", this.form.adOpsTeam === 'Campanhas Internas'? '': this.form.adOpsTeam);
-            formdata.append("campaign", this.form.campaign);
+            formdata.append("adOpsTeam", this.form.adOpsTeam);
+            console.log('this.form.adOpsTeam', this.form.adOpsTeam)
             const requestOptions = {
                 method: 'POST',
                 headers: {
@@ -165,6 +113,7 @@ export default {
                 body: formdata,
                 redirect: 'follow'
             };
+            console.log('formdata', formdata)
             this.show_load = true;
             fetch(url, requestOptions)
             .then((response) => {
@@ -184,6 +133,7 @@ export default {
             }).finally(() => {
                 this.visivel = true;
                 this.show_load = false;
+                this.clearForm();
             });
         },
         isAuthError(statusCode){

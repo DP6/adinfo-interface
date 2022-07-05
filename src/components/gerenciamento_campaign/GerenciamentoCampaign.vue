@@ -1,6 +1,6 @@
 <template>
     <div>
-        <titulo-principal titulo="Gerencimaneto de Campanhas"></titulo-principal>
+        <titulo-principal titulo="Gerenciamento de Campanhas"></titulo-principal>
         <span class="titulo_categoria">AdOpsTeam</span>
 
         <form class="md-layout">
@@ -120,7 +120,9 @@ export default {
             const adOpsTeams = JSON.parse(response.responseText)
 
             adOpsTeams.forEach((adOpsTeam, index) => {
-                this.adOpsTeams.push({id:index, adOpsTeam: adOpsTeam.name});
+                if(adOpsTeam.active){
+                    this.adOpsTeams.push({id:index, adOpsTeam: adOpsTeam.name});
+                }
             });
         }).then(()=>{
             this.adOpsTeams.forEach(adOpsTeam => {
