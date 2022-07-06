@@ -1,6 +1,6 @@
 <template>
     <div>
-        <titulo-principal titulo="Gerencimaneto de Campanhas"></titulo-principal>
+        <titulo-principal titulo="Gerenciamento de Campanhas"></titulo-principal>
         <span class="titulo_categoria">AdOpsTeam</span>
 
         <form class="md-layout">
@@ -102,7 +102,7 @@ export default {
     },
     created() {
         this.show_load = true;
-        const urlAdOpsTeamList = `${this.$apiRoute}/adOpsTeams/campaigns`;
+        const urlAdOpsTeamList = `${this.$apiRoute}/adOpsTeam/list`;
         fetch(urlAdOpsTeamList, {
             method: 'GET',
             headers: {
@@ -117,31 +117,42 @@ export default {
                 throw new Error(response.responseText || response.errorMessage);
             }
 
-            let count = 0;
-            response.forEach(adOpsTeam => {
-                Object.keys(adOpsTeam).forEach(adOpsTeamName => {
-                    if(adOpsTeamName === 'AdvertiserCampaigns'){
-                        this.adOpsTeams.push({id:count, adOpsTeam: 'Campanhas Internas'});
-                    }else{
-                        this.adOpsTeams.push({id:count, adOpsTeam: adOpsTeamName});
+            const adOpsTeams = JSON.parse(response.responseText)
+
+            adOpsTeams.forEach((adOpsTeam, index) => {
+                if(adOpsTeam.active){
+                    this.adOpsTeams.push({id:index, adOpsTeam: adOpsTeam.name});
+                }
+            });
+        }).then(()=>{
+            this.adOpsTeams.forEach(adOpsTeam => {
+                const urlCampaignList = `${this.$apiRoute}/campaign/${adOpsTeam.adOpsTeam}/list`;
+                fetch(urlCampaignList, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        token: localStorage.getItem('userToken')
                     }
-                    count++
-                })
+                }).then((response) => {
+                    this.statusCode = response.status;
+                    return response.json();
+                }).then((response) => {
+                    if(this.statusCode !== 200) {
+                        throw new Error(response.responseText || response.errorMessage);
+                    }
+
+                    const campaigns = JSON.parse(response.responseText);
+
+                    campaigns.forEach(campaign => this.campaigns.push(campaign))
+                }).catch((err) => {
+                    this.apiError = true;
+                    this.apiErrorMessage = err.message;
+                    this.tituloResposta = 'Erro ao recuperar configuração';
+                    this.showAuthAlert = this.isAuthError(this.statusCode);
+                }).finally(() => {
+                    this.show_load = false;
+                });
             });
-
-            const nestedCampaigns = []
-
-            response.forEach(adOpsTeamObject => {
-                Object.values(adOpsTeamObject).forEach(adOpsTeamCampaigns => {
-                    nestedCampaigns.push(adOpsTeamCampaigns);
-                })
-            });
-
-            nestedCampaigns.forEach(campaign => {
-                campaign.forEach(campaignObject => {
-                    this.campaigns.push(campaignObject)
-                })
-            })
         }).catch((err) => {
             this.apiError = true;
             this.apiErrorMessage = err.message;
@@ -206,7 +217,7 @@ export default {
                 }
             }).catch((err) => {
                 this.showAuthAlert = this.isAuthError(this.statusCode);
-                this.snackbar_message = 'Erro ao mudar status do usuário!';
+                this.snackbar_message = 'Erro ao mudar status da Campanha!';
                 this.showSnackbar = true;
             }).finally(() => {
                 this.show_load = false;
