@@ -101,8 +101,6 @@ export default {
         }).then(() => {
           this.resetAdOpsTeams();
           this.adOpsTeams.forEach(adOpsTeam => {
-                    console.log('adOpsTeam',adOpsTeam)
-                    console.log('adOpsTeam.active', adOpsTeam.active)
                     if(adOpsTeam.active){
                               this.adopsteam_activates.push(adOpsTeam)
                     }else {
@@ -115,8 +113,6 @@ export default {
             this.tituloResposta = 'Erro ao recuperar configuração';
             this.showAuthAlert = this.isAuthError(this.statusCode);
         }).finally(() => {
-          console.log('activates', this.adopsteam_activates)
-          console.log('deactivates', this.adopsteam_deactivates)
           this.show_load = false;
         });
     },
@@ -142,9 +138,7 @@ export default {
                 this.adopsteam_activates.push(adOpsTeamAtivada[0]);
                 this.adopsteam_deactivates = this.adopsteam_deactivates.filter(adOpsTeam => adOpsTeam.name !== adOpsTeamName);
             } else if(opcao  === 'desativa') {
-                    console.log('cheguei')
                 url = `${this.$apiRoute}/adOpsTeam/${adOpsTeamName}/deactivate`;
-                console.log('url', url)
                 const adOpsTeamDesativada = this.adopsteam_activates.filter(adOpsTeam => adOpsTeam.name === adOpsTeamName);
                 this.adopsteam_deactivates.push(adOpsTeamDesativada[0]);
                 this.adopsteam_activates = this.adopsteam_activates.filter(adOpsTeam => adOpsTeam.name !== adOpsTeamName);
@@ -160,13 +154,12 @@ export default {
                 this.statusCode = response.status;
                 return response.json();
             }).then((response) => {
-                    console.log('responseee',response)
                 if(this.statusCode !== 200) {
                     throw new Error(response.responseText || response.errorMessage);
                 }
             }).catch((err) => {
                 this.showAuthAlert = this.isAuthError(this.statusCode);
-                this.snackbar_message = 'Erro ao mudar status do usuário!';
+                this.snackbar_message = 'Erro ao mudar status do AdOpsTeam!';
                 this.showSnackbar = true;
             }).finally(() => {
                 this.show_load = false;

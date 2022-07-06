@@ -103,8 +103,7 @@ export default {
             this.apiError = false;
             const url = `${this.$apiRoute}/adOpsTeam`;
             const formdata = new FormData();
-            formdata.append("adOpsTeam", this.form.adOpsTeam);
-            console.log('this.form.adOpsTeam', this.form.adOpsTeam)
+            formdata.append("name", this.form.adOpsTeam);
             const requestOptions = {
                 method: 'POST',
                 headers: {
@@ -113,7 +112,6 @@ export default {
                 body: formdata,
                 redirect: 'follow'
             };
-            console.log('formdata', formdata)
             this.show_load = true;
             fetch(url, requestOptions)
             .then((response) => {
