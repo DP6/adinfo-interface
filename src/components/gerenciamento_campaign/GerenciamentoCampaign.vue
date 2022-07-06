@@ -217,7 +217,7 @@ export default {
                 }
             }).catch((err) => {
                 this.showAuthAlert = this.isAuthError(this.statusCode);
-                this.snackbar_message = 'Erro ao mudar status do usuário!';
+                this.snackbar_message = 'Erro ao mudar status da Campanha!';
                 this.showSnackbar = true;
             }).finally(() => {
                 this.show_load = false;
