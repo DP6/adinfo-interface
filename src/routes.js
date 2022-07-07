@@ -11,7 +11,7 @@ import Interface from './views/Interface.vue';
 import CadastroCampaign from './components/cadastro_campaign/CadastroCampaign.vue';
 import GerenciamentoCampaign from './components/gerenciamento_campaign/GerenciamentoCampaign.vue';
 import ConsultaCsv from './components/consulta_csv/ConsultaCsv.vue';
-
+import BaixarConfiguracao from './components/baixar_configuracao/BaixarConfiguracao.vue';
 
 export const routes = [
     { path: '/', component: Interface, titulo:'Interface',
@@ -23,6 +23,7 @@ export const routes = [
         { path: 'template', component: Template, titulo: 'Template', permission: 'admin|owner|agencyOwner|user', group: 'Parametrizar', icon: 'outlined_flag'},
         { path: 'updateConfig', component: AtualizarConfiguracao, titulo: 'Atualizar Configuração', permission: 'admin|owner|agencyOwner|user', group: 'Configurações', icon: 'settings'},
         { path: 'newConfig', component: NovaConfiguracao, titulo: 'Nova Configuração', permission: 'admin|owner', group: 'Configurações', icon: 'settings'},
+        { path: 'baixarConfig', component: BaixarConfiguracao, titulo: 'Baixar Configuração', permission: 'admin|owner', group: 'Configurações', icon: 'settings'},
         { path: 'register', component: Register, titulo: 'Registrar usuário', permission: 'admin|owner|agencyOwner', group: 'Usuários', icon: 'people'},
         { path: 'dependencyConfig', component: DependencyConfig, titulo: 'Dependências', permission: 'admin|owner|agencyOwner|user', group: 'Configurações', icon: 'settings'},
         { path: 'alterarSenha', component: AlterarSenha, titulo: 'Alterar Senha', permission: 'admin|owner|agencyOwner|user', group: '', icon: 'lock'},
