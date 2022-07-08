@@ -1,20 +1,19 @@
 <template>
     <div>
-        <titulo-principal titulo="Nova Configuração"></titulo-principal>
+        <titulo-principal titulo="Baixar Configuração"></titulo-principal>
         <form class="md-layout">
             <md-card class="md-layout-item md-larger-size">
                 <md-card-content>
-                    <div class="md-layout md-gutter">
-                        <div class="md-layout-item md-medium-size-100">
+                    <!-- div class="md-layout md-gutter">
+                        < div class="md-layout-item md-medium-size-100">
                             <md-field>
-                                <label>Upload files</label>
-                                <md-file v-model="file" accept=".json" id="file" @change="validaArquivo($event)" placeholder="Anexar Arquivo" />
+                                <label>Baixe o a última Configuração</label>
                             </md-field>
                         </div>
-                    </div>
+                    </div-->
                 </md-card-content>
                 <md-card-actions>
-                    <botao-submit @botaoAtivado="newConfig()" nome_do_botao="Enviar Nova Configuração" :disabled="disable_button"></botao-submit>
+                    <botao-submit @botaoAtivado="downloadConfig()" nome_do_botao="Baixar Configuração"></botao-submit>
                 </md-card-actions>
             </md-card>
         </form>
@@ -42,13 +41,11 @@ import {
 import BotaoSubmitForm from '../shared/botao_submit_form/BotaoSubmitForm.vue';
 
 export default {
-    name: 'CSVForm',
-    mixins: [validationMixin],
     components: {
-    'titulo-principal': TituloAreaPrincipal,
-    'botao-submit': BotaoSubmitForm,
-    'usuario-invalido': InvalidUserAlert
-},
+        'titulo-principal': TituloAreaPrincipal,
+        'botao-submit': BotaoSubmitForm,
+        'usuario-invalido': InvalidUserAlert
+    },
     data() {
         return {
             showSnackbar: false,
@@ -58,8 +55,7 @@ export default {
             snackbar_message: '',
             statusCode: null,
             showAuthAlert: false,
-            show_load: false,
-            disable_button: true
+            show_load: false
         }
     },
     validations: {
@@ -78,37 +74,35 @@ export default {
                 }
             }
         },
-        validaArquivo(e) {
-            this.disable_button = false;
-        },
-        newConfig() {
-            this.show_load = true;
-            var reader = new FileReader();
-            reader.readAsText(document.querySelector('#file').files[0], "UTF-8")
-            reader.onload = (evt) => {
-                const url = `${this.$apiRoute}/config`;
-                const formdata = new FormData();
-                formdata.append("config", evt.target.result);
-                fetch(url, {
-                    method: 'POST',
-                    headers: {
-                        token: localStorage.getItem('userToken')
-                    },
-                    body: formdata
-                }).then((response) => {
-                    this.statusCode = response.status;
-                    return response.json();
-                }).then((response) => {
-                    this.snackbar_message = response.responseText || response.errorMessage;
-                    this.showSnackbar = true;
-                }).catch((err) => {
-                    this.showAuthAlert = this.isAuthError(this.statusCode);
-                    this.snackbar_message = 'Erro ao atualizar a configuração!';
-                    this.showSnackbar = true;
-                }).finally(() => {
-                    this.show_load = false;
-                });
-            }
+        downloadConfig() {
+            const urlConfig = `${this.$apiRoute}/config`;   
+            fetch(urlConfig, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    token: localStorage.getItem('userToken')
+                }
+            }).then((response) => {                
+                this.statusCode = response.status;
+                return response.json();
+            }).then((response) => {             
+                if(this.statusCode === 401) {
+                    this.$router.push('login');
+                } else if(this.statusCode !== 200) {
+                    throw new Error(response.rescreateObjectURLponseText || response.errorMessage);
+                }
+                this.fileConfig = response.responseText;
+                this.fileConfig = JSON.parse(this.fileConfig);
+                return this.fileConfig;
+            }).then((response) => {
+                const url = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(response));
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'config.json';
+                document.body.appendChild(a);
+                a.click();
+                a.remove();
+            });
         },
         isAuthError(statusCode){
             if(statusCode === 403)
