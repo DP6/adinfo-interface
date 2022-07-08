@@ -1,7 +1,7 @@
 <template>
     <div>
-        <titulo-principal titulo="Gerencimaneto de Campanhas"></titulo-principal>
-        <span class="titulo_categoria">Agência</span>
+        <titulo-principal titulo="Gerenciamento de Campanhas"></titulo-principal>
+        <span class="titulo_categoria">AdOpsTeam</span>
 
         <form class="md-layout">
             <md-card class="md-layout-item md-larger-size card">
@@ -9,14 +9,14 @@
                     <div class="md-layout md-gutter">
                         <div class="md-layout-item md-medium-size-100">
                             <md-field>
-                                <label for="agency">Agência</label>
-                                <md-select v-model="agency" name="agency" id="agency" @md-selected="getFilteredCampaigns()">
-                                    <md-optgroup label="Agências">
+                                <label for="adOpsTeam">AdOpsTeam</label>
+                                <md-select v-model="adOpsTeam" name="adOpsTeam" id="adOpsTeam" @md-selected="getFilteredCampaigns()">
+                                    <md-optgroup label="AdOpsTeams">
                                         <md-option
-                                            v-for="agency in agencies"
-                                            :key="agency.id"
-                                            :value="agency.agency"
-                                        >{{agency.agency}}</md-option>
+                                            v-for="adOpsTeam in adOpsTeams"
+                                            :key="adOpsTeam.id"
+                                            :value="adOpsTeam.adOpsTeam"
+                                        >{{adOpsTeam.adOpsTeam}}</md-option>
                                     </md-optgroup>
                                 </md-select>
                             </md-field>
@@ -27,7 +27,7 @@
         </form>
 
         <span class="titulo_categoria" v-if="campaign_activates.length > 0">Campanhas Ativas</span>
-        <md-card class="md-layout-item md-larger-size card" v-if="agency">
+        <md-card class="md-layout-item md-larger-size card" v-if="adOpsTeam">
             <md-list class="lista_campanhas">
                 <md-list-item v-for="campaign in campaign_activates" :key="campaign.id" class="campaign">
                     {{campaign.campaignName}}
@@ -92,9 +92,9 @@ export default {
             responseVisibility: false,
             campaign_activates: [],
             campaign_deactivates: [],
-            agencies: [],
+            adOpsTeams: [],
             campaigns: [],
-            selected_agency:  '',
+            selected_adOpsTeam:  '',
             snackbar_message: '',
             position: 'center',
             showSnackbar: false
@@ -102,8 +102,8 @@ export default {
     },
     created() {
         this.show_load = true;
-        const urlAgencyList = `${this.$apiRoute}/agencies/campaigns`;
-        fetch(urlAgencyList, {
+        const urlAdOpsTeamList = `${this.$apiRoute}/adOpsTeam/list`;
+        fetch(urlAdOpsTeamList, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -117,31 +117,42 @@ export default {
                 throw new Error(response.responseText || response.errorMessage);
             }
 
-            let count = 0;
-            response.forEach(agency => {
-                Object.keys(agency).forEach(agencyName => {
-                    if(agencyName === 'CompanyCampaigns'){
-                        this.agencies.push({id:count, agency: 'Campanhas Internas'});
-                    }else{
-                        this.agencies.push({id:count, agency: agencyName});
+            const adOpsTeams = JSON.parse(response.responseText)
+
+            adOpsTeams.forEach((adOpsTeam, index) => {
+                if(adOpsTeam.active){
+                    this.adOpsTeams.push({id:index, adOpsTeam: adOpsTeam.name});
+                }
+            });
+        }).then(()=>{
+            this.adOpsTeams.forEach(adOpsTeam => {
+                const urlCampaignList = `${this.$apiRoute}/campaign/${adOpsTeam.adOpsTeam}/list`;
+                fetch(urlCampaignList, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        token: localStorage.getItem('userToken')
                     }
-                    count++
-                })
+                }).then((response) => {
+                    this.statusCode = response.status;
+                    return response.json();
+                }).then((response) => {
+                    if(this.statusCode !== 200) {
+                        throw new Error(response.responseText || response.errorMessage);
+                    }
+
+                    const campaigns = JSON.parse(response.responseText);
+
+                    campaigns.forEach(campaign => this.campaigns.push(campaign))
+                }).catch((err) => {
+                    this.apiError = true;
+                    this.apiErrorMessage = err.message;
+                    this.tituloResposta = 'Erro ao recuperar configuração';
+                    this.showAuthAlert = this.isAuthError(this.statusCode);
+                }).finally(() => {
+                    this.show_load = false;
+                });
             });
-
-            const nestedCampaigns = []
-
-            response.forEach(agencyObject => {
-                Object.values(agencyObject).forEach(agencyCampaigns => {
-                    nestedCampaigns.push(agencyCampaigns);
-                })
-            });
-
-            nestedCampaigns.forEach(campaign => {
-                campaign.forEach(campaignObject => {
-                    this.campaigns.push(campaignObject)
-                })
-            })
         }).catch((err) => {
             this.apiError = true;
             this.apiErrorMessage = err.message;
@@ -158,10 +169,10 @@ export default {
         },
         getFilteredCampaigns() {
             this.resetCampaigns();
-            let agencia = this.agency === 'Campanhas Internas'? 'CompanyCampaigns': this.agency;
-            const allCampaigns = this.campaigns.filter(campaign => campaign.agency === agencia);
+            let adOpsTeam = this.adOpsTeam === 'Campanhas Internas'? 'AdvertiserCampaigns': this.adOpsTeam;
+            const allCampaigns = this.campaigns.filter(campaign => campaign.adOpsTeam === adOpsTeam);
             allCampaigns.forEach(campanha => {
-                if(campanha.activate){
+                if(campanha.active){
                     this.campaign_activates.push(campanha)
                 }else {
                     this.campaign_deactivates.push(campanha)
@@ -206,7 +217,7 @@ export default {
                 }
             }).catch((err) => {
                 this.showAuthAlert = this.isAuthError(this.statusCode);
-                this.snackbar_message = 'Erro ao mudar status do usuário!';
+                this.snackbar_message = 'Erro ao mudar status da Campanha!';
                 this.showSnackbar = true;
             }).finally(() => {
                 this.show_load = false;

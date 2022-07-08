@@ -1,22 +1,22 @@
 <template>
     <div>
-        <titulo-principal titulo="Gerencimaneto de Usuários"></titulo-principal>
-        
-        <span class="titulo_categoria" v-if="users_activates.length > 0">Usuários Ativos</span>
-        <md-card class="md-layout-item md-larger-size card" v-if="users_activates.length > 0">
-            <md-list class="lista_usuarios">
-                <md-list-item v-for="user in users_activates" :key="user.id" class="usuario">
-                    {{user.email}} ({{user.permission}})
-                <md-icon class="md-size-2x desativar_usuario" @click.native="gerenciaUsuario(user.id, 'desativa')">toggle_on</md-icon>
+        <titulo-principal titulo="Gerenciamento de AdOpsTeams"></titulo-principal>
+
+        <span class="titulo_categoria" v-if="adopsteam_activates.length > 0">AdOpsTeams Ativos</span>
+        <md-card class="md-layout-item md-larger-size card">
+            <md-list class="lista_campanhas">
+                <md-list-item v-for="adopsteam in adopsteam_activates" :key="adopsteam.name" class="campaign">
+                    {{adopsteam.name}}
+                <md-icon class="md-size-2x desativar_campaign" @click.native="gerenciaAdOpsTeams(adopsteam.name, 'desativa')">toggle_on</md-icon>
                 </md-list-item>
             </md-list>
         </md-card>
-        <span class="titulo_categoria" v-if="users_deactivates.length > 0">Usuários Desativados</span>
-        <md-card class="md-layout-item md-larger-size card" v-if="users_deactivates.length > 0">
-            <md-list class="lista_usuarios_desativados lista_usuarios">
-                <md-list-item v-for="user in users_deactivates" :key="user.id" class="usuario">
-                    {{user.email}} ({{user.permission}})
-                <md-icon class="md-size-2x ativar_usuario usuario" @click.native="gerenciaUsuario(user.id, 'ativa')">toggle_off</md-icon>
+        <span class="titulo_categoria" v-if="adopsteam_deactivates.length > 0">AdOpsTeams Desativados</span>
+        <md-card class="md-layout-item md-larger-size card" v-if="adopsteam_deactivates.length > 0">
+            <md-list class="lista_campanhas_desativados lista_campanhas">
+                <md-list-item v-for="adopsteam in adopsteam_deactivates" :key="adopsteam.name" class="campaign">
+                    {{adopsteam.name}}
+                <md-icon class="md-size-2x ativar_campaign campaign" @click.native="gerenciaAdOpsTeams(adopsteam.name, 'ativa')">toggle_off</md-icon>
                 </md-list-item>
             </md-list>
         </md-card>
@@ -46,6 +46,7 @@ import TituloAreaPrincipal from '../shared/titulo_area_principal/TituloAreaPrinc
 import InvalidUserAlert from '../shared/login/InvalidUser.vue';
 import { validationMixin } from 'vuelidate'
 import BotaoSubmitForm from '../shared/botao_submit_form/BotaoSubmitForm.vue';
+import { connectableObservableDescriptor } from 'rxjs/internal/observable/ConnectableObservable';
 
 export default {
     name: 'CSVForm',
@@ -66,57 +67,83 @@ export default {
             downloadError: false,
             downloadErrorMessage: 'Erro no Download!',
             responseVisibility: false,
-            users_activates: [],
-            users_deactivates: [],
+            adopsteam_activates: [],
+            adopsteam_deactivates: [],
+            adOpsTeams: [],
+            selected_adOpsTeam:  '',
             snackbar_message: '',
             position: 'center',
             showSnackbar: false
         }
     },
     created() {
-        const url = localStorage.getItem('permission') === 'adOpsManager'?`${this.$apiRoute}/adOpsTeam/users`:`${this.$apiRoute}/users`;
         this.show_load = true;
-        fetch(url, {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-                token: localStorage.getItem('userToken')
-            }
+        const urlAdOpsTeamList = `${this.$apiRoute}/adOpsTeam/list`;
+        fetch(urlAdOpsTeamList, {
+          method: 'GET',
+          headers: {
+          'Content-Type': 'application/json',
+          token: localStorage.getItem('userToken')
+          }
         }).then((response) => {
-            this.statusCode = response.status;
-            return response.json();
+          this.statusCode = response.status;
+          return response.json();
         }).then((response) => {
-            if(this.statusCode !== 200) {
-                throw new Error(response.responseText || response.errorMessage);
-            }
-            const allUsers = JSON.parse(response.responseText).filter(user => user.email !== localStorage.getItem('email'));
-            this.users_activates = allUsers.filter(user => user.active == true);
-            this.users_deactivates = allUsers.filter(user => user.active == false);
+          if(this.statusCode !== 200) {
+                    throw new Error(response.responseText || response.errorMessage);
+          }
+
+          const adOpsTeams = JSON.parse(response.responseText)
+
+          adOpsTeams.forEach((adOpsTeam) => {
+                    this.adOpsTeams.push(adOpsTeam);
+          });
+        }).then(() => {
+          this.resetAdOpsTeams();
+          this.adOpsTeams.forEach(adOpsTeam => {
+                    if(adOpsTeam.active){
+                              this.adopsteam_activates.push(adOpsTeam)
+                    }else {
+                              this.adopsteam_deactivates.push(adOpsTeam)
+                    }
+          })
         }).catch((err) => {
             this.apiError = true;
             this.apiErrorMessage = err.message;
             this.tituloResposta = 'Erro ao recuperar configuração';
             this.showAuthAlert = this.isAuthError(this.statusCode);
         }).finally(() => {
-            this.show_load = false;
+          this.show_load = false;
         });
     },
     methods: {
+        resetAdOpsTeams(){
+            this.campaign_activates = [];
+            this.campaign_deactivates = [];
+        },
         isAuthError(statusCode) {
             if(statusCode === 403)
                 return true;
             this.apiError = true;
             return false;
         },
-        gerenciaUsuario(id, opcao) {
+        gerenciaAdOpsTeams(adOpsTeamName, opcao) {
             let url;
-            if(opcao === 'ativa') {
-                url = `${this.$apiRoute}/user/${id}/reactivate`;
-            } else if(opcao  === 'desativa') {
-                url = `${this.$apiRoute}/user/${id}/deactivate`;
-            }
+
             this.show_load = true;
-            const urlUsers = localStorage.getItem('permission') === 'adOpsManager'?`${this.$apiRoute}/adOpsTeam/users`:`${this.$apiRoute}/users`;
+
+            if(opcao === 'ativa') {
+                url = `${this.$apiRoute}/adOpsTeam/${adOpsTeamName}/reactivate`;
+                const adOpsTeamAtivada = this.adopsteam_deactivates.filter(adOpsTeam => adOpsTeam.name === adOpsTeamName);
+                this.adopsteam_activates.push(adOpsTeamAtivada[0]);
+                this.adopsteam_deactivates = this.adopsteam_deactivates.filter(adOpsTeam => adOpsTeam.name !== adOpsTeamName);
+            } else if(opcao  === 'desativa') {
+                url = `${this.$apiRoute}/adOpsTeam/${adOpsTeamName}/deactivate`;
+                const adOpsTeamDesativada = this.adopsteam_activates.filter(adOpsTeam => adOpsTeam.name === adOpsTeamName);
+                this.adopsteam_deactivates.push(adOpsTeamDesativada[0]);
+                this.adopsteam_activates = this.adopsteam_activates.filter(adOpsTeam => adOpsTeam.name !== adOpsTeamName);
+            }
+
             fetch(url, {
                 method: 'POST',
                 headers: {
@@ -130,27 +157,9 @@ export default {
                 if(this.statusCode !== 200) {
                     throw new Error(response.responseText || response.errorMessage);
                 }
-                this.show_load = true;
-                return fetch(urlUsers, {
-                    method: 'GET',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        token: localStorage.getItem('userToken')
-                    }
-                });
-            }).then((response) => {
-                this.statusCode = response.status;
-                return response.json();
-            }).then((response) => {
-                if(this.statusCode !== 200) {
-                    throw new Error(response.responseText || response.errorMessage);
-                }
-                const allUsers = JSON.parse(response.responseText).filter(user => user.email !== localStorage.getItem('email'));
-                this.users_activates = allUsers.filter(user => user.active == true);
-                this.users_deactivates = allUsers.filter(user => user.active == false);
             }).catch((err) => {
                 this.showAuthAlert = this.isAuthError(this.statusCode);
-                this.snackbar_message = 'Erro ao mudar status do usuário!';
+                this.snackbar_message = 'Erro ao mudar status do AdOpsTeam!';
                 this.showSnackbar = true;
             }).finally(() => {
                 this.show_load = false;
@@ -193,25 +202,25 @@ export default {
         display: block;
     }
 
-    .lista_usuarios {
+    .lista_campanhas {
         margin-left: 0px!important;
     }
 
-    .lista_usuarios_desativados {
+    .lista_campanhas_desativados {
         background-color: #ececec;
     }
 
-    .usuario:hover {
+    .campaign:hover {
         background-color: #ecf1fd;
     }
 
-    i.ativar_usuario {
+    i.ativar_campaign {
         font-size: 20px;
         cursor: pointer;
         color: red!important;
     }
 
-    i.desativar_usuario {
+    i.desativar_campaign {
         font-size: 20px;
         cursor: pointer;
         color: green!important;

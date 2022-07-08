@@ -7,14 +7,14 @@
                     <div class="md-layout md-gutter">
                         <div class="md-layout-item md-layout md-gutter">
                             <md-field>
-                                <label for="agency">Agência</label>
-                                <md-select v-model="selected_agency" name="agency" id="agency" @md-selected="getCampaigns()">
-                                    <md-optgroup label="Agências">
+                                <label for="adOpsTeam">AdOpsTeam</label>
+                                <md-select v-model="selected_adOpsTeam" name="adOpsTeam" id="adOpsTeam" @md-selected="getCampaigns()">
+                                    <md-optgroup label="AdOpsTeams">
                                         <md-option
-                                            v-for="agency in agencies"
-                                            :key="agency.id"
-                                            :value="agency.agency"
-                                        >{{agency.agency}}</md-option>
+                                            v-for="adOpsTeam in adOpsTeams"
+                                            :key="adOpsTeam.id"
+                                            :value="adOpsTeam.adOpsTeam"
+                                        >{{adOpsTeam.adOpsTeam}}</md-option>
                                     </md-optgroup>
                                 </md-select>
                             </md-field>
@@ -128,7 +128,7 @@ export default {
     data() {
         return {
             form: {
-                agency: '',
+                adOpsTeam: '',
                 campaignId: '',
                 campaign: ''
             },
@@ -154,19 +154,19 @@ export default {
             downloadErrorMessage: 'Erro no Download!',
             configVersion: '',
             configDate: '',
-            agencies: [],
+            adOpsTeams: [],
             campaigns: [],
             elegible_campaigns: [],
-            selected_agency:'',
+            selected_adOpsTeam:'',
         }
     },
     validations: {
         form: {
-            agency: {
+            adOpsTeam: {
                 required,
                 minLength: minLength(3)
             },
-            company: {
+            advertiser: {
                 required,
                 minLength: minLength(3)
             },
@@ -204,22 +204,20 @@ export default {
             this.configDate = `${data.insertTime.substring(6, 8)}/${data.insertTime.substring(4, 6)}/${data.insertTime.substring(0, 4)}`;
             delete data.insertTime;
             this.configJson = data;
-            const titles = {
-                'ga': 'Google Analytics',
-                'adobe': 'Adobe Analytics',
-                'facebookads': 'Facebook Ads',
-                'googleads': 'Google Ads'
-            };
-            Object.keys(this.configJson).forEach(key => {
-                if(typeof this.configJson[key] === 'object' && key !== 'columns') {
-                    if(key != 'dependenciesConfig' && key.charAt(0).toUpperCase() + key.slice(1) !== 'CsvSeparator') {
-                        this.parametrizers.push({
-                            title: titles[key] ? titles[key] : key.charAt(0).toUpperCase() + key.slice(1),
-                            value: key,
-                            type: (key === 'ga' || key === 'adobe') ? 'analytics' : 'media'
-                        });
-                    }
-                }
+
+            Object.keys(this.configJson.analyticsTools).forEach(key => {
+                this.parametrizers.push({
+                    title: key === 'ga'? 'Google Analytics': 'Adobe',
+                    value: key,
+                    type: 'analytics',
+                })
+            });
+            Object.keys(this.configJson.mediaTaxonomy).forEach(key => {
+                this.parametrizers.push({
+                    title: key,
+                    value: key,
+                    type: 'media',
+                })
             });
         }).catch((err) => {
             this.visibilidadeResposta = true;
@@ -229,8 +227,8 @@ export default {
             this.apiErrorMessage = err.message;
         });
 
-        const urlAgencyList = `${this.$apiRoute}/agencies/campaigns`;
-        fetch(urlAgencyList, {
+        const urlAdOpsTeamList = `${this.$apiRoute}/adOpsTeam/list`;
+        fetch(urlAdOpsTeamList, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -244,31 +242,42 @@ export default {
                 throw new Error(response.responseText || response.errorMessage);
             }
 
-            let count = 0;
-            response.forEach(agency => {
-                Object.keys(agency).forEach(agencyName => {
-                    if (agencyName === 'CompanyCampaigns') {
-                        this.agencies.push({id:count, agency: 'Campanhas Internas'});
-                    } else if(agencyName) {
-                        this.agencies.push({id:count, agency: agencyName});
+            const adOpsTeams = JSON.parse(response.responseText)
+
+            adOpsTeams.forEach((adOpsTeam, index) => {
+                if(adOpsTeam.active){
+                    this.adOpsTeams.push({id:index, adOpsTeam: adOpsTeam.name});
+                }
+            });
+        }).then(()=>{
+            this.adOpsTeams.forEach(adOpsTeam => {
+                const urlCampaignList = `${this.$apiRoute}/campaign/${adOpsTeam.adOpsTeam}/list`;
+                fetch(urlCampaignList, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        token: localStorage.getItem('userToken')
                     }
-                    count++
-                })
+                }).then((response) => {
+                    this.statusCode = response.status;
+                    return response.json();
+                }).then((response) => {
+                    if(this.statusCode !== 200) {
+                        throw new Error(response.responseText || response.errorMessage);
+                    }
+
+                    const campaigns = JSON.parse(response.responseText);
+
+                    campaigns.forEach(campaign => this.campaigns.push(campaign))
+                }).catch((err) => {
+                    this.apiError = true;
+                    this.apiErrorMessage = err.message;
+                    this.tituloResposta = 'Erro ao recuperar configuração';
+                    this.showAuthAlert = this.isAuthError(this.statusCode);
+                }).finally(() => {
+                    this.show_load = false;
+                });
             });
-
-            const nestedCampaigns = []
-
-            response.forEach(agencyObject => {
-                Object.values(agencyObject).forEach(agencyCampaigns => {
-                    nestedCampaigns.push(agencyCampaigns);
-                })
-            });
-
-            nestedCampaigns.forEach(campaign => {
-                campaign.forEach(campaignObject => {
-                    this.campaigns.push(campaignObject)
-                })
-            })
         }).catch((err) => {
             this.apiError = true;
             this.apiErrorMessage = err.message;
@@ -289,9 +298,9 @@ export default {
         },
         clearForm () {
             this.$v.$reset()
-            // this.form.agency = null
+            // this.form.adOpsTeam = null
             this.form.campaignId = null;
-            this.form.company = null;
+            this.form.advertiser = null;
             this.form.file = null;
             this.form.campaign = null;
             this.elegible_campaigns = null;
@@ -320,7 +329,7 @@ export default {
                 headers: {
                     token: localStorage.getItem('userToken'),
                     campaign: this.form.campaign,
-                    agency: this.form.agency === 'CompanyCampaigns'? '': this.form.agency
+                    adOpsTeam: this.form.adOpsTeam === 'AdvertiserCampaigns'? '': this.form.adOpsTeam
                 },
                 body: formdata,
                 redirect: 'follow'
@@ -388,10 +397,10 @@ export default {
         getCampaigns() {
             this.form.campaignId = null;
             let selectedCampaigns = [];
-            this.selected_agency === 'Campanhas Internas'? this.form.agency = 'CompanyCampaigns': this.form.agency = this.selected_agency;
+            this.selected_adOpsTeam === 'Campanhas Internas'? this.form.adOpsTeam = 'AdvertiserCampaigns': this.form.adOpsTeam = this.selected_adOpsTeam;
 
             this.campaigns.forEach(campaignObject => {
-                if(campaignObject.agency === this.form.agency && campaignObject.activate === true){
+                if(campaignObject.adOpsTeam === this.form.adOpsTeam && campaignObject.active === true){
                     selectedCampaigns.push({campaignId:campaignObject.campaignId, campaignName: campaignObject.campaignName})
                 }
             })
@@ -429,7 +438,7 @@ export default {
         margin-left: 50px;
     }
 
-    .agency-select {
+    .adOpsTeam-select {
         margin-right: 30px;
         margin-bottom: 10px;
         margin-left: -30px;
@@ -456,7 +465,7 @@ export default {
         margin-top: 10px;
         border: 40px solid white;
     }
-    /* .agency-select {
+    /* .adOpsTeam-select {
         margin-right: 30px;
         margin-bottom: 10px;
         margin-left: -30px;

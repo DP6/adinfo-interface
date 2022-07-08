@@ -1,35 +1,20 @@
 <template>
     <div>
-        <titulo-principal titulo="Registrar usuário"></titulo-principal>
+        <titulo-principal titulo="Cadastrar AdOpsTeam"></titulo-principal>
         <form class="md-layout">
             <md-card class="md-layout-item md-larger-size">
                 <md-card-content>
                     <div class="md-layout md-gutter">
-                        <div v-if=show_field class="md-layout-item md-medium-size-100">
-                            <md-field :class="getValidationClass('adOpsTeam')">
-                                <label for="adOpsTeam">AdOpsTeam</label>
-                                <md-input name="adOpsTeam" id="adOpsTeam" v-model="form.adOpsTeam"/>
-                                <span class="md-error" v-if="!$v.form.adOpsTeam.required">The adOpsTeam name is required</span>
-                            </md-field>
-                        </div>
                         <div class="md-layout-item md-medium-size-100">
-                            <md-field :class="getValidationClass('email')">
-                                <label for="email">E-mail</label>
-                                <md-input name="email" id="email" v-model="form.email"/>
-                                <span class="md-error" v-if="!$v.form.email.required">The email is required</span>
-                            </md-field>
-                        </div>
-                        <div class="md-layout-item md-medium-size-100">
-                            <md-field :class="getValidationClass('senha')">
-                                <label for="senha">Senha</label>
-                                <md-input name="senha" id="senha" v-model="form.senha" type="password"/>
-                                <span class="md-error" v-if="!$v.form.senha.required">The senha is required</span>
+                            <md-field :class="getValidationClass('campaign')">
+                                <label for="campaign">AdOpsTeam</label>
+                                <md-input name="adopsteam" id="adopsteam" v-model="form.adOpsTeam"/>
                             </md-field>
                         </div>
                     </div>
                 </md-card-content>
                 <md-card-actions>
-                    <botao-submit nome_do_botao="Criar" @botaoAtivado="createUser()"></botao-submit>
+                    <botao-submit nome_do_botao="Criar" @botaoAtivado="createAdOpsTeam()"></botao-submit>
                 </md-card-actions>
             </md-card>
         </form>
@@ -76,10 +61,7 @@ export default {
     data() {
         return {
             form: {
-                // advertiser: localStorage.getItem('advertiser') || '',
                 adOpsTeam: null,
-                email: null,
-                senha: null,
             },
             visivel: false,
             tituloResposta: 'Resposta',
@@ -89,32 +71,19 @@ export default {
             show_load: false,
             show_field: false,
             apiError: false,
-            apiErrorMessage: ''
+            apiErrorMessage: '',
         }
     },
     validations: {
         form: {
             adOpsTeam: {
             },
-            advertiser: {
+            campaign: {
                 required,
-                minLength: minLength(3)
-            },
-            email: {
-                required,
-                email
-            },
-            senha: {
-                required,
-                minLength: minLength(5)
+                minLength: minLength(2)
             }
         }
     },
-    created() {
-    if(localStorage.getItem('permission') !== 'adOpsManager'){
-        this.show_field = true;
-    }
-  },
     methods: {
         getValidationClass (fieldName) {
             const field = this.$v.form[fieldName]
@@ -124,33 +93,17 @@ export default {
                 }
             }
         },
-        clearForm () {
+        clearForm() {
             this.$v.$reset()
             this.form.adOpsTeam = null
-            this.form.advertiser = null
-            this.form.email = null
-            this.form.senha = null
         },
-        createUser() {
+        createAdOpsTeam() {
             let statusCode;
             this.visivel = false;
             this.apiError = false;
-            const url = `${this.$apiRoute}/register`;
+            const url = `${this.$apiRoute}/adOpsTeam`;
             const formdata = new FormData();
-            let permission = 'user';
-            let adOpsTeam = this.form.adOpsTeam;
-            formdata.append("email", this.form.email);
-            formdata.append("password", this.form.senha);
-            if(localStorage.getItem('permission') === 'admin' && !this.form.adOpsTeam){
-                permission = 'admin';
-            } else if(localStorage.getItem('permission') === 'admin' && this.form.adOpsTeam){
-                permission = 'adOpsManager';
-            }
-            if(localStorage.getItem('permission')==='adOpsManager' && !this.form.adOpsTeam){
-                adOpsTeam = localStorage.getItem('adOpsTeam');
-            }
-            formdata.append("adOpsTeam", (localStorage.getItem('permission')==='adOpsManager' && !this.form.adOpsTeam)?localStorage.getItem('adOpsTeam'):this.form.adOpsTeam);
-            formdata.append("permission", permission);
+            formdata.append("name", this.form.adOpsTeam);
             const requestOptions = {
                 method: 'POST',
                 headers: {
@@ -178,6 +131,7 @@ export default {
             }).finally(() => {
                 this.visivel = true;
                 this.show_load = false;
+                this.clearForm();
             });
         },
         isAuthError(statusCode){

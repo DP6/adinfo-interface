@@ -6,10 +6,10 @@
                 <md-card-content>
                     <!-- <div class="md-layout md-gutter">
                         <div class="md-layout-item md-medium-size-100">
-                            <md-field :class="getValidationClass('company')">
-                                <label for="company">Empresa</label>
-                                <md-input disabled=disable name="company" id="company" v-model="form.company"/>
-                                <span class="md-error" v-if="!$v.form.company.required">The first name is required</span>
+                            <md-field :class="getValidationClass('advertiser')">
+                                <label for="advertiser">Empresa</label>
+                                <md-input disabled=disable name="advertiser" id="advertiser" v-model="form.advertiser"/>
+                                <span class="md-error" v-if="!$v.form.advertiser.required">The first name is required</span>
                             </md-field>
                         </div>
                     </div> -->
@@ -83,7 +83,7 @@ export default {
     },
     validations: {
         form: {
-            company: {
+            advertiser: {
                 required,
                 minLength: minLength(3)
             }
@@ -112,7 +112,7 @@ export default {
         },
         clearForm() {
             this.$v.$reset()
-            this.form.company = null
+            this.form.advertiser = null
         },
         downloadTemplate() {
             this.download(this.templateFile, 'template.csv');

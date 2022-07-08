@@ -12,16 +12,20 @@ import CadastroCampaign from './components/cadastro_campaign/CadastroCampaign.vu
 import GerenciamentoCampaign from './components/gerenciamento_campaign/GerenciamentoCampaign.vue';
 import ConsultaCsv from './components/consulta_csv/ConsultaCsv.vue';
 import BaixarConfiguracao from './components/baixar_configuracao/BaixarConfiguracao.vue';
+import CadastroAdOpsTeam from './components/cadastro_adopsteam/CadastroAdOpsTeam.vue'
+import GerenciamentoAdOpsTeam from './components/gerenciamento_adopsteam/GerenciamentoAdOpsTeam.vue';
 
 export const routes = [
     { path: '/', component: Interface, titulo:'Interface',
     children:[
-        { path: 'parametrizacao', component: Parametrizacao, titulo: 'Parametrização', permission: 'admin|owner|agencyOwner|user', group: 'Parametrizar', icon: 'outlined_flag'},
-        { path: 'campaignCsv', component: ConsultaCsv, titulo: 'Consultar CSVs', permission: 'admin|owner|agencyOwner|user', group: 'Campanhas', icon: 'campaign'},
-        { path: 'newCampaign', component: CadastroCampaign, titulo: 'Cadastrar Campanha', permission: 'admin|owner|agencyOwner', group: 'Campanhas', icon: 'campaign'},
-        { path: 'gerenciamentoCampanhas', component: GerenciamentoCampaign, titulo: 'Gerenciar Campanha', permission: 'admin|owner|agencyOwner', group: 'Campanhas', icon: 'campaign'},
-        { path: 'template', component: Template, titulo: 'Template', permission: 'admin|owner|agencyOwner|user', group: 'Parametrizar', icon: 'outlined_flag'},
-        { path: 'updateConfig', component: AtualizarConfiguracao, titulo: 'Atualizar Configuração', permission: 'admin|owner|agencyOwner|user', group: 'Configurações', icon: 'settings'},
+        { path: 'parametrizacao', component: Parametrizacao, titulo: 'Parametrização', permission: 'admin|owner|adOpsManager|user', group: 'Parametrizar', icon: 'outlined_flag'},
+        { path: 'campaignCsv', component: ConsultaCsv, titulo: 'Consultar CSVs', permission: 'admin|owner|adOpsManager|user', group: 'Campanhas', icon: 'campaign'},
+        { path: 'newCampaign', component: CadastroCampaign, titulo: 'Cadastrar Campanha', permission: 'admin|owner|adOpsManager', group: 'Campanhas', icon: 'campaign'},
+        { path: 'gerenciamentoCampanhas', component: GerenciamentoCampaign, titulo: 'Gerenciar Campanha', permission: 'admin|owner|adOpsManager', group: 'Campanhas', icon: 'campaign'},
+        { path: 'newAdOpsTeam', component: CadastroAdOpsTeam, titulo: 'Cadastrar AdOpsTeams', permission: 'admin|owner', group: 'AdOpsTeams', icon: 'groups'},
+        { path: 'gerenciamentoAdOpsTeams', component: GerenciamentoAdOpsTeam, titulo: 'Gerenciar AdOpsTeams', permission: 'admin|owner', group: 'AdOpsTeams', icon: 'groups'},
+        { path: 'template', component: Template, titulo: 'Template', permission: 'admin|owner|adOpsManager|user', group: 'Parametrizar', icon: 'outlined_flag'},
+        { path: 'updateConfig', component: AtualizarConfiguracao, titulo: 'Atualizar Configuração', permission: 'admin|owner|adOpsManager|user', group: 'Configurações', icon: 'settings'},
         { path: 'newConfig', component: NovaConfiguracao, titulo: 'Nova Configuração', permission: 'admin|owner', group: 'Configurações', icon: 'settings'},
         { path: 'baixarConfig', component: BaixarConfiguracao, titulo: 'Baixar Configuração', permission: 'admin|owner', group: 'Configurações', icon: 'settings'},
         { path: 'register', component: Register, titulo: 'Registrar usuário', permission: 'admin|owner|agencyOwner', group: 'Usuários', icon: 'people'},
