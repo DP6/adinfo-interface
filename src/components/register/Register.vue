@@ -5,11 +5,18 @@
             <md-card class="md-layout-item md-larger-size">
                 <md-card-content>
                     <div class="md-layout md-gutter">
-                        <div v-if=show_field class="md-layout-item md-medium-size-100">
-                            <md-field :class="getValidationClass('adOpsTeam')">
+                        <div class="md-layout-item md-layout md-gutter">
+                            <md-field>
                                 <label for="adOpsTeam">AdOpsTeam</label>
-                                <md-input name="adOpsTeam" id="adOpsTeam" v-model="form.adOpsTeam"/>
-                                <span class="md-error" v-if="!$v.form.adOpsTeam.required">The adOpsTeam name is required</span>
+                                <md-select v-model="form.adOpsTeam" name="adOpsTeam" id="adOpsTeam" >
+                                    <md-optgroup label="AdOpsTeams">
+                                        <md-option
+                                            v-for="adOpsTeam in adOpsTeams"
+                                            :key="adOpsTeam.id"
+                                            :value="adOpsTeam.adOpsTeam"
+                                        >{{adOpsTeam.adOpsTeam}}</md-option>
+                                    </md-optgroup>
+                                </md-select>
                             </md-field>
                         </div>
                         <div class="md-layout-item md-medium-size-100">
@@ -31,6 +38,9 @@
                 <md-card-actions>
                     <botao-submit nome_do_botao="Criar" @botaoAtivado="createUser()"></botao-submit>
                 </md-card-actions>
+                <p v-if=apiError v-show="apiError" class="response">
+                    {{ apiErrorMessage }}
+                </p>
             </md-card>
         </form>
         <div class="load" v-show="show_load">
@@ -89,7 +99,9 @@ export default {
             show_load: false,
             show_field: false,
             apiError: false,
-            apiErrorMessage: ''
+            apiErrorMessage: '',
+            adOpsTeams: [],
+            selected_adOpsTeam:'',
         }
     },
     validations: {
@@ -114,6 +126,41 @@ export default {
     if(localStorage.getItem('permission') !== 'adOpsManager'){
         this.show_field = true;
     }
+    if(localStorage.getItem('permission')==='owner' || localStorage.getItem('permission')==='admin'){
+        const urlAdOpsTeamList = `${this.$apiRoute}/adOpsTeam/list`;
+        fetch(urlAdOpsTeamList, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                token: localStorage.getItem('userToken')
+            }
+        }).then((response) => {
+            this.statusCode = response.status;
+            return response.json();
+        }).then((response) => {
+            if(this.statusCode !== 200) {
+                throw new Error(response.responseText || response.errorMessage);
+            }
+
+            const adOpsTeams = JSON.parse(response.responseText)
+
+            adOpsTeams.forEach((adOpsTeam, index) => {
+                if(adOpsTeam.active){
+                    this.adOpsTeams.push({id:index, adOpsTeam: adOpsTeam.name});
+                }
+            });
+        }).catch((err) => {
+            this.apiError = true;
+            this.apiErrorMessage = err.message;
+            this.tituloResposta = 'Erro ao recuperar configuração';
+            this.showAuthAlert = this.isAuthError(this.statusCode);
+        }).finally(() => {
+            this.show_load = false;
+        });
+    } else{
+        this.adOpsTeams.push({id:0, adOpsTeam: localStorage.getItem('adOpsTeam')});
+    }
+
   },
     methods: {
         getValidationClass (fieldName) {
@@ -139,18 +186,20 @@ export default {
             const formdata = new FormData();
             let permission = 'user';
             let adOpsTeam = this.form.adOpsTeam;
+            if(!adOpsTeam) throw Error('O valor do AdOpsTeam é obrigatório!')
             formdata.append("email", this.form.email);
             formdata.append("password", this.form.senha);
-            if(localStorage.getItem('permission') === 'admin' && !this.form.adOpsTeam){
+            if(localStorage.getItem('permission') === 'owner'){
                 permission = 'admin';
-            } else if(localStorage.getItem('permission') === 'admin' && this.form.adOpsTeam){
+            } else if(localStorage.getItem('permission') === 'admin'){
                 permission = 'adOpsManager';
             }
-            if(localStorage.getItem('permission')==='adOpsManager' && !this.form.adOpsTeam){
-                adOpsTeam = localStorage.getItem('adOpsTeam');
+            if(localStorage.getItem('permission')==='adOpsManager'){
+                permission = 'user'
             }
-            formdata.append("adOpsTeam", (localStorage.getItem('permission')==='adOpsManager' && !this.form.adOpsTeam)?localStorage.getItem('adOpsTeam'):this.form.adOpsTeam);
+            formdata.append("adOpsTeam", adOpsTeam);
             formdata.append("permission", permission);
+            console.log('formdata', formdata)
             const requestOptions = {
                 method: 'POST',
                 headers: {
@@ -175,6 +224,9 @@ export default {
                 this.showAuthAlert = this.isAuthError(statusCode);
                 this.apiError = true;
                 this.apiErrorMessage = err.message;
+                this.visibilidadeResposta = true;
+                this.tituloResposta = 'Falha no Registro do Usuário';
+                console.log(err);
             }).finally(() => {
                 this.visivel = true;
                 this.show_load = false;
