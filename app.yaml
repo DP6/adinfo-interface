@@ -1,11 +1,7 @@
 runtime: nodejs10
 service: adinfo-interface-estable
 handlers:
-- url: /
+- url: /(.*)
   static_files: index.html
   require_matching_file: false
   upload: index.html
-- url: /(.*)
-  static_files: \1
-  require_matching_file: false
-  upload: (.*)
