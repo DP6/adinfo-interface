@@ -28,10 +28,10 @@ export const routes = [
         { path: 'updateConfig', component: AtualizarConfiguracao, titulo: 'Atualizar Configuração', permission: 'admin|owner|adOpsManager|user', group: 'Configurações', icon: 'settings'},
         { path: 'newConfig', component: NovaConfiguracao, titulo: 'Nova Configuração', permission: 'admin|owner', group: 'Configurações', icon: 'settings'},
         { path: 'baixarConfig', component: BaixarConfiguracao, titulo: 'Baixar Configuração', permission: 'admin|owner', group: 'Configurações', icon: 'settings'},
-        { path: 'register', component: Register, titulo: 'Registrar usuário', permission: 'admin|owner|agencyOwner', group: 'Usuários', icon: 'people'},
-        { path: 'dependencyConfig', component: DependencyConfig, titulo: 'Dependências', permission: 'admin|owner|agencyOwner|user', group: 'Configurações', icon: 'settings'},
-        { path: 'alterarSenha', component: AlterarSenha, titulo: 'Alterar Senha', permission: 'admin|owner|agencyOwner|user', group: '', icon: 'lock'},
-        { path: 'gerenciamentoUsuarios', component: GerenciamentoUsuarios, titulo: 'Gerenciamento de Usuários', permission: 'admin|owner|agencyOwner', group: 'Usuários', icon: 'people'}
+        { path: 'register', component: Register, titulo: 'Registrar usuário', permission: 'admin|owner|adOpsManager', group: 'Usuários', icon: 'people'},
+        { path: 'dependencyConfig', component: DependencyConfig, titulo: 'Dependências', permission: 'admin|owner|adOpsManager|user', group: 'Configurações', icon: 'settings'},
+        { path: 'alterarSenha', component: AlterarSenha, titulo: 'Alterar Senha', permission: 'admin|owner|adOpsManager|user', group: '', icon: 'lock'},
+        { path: 'gerenciamentoUsuarios', component: GerenciamentoUsuarios, titulo: 'Gerenciamento de Usuários', permission: 'admin|owner|adOpsManager', group: 'Usuários', icon: 'people'}
     ]},
     { path: '/login', component: Login, titulo:'Login'},
 ];
