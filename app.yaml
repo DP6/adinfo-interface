@@ -1,7 +1,26 @@
 runtime: nodejs10
 service: adinfo-interface-estable
 handlers:
-- url: /(.*)
+- url: /(.+\.js)
+  static_files: \1
+  upload: (.+\.js)
+  secure: always
+  redirect_http_response_code: 301
+
+- url: /(.+\.jpg)
+  static_files: \1
+  upload: (.+\.jpg)
+  secure: always
+  redirect_http_response_code: 301
+
+- url: /(.+)
   static_files: index.html
-  require_matching_file: false
   upload: index.html
+  secure: always
+  redirect_http_response_code: 301
+  
+- url: /
+  static_files: index.html
+  upload: index.html
+  secure: always
+  redirect_http_response_code: 301
