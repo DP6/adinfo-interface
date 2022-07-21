@@ -1,4 +1,4 @@
-runtime: nodejs10
+runtime: nodejs16
 service: adinfo-interface-estable
 handlers:
 - url: /(.+\.js)
@@ -18,7 +18,7 @@ handlers:
   upload: index.html
   secure: always
   redirect_http_response_code: 301
-  
+
 - url: /
   static_files: index.html
   upload: index.html
