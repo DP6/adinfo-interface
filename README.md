@@ -2,8 +2,6 @@
 
 > A Vue.js project
 
-# Interface-Adinfo
-
 <div align="center"> <img src="https://raw.githubusercontent.com/DP6/templates-centro-de-inovacoes/main/public/images/centro_de_inovacao_dp6.png" height="100px" /> </div> <div align="center"> <img src="https://img.shields.io/codacy/grade/6276f660577e41e0a7b7e4605c4f0434"> <img src="https://img.shields.io/codacy/coverage/6276f660577e41e0a7b7e4605c4f0434"> <img src="https://img.shields.io/github/issues/DP6/penguin-adinfo"> <img src="https://img.shields.io/github/license/DP6/penguin-adinfo"> </div>
 
   **ADInfo-interface** é a interface do [penguin ADinfo](https://github.com/DP6/adinfo-interface) ferramenta que foi desenvolvida para facilitar o controle e padronização do uso de parametrização e nomenclatura de mídia digital. Os principais componentes no uso da aplicação são a configuração, um JSON contendo quais campos são aceitos na taxonomia de mídia, o permissionamento para controle de ações permitidas por nível de acesso, e o arquivo de parametrização, um CSV contendo a lista de URLs e os campos preenchidos conforme o que foi configurado.
@@ -23,37 +21,20 @@ Por meio de controle de acessos, histórico de campanhas e versionamento de taxo
 - API [ADinfo](https://github.com/DP6/penguin-adinfo#instala%C3%A7%C3%A3o) já hospedada;
 - Node a partir da versão 16;
 - Vue.js.
-## Hospedagem
-
-
 
 # Executando a aplicação
 
-  
-
 *Clone o projeto do github para sua máquina local ou Cloud Shell, usando o comando abaixo:*
 
-  
-
-https://github.com/DP6/adinfo-interface.git
-
-  
+```https://github.com/DP6/adinfo-interface.git```
 
 **Após a instalação, será necessário apenas iniciar a interface executando os seguintes comandos :**
 
-  
-
 *Instala as dependências para execução local:*
-
-  
 
 ```npm install```
 
-  
-
-*Executa a aplicação em ambiente local(http://localhost:8080/):*
-
-  
+*Executa a aplicação em ambiente local(<http://localhost:8080/>):*
 
 ```nmp start```
 
@@ -65,11 +46,11 @@ https://github.com/DP6/adinfo-interface.git
 
 No Adinfo, temos dois tipos dois tipos de usuário:
 
-  - **Admin** - Nivel mais alto de permissionamento, destinado aos usuários que estabelecerão os padrões a serem seguidos na parametrização de campanhas. Possui acesso a todos os menus, inclusive abas de Atualizar configuração ou Nova configuração, Dependências e Registro de usuários.
+- **Admin** - Nivel mais alto de permissionamento, destinado aos usuários que estabelecerão os padrões a serem seguidos na parametrização de campanhas. Possui acesso a todos os menus, inclusive abas de Atualizar configuração ou Nova configuração, Dependências e Registro de usuários.
 
 - **Usuário** - Nível mais limitado de acesso, destinado à operação, ou seja, que irão parametrizar e implementar campanhas. Possui acesso apenas às abas de Parametrização, CSV e Template.
 
- ### 1.2 Como adicionar novos usuários ao Adinfo
+### 1.2 Como adicionar novos usuários ao Adinfo
 
 **![](https://lh4.googleusercontent.com/d5WKB29ZulGuVLJ4K4jixKZltp9bvFqT8WwYLvcBLDFvpxkhDnh4cif3n3YnOVEfMOf2DzeXwjYOPLvT4HDy3qM3pKq4gK78VN2Qhy8_Yydcq0fe2PiKGOfWhiVP_za0IiuLMtlZOcKpqCKfjybljSc)**
 
@@ -81,15 +62,11 @@ No Adinfo, temos dois tipos dois tipos de usuário:
 
 4. Logo abaixo na sub aba de Gerenciamento de Usuários também é possível ativar e desativar quais usuários terão acesso a plataforma de um modo bem eficiente.
 
-  
-
 ## 2. Como parametrizar campanhas
 
 ### 2.1 **Download do arquivo de preenchimento**
 
 O primeiro passo do processo é a consulta e download do arquivo de preenchimento ou template. O template possui todas as informações definidas pelo Administrador como necessárias nos elementos de nomenclatura e URLs, assim como suas opções de preenchimento e dependências, quando relevantes.
-
-  
 
 ![](https://lh4.googleusercontent.com/63IHzxnijB35AAeFEVIf_IIy-JWaod0WR9C8ra7klCww9Vw1SuOEKok50yJxDNo-Siki8lTpSrKIXWSlTjwe77avvap1nL-rCUze9iu4NxKAZaJdpp19-tcVHsZfivh9vO0nACfvDJNlJWPoSWG-nGs)
 
@@ -101,23 +78,15 @@ O primeiro passo do processo é a consulta e download do arquivo de preenchiment
 
 4. Após a conferência dos campos, realize o download do template em um dos dois formatos disponíveis, CSV ou XLSX (3).
 
-  
-
 *Após o Download, as linhas devem ser preenchidas com as respectivas informações, necessárias para a geração do arquivo de parametrização.*
-
-  
 
 ### 2.2 Parametrização na ferramenta
 
 Com o template devidamente preenchido, o primeiro passo é exportar a aba template em formato CSV.
 
-  
-
 ![](https://lh4.googleusercontent.com/ZbMQAkBd6a7gciJHZn_iMuqdlA8KkXMBNoQyHC7n757Hnw0s01LtR_oHBKQCfVfa0lDfPUZLthVQ5XLRC7UeumwSQQSBZzBVCQbQb8znKog_4m6oXcyozZK4rNV5kM4nXkWZbQtmG1OwrwLWKDVV_mc)
 
 Para realizar a parametrização, realize os passos a seguir:
-
-  
 
 1. Navegue até a aba parametrização, na opção Parametrizar do menu lateral;
 
@@ -131,21 +100,13 @@ Para realizar a parametrização, realize os passos a seguir:
 
 6. E logo em seguida a mídia desejada.
 
-  
-
 7. Com todos os campos selecionados, clique na opção parametrizar.
 
-  
-
 *Após a parametrização, o Adinfo apresentará uma prévia das informações configuradas para revisão. Para consultar o resultado, selecione a opção Download Parametrização.*
-
-  
 
 # Como contribuir
 
 Pull requests são bem-vindos! Nós vamos adorar ajuda para evoluir esse modulo. Sinta-se livre para navegar por issues abertas buscando por algo que possa fazer. Caso tenha uma nova feature ou bug, por favor abra uma nova issue para ser acompanhada pelo nosso time.
-
-  
 
 ### 1.1 Requisitos obrigatórios
 
@@ -159,5 +120,4 @@ Pull requests são bem-vindos! Nós vamos adorar ajuda para evoluir esse modulo.
 
 e-mail: [koopas@dp6.com.br](mailto:koopas@dp6.com.br)
 
-  
  <img src="https://raw.githubusercontent.com/DP6/templates-centro-de-inovacoes/main/public/images/koopa.png" height="100" />
