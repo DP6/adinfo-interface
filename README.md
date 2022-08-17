@@ -8,7 +8,7 @@
 
   **ADInfo-interface** é a interface do [penguin ADinfo](https://github.com/DP6/adinfo-interface) ferramenta que foi desenvolvida para facilitar o controle e padronização do uso de parametrização e nomenclatura de mídia digital. Os principais componentes no uso da aplicação são a configuração, um JSON contendo quais campos são aceitos na taxonomia de mídia, o permissionamento para controle de ações permitidas por nível de acesso, e o arquivo de parametrização, um CSV contendo a lista de URLs e os campos preenchidos conforme o que foi configurado.
 
-> A interface do ADinfo, é baseada em **Vue.js**, **Node.js** & **Html & Css**, e atualmente esta sendo hospedada no **App Engine**, tendo as configurações de ambiente feitas por **App.yaml**. Também contamos com **Babelrc** para transpilar códigos e manter a compatibilidade com navegadores.
+ A interface do ADinfo, é baseada em **Vue.js**, **Node.js** & **Html & Css**, e atualmente esta sendo hospedada no **App Engine**, tendo as configurações de ambiente feitas por **App.yaml**. Também contamos com **Babelrc** para transpilar códigos e manter a compatibilidade com navegadores.
 
 # Funcionalidade
 
@@ -47,7 +47,7 @@ https://github.com/DP6/adinfo-interface.git
 
   
 
-npm install
+```npm install```
 
   
 
@@ -55,7 +55,7 @@ npm install
 
   
 
-nmp start
+```nmp start```
 
 # Overview da Interface
 
