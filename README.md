@@ -1,5 +1,5 @@
 #  Interface-Adinfo
-<div align="center"> <img src="https://raw.githubusercontent.com/DP6/templates-centro-de-inovacoes/main/public/images/centro_de_inovacao_dp6.png" height="100px" /> </div> <div align="center"> <img 
+<div align="center"> <img src="https://raw.githubusercontent.com/DP6/templates-centro-de-inovacoes/main/public/images/centro_de_inovacao_dp6.png" height="100px" /> </div> <div align="center"> 
 
 **ADInfo-interface** é a interface do [penguin ADinfo](https://github.com/DP6/adinfo-interface) ferramenta que foi desenvolvida para facilitar o controle e padronização do uso de parametrização e nomenclatura de mídia digital. Os principais componentes no uso da aplicação são a configuração, um JSON contendo quais campos são aceitos na taxonomia de mídia, o permissionamento para controle de ações permitidas por nível de acesso, e o arquivo de parametrização, um CSV contendo a lista de URLs e os campos preenchidos conforme o que foi configurado.
 
