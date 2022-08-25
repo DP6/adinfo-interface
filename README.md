@@ -1,19 +1,18 @@
 #  Interface-Adinfo
 <div align="center"> <img src="https://raw.githubusercontent.com/DP6/templates-centro-de-inovacoes/main/public/images/centro_de_inovacao_dp6.png" height="100px" /> </div>
 
-**ADInfo-interface** é a interface do [penguin ADinfo](https://github.com/DP6/adinfo-interface) ferramenta que foi desenvolvida para facilitar o controle e padronização do uso de parametrização e nomenclatura de mídia digital. Os principais componentes no uso da aplicação são a configuração, um JSON contendo quais campos são aceitos na taxonomia de mídia, o permissionamento para controle de ações permitidas por nível de acesso, e o arquivo de parametrização, um CSV contendo a lista de URLs e os campos preenchidos conforme o que foi configurado.
+**Adinfo-interface** é a interface do [penguin Adinfo](https://github.com/DP6/penguin-adinfo) ferramenta que foi desenvolvida para facilitar o controle e padronização do uso de parametrização e nomenclatura de mídia digital. Os principais componentes no uso da aplicação são a configuração, um JSON contendo quais campos são aceitos na taxonomia de mídia, um CSV contendo a lista de URLs e os campos preenchidos conforme o que foi configurado.
 
 # Funcionalidade 
 ![](https://lh4.googleusercontent.com/HMY0_gjwrD_ysy5o73A76X_FlpaVyVVyIguCZdmgk4DJ_15dLs4_yilPItgmn-6iUETTSEzTZl4Fn3GzOs3K_5IBM7bUEd1wlNmgnAs8PE-uYrBgnVlta55-TNQW_c0XUP9YjuCSzsJTBDi-C2PBiSw)
 
-Nossa interface foi idealizada para **simplificar** e **otimizar** a parametrização de links de forma altamente costumizável, sendo uma ferramenta descomplicada de se utilizar e que irá centralizar de **forma segura** as informações mais relevantes do seu negócio. 
+A interface foi idealizada para **simplificar** e **otimizar** a parametrização de links de forma altamente customizável, sendo uma ferramenta descomplicada de se utilizar e que irá centralizar de **forma segura** as informações mais relevantes do seu negócio. 
 
-Por meio de controle de acessos, histórico de campanhas e versionamento de taxonomia, torna a interface do ADinfo muito amigável, visualmente simples e adaptável as necessidades de cada marca.
 
 # Requisitos para utilização
-- Ambiente de hospedagem de aplicações, em nuvem, sugestão :
-( [Heroku](https://www.heroku.com/), [App Engine](https://cloud.google.com/appengine?utm_source=google&utm_medium=cpc&utm_campaign=latam-BR-all-pt-dr-SKWS-all-all-trial-e-dr-1011454-LUAC0008679&utm_content=text-ad-none-any-DEV_c-CRE_429626774325-ADGP_Hybrid%20%7C%20SKWS%20-%20EXA%20%7C%20Txt%20~%20Compute_App-Engine-KWID_43700040369789872-kwd-359982465286&utm_term=KW_app%20engine-ST_App%20Engine&gclid=Cj0KCQjw3eeXBhD7ARIsAHjssr_cyDm7Ya38V6I8-BcE6voMScPtjvVzlNVGBA6ojNy62oGmesxhBmIaAjHpEALw_wcB&gclsrc=aw.ds), [AWS](https://aws.amazon.com/pt/free/?all-free-tier.sort-by=item.additionalFields.SortRank&all-free-tier.sort-order=asc&awsf.Free%20Tier%20Types=*all&awsf.Free%20Tier%20Categories=categories#compute&trk=b6664494-006e-43c0-8c10-90b5933786ac&sc_channel=ps&sc_campaign=acquisition&sc_medium=ACQ-P%7CPS-GO%7CNon-Brand%7CDesktop%7CSU%7CCompute%7CSolution%7CBR%7CPT%7CText&s_kwcid=AL!4422!3!589951437530!p!!g!!servi%C3%A7o%20de%20hospedagem&ef_id=Cj0KCQjw3eeXBhD7ARIsAHjssr9WRQ-E-HQzwFNMMxch0__BsklfRKjyQe45XxILOpWR5Kvpr5nLpR8aAkuwEALw_wcB:G:s&s_kwcid=AL!4422!3!589951437530!p!!g!!servi%C3%A7o%20de%20hospedagem), [HostGator](https://www.hostgator.com.br/hospedagem-de-sites-seu-sucesso?gclid=Cj0KCQjw3eeXBhD7ARIsAHjssr9h3DR2TJb2qaPgLohH2Ba__U9d4g6VPuvHGQdpE3iVOnEm_exgLu4aAtJEEALw_wcB)) ; 
-- API [ADinfo](https://github.com/DP6/penguin-adinfo#instala%C3%A7%C3%A3o) já hospedada;
+- Ambiente de hospedagem de aplicações sugestão:
+( [Heroku](https://www.heroku.com/), [App Engine](https://cloud.google.com/appengine?utm_source=google&utm_medium=cpc&utm_campaign=latam-BR-all-pt-dr-SKWS-all-all-trial-e-dr-1011454-LUAC0008679&utm_content=text-ad-none-any-DEV_c-CRE_429626774325-ADGP_Hybrid%20%7C%20SKWS%20-%20EXA%20%7C%20Txt%20~%20Compute_App-Engine-KWID_43700040369789872-kwd-359982465286&utm_term=KW_app%20engine-ST_App%20Engine&gclid=Cj0KCQjw3eeXBhD7ARIsAHjssr_cyDm7Ya38V6I8-BcE6voMScPtjvVzlNVGBA6ojNy62oGmesxhBmIaAjHpEALw_wcB&gclsrc=aw.ds), [AWS](https://aws.amazon.com/pt/free/?all-free-tier.sort-by=item.additionalFields.SortRank&all-free-tier.sort-order=asc&awsf.Free%20Tier%20Types=*all&awsf.Free%20Tier%20Categories=categories#compute&trk=b6664494-006e-43c0-8c10-90b5933786ac&sc_channel=ps&sc_campaign=acquisition&sc_medium=ACQ-P%7CPS-GO%7CNon-Brand%7CDesktop%7CSU%7CCompute%7CSolution%7CBR%7CPT%7CText&s_kwcid=AL!4422!3!589951437530!p!!g!!servi%C3%A7o%20de%20hospedagem&ef_id=Cj0KCQjw3eeXBhD7ARIsAHjssr9WRQ-E-HQzwFNMMxch0__BsklfRKjyQe45XxILOpWR5Kvpr5nLpR8aAkuwEALw_wcB:G:s&s_kwcid=AL!4422!3!589951437530!p!!g!!servi%C3%A7o%20de%20hospedagem); 
+- API [Adinfo](https://github.com/DP6/penguin-adinfo#instala%C3%A7%C3%A3o) já hospedada;
 - Node a partir da versão 16;
 - Vue.js;
 
@@ -57,9 +56,9 @@ No Adinfo, temos dois tipos dois tipos de usuário:
 
 ### 1.2 Como adicionar novos usuários ao Adinfo
 ![](https://lh4.googleusercontent.com/d5WKB29ZulGuVLJ4K4jixKZltp9bvFqT8WwYLvcBLDFvpxkhDnh4cif3n3YnOVEfMOf2DzeXwjYOPLvT4HDy3qM3pKq4gK78VN2Qhy8_Yydcq0fe2PiKGOfWhiVP_za0IiuLMtlZOcKpqCKfjybljSc)
-1.  Através de um usuário com permissão de Adimn, visite a aba de Usuários e em seguida a de Registrar usuários;
+1.  Através de um usuário com permissão de Adimn, visite a aba de Usuários;
     
-2.  Preencha os campos em aberto contendo o e-mail do novo usuário e a senha;
+2.  apos registrar usuários preencha os campos em aberto contendo o e-mail do novo usuário e a senha;
     
 3.  Ao clicar em criar, você receberá em resposta a senha de acesso. Com ela o novo usuário poderá utilizar a interface do Adinfo com acesso de Operação.
 4. Logo abaixo na sub aba de Gerenciamento de Usuários também é possível ativar e desativar quais usuários terão acesso a plataforma de um modo bem eficiente.
@@ -70,11 +69,11 @@ O primeiro passo do processo é a consulta e download do arquivo de preenchiment
 
 ![](https://lh4.googleusercontent.com/63IHzxnijB35AAeFEVIf_IIy-JWaod0WR9C8ra7klCww9Vw1SuOEKok50yJxDNo-Siki8lTpSrKIXWSlTjwe77avvap1nL-rCUze9iu4NxKAZaJdpp19-tcVHsZfivh9vO0nACfvDJNlJWPoSWG-nGs)
 1. Para acessar o template configurado, selecione a opção Parametrizar no menu lateral.
-2. Em seguida a opção Template (1). 
-3. Em seguida, clique em Consultar template (2).
-4. Após a conferência dos campos, realize o download do template em um dos dois formatos disponíveis, CSV ou XLSX (3).
+2. selecione a opção Template (1). 
+3. clique em Consultar template (2).
+4. Após a conferência dos campos, realize o download do template em um dos dois formatos disponíveis, CSV ou Planilha Excel (XLSX). (3).
 
-*Após o Download, as linhas devem ser preenchidas com as respectivas informações, necessárias para a geração do arquivo de parametrização.*
+*Após o Download, as linhas devem ser preenchidas com as respectivas informações necessárias para a geração do arquivo de parametrização.*
 
 ### 2.2 Parametrização na ferramenta
 Com o template devidamente preenchido, o primeiro passo é exportar a aba template em formato CSV.
@@ -92,11 +91,11 @@ Para realizar a parametrização, realize os passos a seguir:
 
 6. Selecione então a ferramenta de Analytics já predefinida.
 
-7. E logo em seguida a mídia desejada.
+7. em seguida a mídia desejada.
 
-8.  Com todos os campos selecionados, clique na opção parametrizar.
+8. Com todos os campos selecionados, clique na opção parametrizar.
     
-*Após a parametrização, o Adinfo apresentará uma prévia das informações configuradas para revisão. Para consultar o resultado, selecione a opção Download Parametrização.*
+*Após a parametrização, o Adinfo apresentará uma prévia das informações configuradas para revisão. Para consultar o resultado, selecione a opção **Download Parametrização**.*
 
 # Como contribuir
 Pull requests são bem-vindos! Nós vamos adorar ajuda para evoluir esse modulo. Sinta-se livre para navegar por issues abertas buscando por algo que possa fazer. Caso tenha uma nova feature ou bug, por favor abra uma nova issue para ser acompanhada pelo nosso time.
