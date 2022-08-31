@@ -47,7 +47,7 @@ após instalação e configuração execute no terminal:
 ``https://github.com/DP6/adinfo-interface.git``
 
 - altere o link de direcionamento da interface para API (caminho:  src > main.js);
-![Nenhuma descrição disponível.](https://scontent-gru1-2.xx.fbcdn.net/v/t1.15752-9/300861576_443014821184808_6378432708256642991_n.png?stp=dst-webp&_nc_cat=100&ccb=1-7&_nc_sid=ae9488&_nc_ohc=JdRdtWWScicAX8yaxQz&_nc_ht=scontent-gru1-2.xx&uss=a2cab187b17e45cf&odm=ZHA2LndvcmtwbGFjZS5jb20&oe2=6335EDEB&oh=03_AVIu7vRwvcqAiDZHE5BZdS6T5gF9p7YiSMMzdYO3DDjFTQ&oe=630F5CDF)
+- ``Vue.prototype.$apiRoute = 'Link da API'.``
   
 **Após a instalação, será necessário apenas iniciar a interface executando os seguintes comandos :**
 
