@@ -1,25 +1,33 @@
 <template>
     <div>
-        <titulo-principal titulo="Gerencimaneto de Usuários"></titulo-principal>
-        
+        <titulo-principal titulo="Gerenciamento de Usuários"></titulo-principal>
+    
         <span class="titulo_categoria" v-if="users_activates.length > 0">Usuários Ativos</span>
-        <md-card class="md-layout-item md-larger-size card" v-if="users_activates.length > 0">
-            <md-list class="lista_usuarios">
-                <md-list-item v-for="user in users_activates" :key="user.id" class="usuario">
+        <md-list class="lista_usuarios" v-for="adOpsTeam in adOpsTeams_active">
+            <md-list-item class="lista_adOpsTeam">
+                <div class="name_adOpsTeam">{{adOpsTeam}}</div> 
+            </md-list-item>
+            
+            <md-card class="md-layout-item md-larger-size card">
+                <md-list-item v-for="user in users_activates" v-if="user.adOpsTeam === adOpsTeam" :key="user.id" class="usuario">
                     {{user.email}} ({{user.permission}})
-                <md-icon class="md-size-2x desativar_usuario" @click.native="gerenciaUsuario(user.id, 'desativa')">toggle_on</md-icon>
+                <md-icon v-if="user.permission !== 'admin'" class="md-size-2x desativar_usuario" @click.native="gerenciaUsuario(user.id, 'desativa')">toggle_on</md-icon>
                 </md-list-item>
-            </md-list>
-        </md-card>
+            </md-card>
+        </md-list>
+        
         <span class="titulo_categoria" v-if="users_deactivates.length > 0">Usuários Desativados</span>
-        <md-card class="md-layout-item md-larger-size card" v-if="users_deactivates.length > 0">
-            <md-list class="lista_usuarios_desativados lista_usuarios">
-                <md-list-item v-for="user in users_deactivates" :key="user.id" class="usuario">
-                    {{user.email}} ({{user.permission}})
-                <md-icon class="md-size-2x ativar_usuario usuario" @click.native="gerenciaUsuario(user.id, 'ativa')">toggle_off</md-icon>
-                </md-list-item>
-            </md-list>
-        </md-card>
+        <md-list class="lista_usuarios" v-for="adOpsTeam in adOpsTeams_disabled">
+            <md-list-item class="lista_adOpsTeam">
+                <div class="name_adOpsTeam">{{adOpsTeam}}</div>
+            </md-list-item>
+            <md-card class="md-layout-item md-larger-size card">
+                    <md-list-item v-for="user in users_deactivates" v-if="user.adOpsTeam === adOpsTeam" :key="user.id" class="usuario">
+                        {{user.email}} ({{user.permission}})
+                    <md-icon v-if="user.permission !== 'admin'" class="md-size-2x ativar_usuario usuario" @click.native="gerenciaUsuario(user.id, 'ativa')">toggle_off</md-icon>
+                    </md-list-item>
+            </md-card>
+        </md-list>
 
         <div class="load" v-show="show_load">
             <md-progress-spinner md-mode="indeterminate"></md-progress-spinner>
@@ -31,7 +39,7 @@
                 {{ apiErrorMessage }}
             </p>
         </div>
-        <md-snackbar :md-position="position" :md-duration="isInfinity ? Infinity : duration" :md-active.sync="showSnackbar" md-persistent>
+        <md-snackbar :md-position="position" :md-duration="6000" :md-active.sync="showSnackbar" md-persistent>
             <span>{{ snackbar_message }}</span>
             <md-button class="md-primary" @click="showSnackbar = false">OK</md-button>
         </md-snackbar>
@@ -41,7 +49,6 @@
 </template>
 
 <script>
-
 import TituloAreaPrincipal from '../shared/titulo_area_principal/TituloAreaPrincipal.vue';
 import InvalidUserAlert from '../shared/login/InvalidUser.vue';
 import { validationMixin } from 'vuelidate'
@@ -66,6 +73,10 @@ export default {
             downloadError: false,
             downloadErrorMessage: 'Erro no Download!',
             responseVisibility: false,
+            adOpsTeams_active: [],
+            adOpsTeams_disabled: [],
+            allUsers: [],
+            adOpsTeam: '',
             users_activates: [],
             users_deactivates: [],
             snackbar_message: '',
@@ -92,6 +103,8 @@ export default {
             const allUsers = JSON.parse(response.responseText).filter(user => user.email !== localStorage.getItem('email'));
             this.users_activates = allUsers.filter(user => user.active == true);
             this.users_deactivates = allUsers.filter(user => user.active == false);
+            this.users_activates.forEach(user => {if(this.adOpsTeams_active.indexOf(user.adOpsTeam) === -1){this.adOpsTeams_active.push(user.adOpsTeam)}});
+            this.users_deactivates.forEach(user => {if(this.adOpsTeams_disabled.indexOf(user.adOpsTeam) === -1){this.adOpsTeams_disabled.push(user.adOpsTeam)}});
         }).catch((err) => {
             this.apiError = true;
             this.apiErrorMessage = err.message;
@@ -107,6 +120,12 @@ export default {
                 return true;
             this.apiError = true;
             return false;
+        },
+        resetAdOpsTeams(){
+            this.adOpsTeams_active = [];
+            this.adOpsTeams_disabled = [];
+            this.users_activates.forEach(user => {if(this.adOpsTeams_active.indexOf(user.adOpsTeam) === -1){this.adOpsTeams_active.push(user.adOpsTeam)}});
+            this.users_deactivates.forEach(user => {if(this.adOpsTeams_disabled.indexOf(user.adOpsTeam) === -1){this.adOpsTeams_disabled.push(user.adOpsTeam)}});
         },
         gerenciaUsuario(id, opcao) {
             let url;
@@ -148,6 +167,7 @@ export default {
                 const allUsers = JSON.parse(response.responseText).filter(user => user.email !== localStorage.getItem('email'));
                 this.users_activates = allUsers.filter(user => user.active == true);
                 this.users_deactivates = allUsers.filter(user => user.active == false);
+                this.resetAdOpsTeams();
             }).catch((err) => {
                 this.showAuthAlert = this.isAuthError(this.statusCode);
                 this.snackbar_message = 'Erro ao mudar status do usuário!';
@@ -164,7 +184,8 @@ export default {
 <style scoped>
 
     .card {
-        margin-left: 50px;
+        margin-top: 10px;
+        margin-left: 10px;
     }
 
     .load {
@@ -186,7 +207,7 @@ export default {
     }
 
     .titulo_categoria {
-        font-size: 20px;
+        font-size: 22px;
         margin-left: 60px;
         padding-bottom: 20px;
         padding-top: 25px;
@@ -194,7 +215,7 @@ export default {
     }
 
     .lista_usuarios {
-        margin-left: 0px!important;
+        margin-left: 40px!important;
     }
 
     .lista_usuarios_desativados {
@@ -215,6 +236,17 @@ export default {
         font-size: 20px;
         cursor: pointer;
         color: green!important;
+    }
+
+    .lista_adOpsTeam {
+        margin-left: 8px;
+        border-bottom: 1px solid #a8c0ff;
+    }
+
+    .name_adOpsTeam{
+        font-size: 16px;
+        font-weight: bold;
+        color: #3f2b96;
     }
 
 </style>
