@@ -30,9 +30,9 @@ Também contamos com *Babelrc* para transpilar códigos e manter a compatibilida
 
 ## Google App Engine
 
-Recomendamos fortemente o **Google App Engine** como ambiente de hospedagem por ser uma opção com escabilidade autómatica, banco de dados e toda infraestrutura que apenas o Google pode oferecer.
+Recomendamos fortemente o **Google App Engine** como ambiente de hospedagem por ser uma opção que requer o mínimo de configurações possíveis, com um serviço de plataforma completo e muita segurança do ambiente, o App Engine se mostra muito eficaz e fácil de utilizar.
 
-Além disso ele permite que a aplicação seja executada em host local, e quando feita alterações, ele atualiza automaticamente em tempo real sem necessidade de reimplementar.
+Além destes pontos, basta apenas enviar o projeto para o App Engine que tudo deve funcionar e qualquer atualização será feita em tempo real sem a necessidade de reimplementação. Consequentemente, não há necessidade de se preocupar em qual plataforma de hardware o serviço está rodando, tanto quanto a versão do sistema operacional e muito menos a configuração de todo o ambiente utilizado.
 
   **Requisitos Google App Engine:**
 
@@ -61,17 +61,7 @@ após instalação e configuração execute no terminal:
 
 # Overview da Interface
 
-## 1. Controle de acessos ao Adinfo
-
-### **1.1 Tipos de usuários**
-
-No Adinfo, temos dois tipos dois tipos de usuário:
-
-- **Admin** - Nivel mais alto de permissionamento, destinado aos usuários que estabelecerão os padrões a serem seguidos na parametrização de campanhas. Possui acesso a todos os menus, inclusive abas de Atualizar configuração ou Nova configuração, Dependências e Registro de usuários.
-
-- **Usuário** - Nível mais limitado de acesso, destinado à operação, ou seja, que irão parametrizar e implementar campanhas. Possui acesso apenas às abas de Parametrização, CSV e Template.
-
-### 1.2 Como adicionar novos usuários ao Adinfo
+## 1. Como adicionar novos usuários ao Adinfo
 
 ![](https://lh4.googleusercontent.com/d5WKB29ZulGuVLJ4K4jixKZltp9bvFqT8WwYLvcBLDFvpxkhDnh4cif3n3YnOVEfMOf2DzeXwjYOPLvT4HDy3qM3pKq4gK78VN2Qhy8_Yydcq0fe2PiKGOfWhiVP_za0IiuLMtlZOcKpqCKfjybljSc)
 
