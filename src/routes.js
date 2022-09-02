@@ -14,6 +14,7 @@ import ConsultaCsv from './components/consulta_csv/ConsultaCsv.vue';
 import BaixarConfiguracao from './components/baixar_configuracao/BaixarConfiguracao.vue';
 import CadastroAdOpsTeam from './components/cadastro_adopsteam/CadastroAdOpsTeam.vue'
 import GerenciamentoAdOpsTeam from './components/gerenciamento_adopsteam/GerenciamentoAdOpsTeam.vue';
+import teste  from './components/atualizar_configuracao/testeConfig.vue'
 
 export const routes = [
     { path: '/', component: Interface, titulo:'Interface',
@@ -25,7 +26,7 @@ export const routes = [
         { path: 'newAdOpsTeam', component: CadastroAdOpsTeam, titulo: 'Cadastrar AdOpsTeams', permission: 'admin|owner', group: 'AdOpsTeams', icon: 'groups'},
         { path: 'gerenciamentoAdOpsTeams', component: GerenciamentoAdOpsTeam, titulo: 'Gerenciar AdOpsTeams', permission: 'admin|owner', group: 'AdOpsTeams', icon: 'groups'},
         { path: 'template', component: Template, titulo: 'Template', permission: 'admin|owner|adOpsManager|user', group: 'Parametrizar', icon: 'outlined_flag'},
-        { path: 'updateConfig', component: AtualizarConfiguracao, titulo: 'Atualizar Configuração', permission: 'admin|owner|adOpsManager|user', group: 'Configurações', icon: 'settings'},
+        { path: 'updateConfig', component: teste, titulo: 'Atualizar Configuração', permission: 'admin|owner|adOpsManager|user', group: 'Configurações', icon: 'settings'},
         { path: 'newConfig', component: NovaConfiguracao, titulo: 'Nova Configuração', permission: 'admin|owner', group: 'Configurações', icon: 'settings'},
         { path: 'baixarConfig', component: BaixarConfiguracao, titulo: 'Baixar Configuração', permission: 'admin|owner', group: 'Configurações', icon: 'settings'},
         { path: 'register', component: Register, titulo: 'Registrar usuário', permission: 'admin|owner|adOpsManager', group: 'Usuários', icon: 'people'},

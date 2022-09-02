@@ -95,7 +95,7 @@ export default {
                 this.fileConfig = JSON.parse(this.fileConfig);
                 return this.fileConfig;
             }).then((response) => {
-                const url = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(response));
+                const url = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(response, null, 2));
                 const a = document.createElement('a');
                 a.href = url;
                 a.download = 'config.json';

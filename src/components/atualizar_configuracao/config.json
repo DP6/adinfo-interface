@@ -1,0 +1,25 @@
+{
+          "separator":":",
+          "csvSeparator":[",",";"],
+          "spaceSeparator":"_",
+          "insertTime":"20220719150108",
+          "version":5,
+          "analyticsTools":{
+                    "ga":{
+                              "utm_medium":["Veiculo"],
+                              "utm_campaign":["Formato","Display"],
+                              "utm_source":["Exemplo"]
+                    },
+                    "adobe":{
+                              "cid":["Exemplo","Formato","Display","Veiculo"]}},
+                              "columns":{
+                                        "Veiculo":["googleAds","facebookAds"],
+                                        "Display":["500x200","300x300"],
+                                        "Formato":["display","video"],
+                                        "Exemplo":["/.*/"]
+                              },
+          "mediaTaxonomy":{
+                    "fb":{
+                              "campanha":["veiculo","formato"]
+                    }
+}
