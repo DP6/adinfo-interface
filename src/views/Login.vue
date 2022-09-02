@@ -99,8 +99,11 @@ export default {
                 localStorage.setItem('permission', JSON.parse(data.responseText).permission);
                 this.redirect();
             }).catch((err) => {
-                console.log(err);
                 this.apiErrorMessage = err.message;
+                console.log(err);
+                if(statusCode === 404) {
+                    this.apiErrorMessage = "Não foi possível se conectar à API do Adinfo"
+                }
                 this.showAuthAlert = this.isAuthError(statusCode);
             }).finally(() => {
                 this.show_load = false
