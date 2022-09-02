@@ -3,22 +3,13 @@
 <div  align="center">  <img  src="https://raw.githubusercontent.com/DP6/templates-centro-de-inovacoes/main/public/images/centro_de_inovacao_dp6.png"  height="100px"  />  </div>
 
 **Adinfo-interface** é a interface do [penguin Adinfo](https://github.com/DP6/penguin-adinfo) ferramenta que foi desenvolvida para facilitar o controle e padronização do uso de parametrização e nomenclatura de mídia digital. Os principais componentes no uso da aplicação são a configuração, um JSON contendo quais campos são aceitos na taxonomia de mídia, um CSV contendo a lista de URLs e os campos preenchidos conforme o que foi configurado.
-
-# Funcionalidade
-
-![](https://lh4.googleusercontent.com/HMY0_gjwrD_ysy5o73A76X_FlpaVyVVyIguCZdmgk4DJ_15dLs4_yilPItgmn-6iUETTSEzTZl4Fn3GzOs3K_5IBM7bUEd1wlNmgnAs8PE-uYrBgnVlta55-TNQW_c0XUP9YjuCSzsJTBDi-C2PBiSw)
-
-A interface foi idealizada para **simplificar** e **otimizar** a parametrização de links de forma altamente customizável, sendo uma ferramenta descomplicada de se utilizar e que irá centralizar de **forma segura** as informações mais relevantes do seu negócio.
-
 # Requisitos para utilização
 
-- Ambiente de hospedagem de aplicações sugestão:
-
-( [Heroku](https://www.heroku.com/),  [Google App Engine](https://cloud.google.com/appengine?utm_source=google&utm_medium=cpc&utm_campaign=latam-BR-all-pt-dr-SKWS-all-all-trial-e-dr-1011454-LUAC0008679&utm_content=text-ad-none-any-DEV_c-CRE_429626774325-ADGP_Hybrid%20%7C%20SKWS%20-%20EXA%20%7C%20Txt%20~%20Compute_App-Engine-KWID_43700040369789872-kwd-359982465286&utm_term=KW_app%20engine-ST_App%20Engine&gclid=Cj0KCQjw3eeXBhD7ARIsAHjssr_cyDm7Ya38V6I8-BcE6voMScPtjvVzlNVGBA6ojNy62oGmesxhBmIaAjHpEALw_wcB&gclsrc=aw.ds),     [AWS (ECS)](https://aws.amazon.com/pt/free/?all-free-tier.sort-by=item.additionalFields.SortRank&all-free-tier.sort-order=asc&awsf.Free%20Tier%20Types=*all&awsf.Free%20Tier%20Categories=categories#compute&trk=b6664494-006e-43c0-8c10-90b5933786ac&sc_channel=ps&sc_campaign=acquisition&sc_medium=ACQ-P%7CPS-GO%7CNon-Brand%7CDesktop%7CSU%7CCompute%7CSolution%7CBR%7CPT%7CText&s_kwcid=AL!4422!3!589951437530!p!!g!!servi%C3%A7o%20de%20hospedagem&ef_id=Cj0KCQjw3eeXBhD7ARIsAHjssr9WRQ-E-HQzwFNMMxch0__BsklfRKjyQe45XxILOpWR5Kvpr5nLpR8aAkuwEALw_wcB:G:s&s_kwcid=AL!4422!3!589951437530!p!!g!!servi%C3%A7o%20de%20hospedagem),  [Azure Container Services](https://azure.microsoft.com/pt-br/products/category/containers/));
+- Sugerimos o Ambiente de hospedagem de aplicações [Google App Engine](https://cloud.google.com/appengine?utm_source=google&utm_medium=cpc&utm_campaign=latam-BR-all-pt-dr-SKWS-all-all-trial-e-dr-1011454-LUAC0008679&utm_content=text-ad-none-any-DEV_c-CRE_429626774325-ADGP_Hybrid%20%7C%20SKWS%20-%20EXA%20%7C%20Txt%20~%20Compute_App-Engine-KWID_43700040369789872-kwd-359982465286&utm_term=KW_app%20engine-ST_App%20Engine&gclid=Cj0KCQjw3eeXBhD7ARIsAHjssr_cyDm7Ya38V6I8-BcE6voMScPtjvVzlNVGBA6ojNy62oGmesxhBmIaAjHpEALw_wcB&gclsrc=aw.ds), demais Ambientes:([Heroku](https://www.heroku.com/), [AWS (ECS)](https://aws.amazon.com/pt/free/?all-free-tier.sort-by=item.additionalFields.SortRank&all-free-tier.sort-order=asc&awsf.Free%20Tier%20Types=*all&awsf.Free%20Tier%20Categories=categories#compute&trk=b6664494-006e-43c0-8c10-90b5933786ac&sc_channel=ps&sc_campaign=acquisition&sc_medium=ACQ-P%7CPS-GO%7CNon-Brand%7CDesktop%7CSU%7CCompute%7CSolution%7CBR%7CPT%7CText&s_kwcid=AL!4422!3!589951437530!p!!g!!servi%C3%A7o%20de%20hospedagem&ef_id=Cj0KCQjw3eeXBhD7ARIsAHjssr9WRQ-E-HQzwFNMMxch0__BsklfRKjyQe45XxILOpWR5Kvpr5nLpR8aAkuwEALw_wcB:G:s&s_kwcid=AL!4422!3!589951437530!p!!g!!servi%C3%A7o%20de%20hospedagem), [Azure Container Services](https://azure.microsoft.com/pt-br/products/category/containers/));
 
 - API [Adinfo](https://github.com/DP6/penguin-adinfo#instala%C3%A7%C3%A3o) já hospedada;
 
-- Node a partir da versão 16;
+- Node versão 16 ou superior;
 
 - Vue.js.
 
@@ -26,13 +17,11 @@ A interface foi idealizada para **simplificar** e **otimizar** a parametrizaçã
 
 A interface do Adinfo, é baseada em *Vue.js*, *Node.js* e *Html & Css*, atualmente esta sendo hospedada no *App Engine*, tendo as configurações de ambiente feitas por *App.yaml*.
 
-Também contamos com *Babelrc* para transpilar códigos e manter a compatibilidade com navegadores.
-
 ## Google App Engine
 
-Recomendamos fortemente o **Google App Engine** como ambiente de hospedagem por ser uma opção que requer o mínimo de configurações possíveis, com um serviço de plataforma completo e muita segurança do ambiente, o App Engine se mostra muito eficaz e fácil de utilizar.
+Recomendamos fortemente o **Google App Engine** como ambiente de hospedagem por ser uma opção com escabilidade autómatica, banco de dados e toda infraestrutura que apenas o Google pode oferecer.
 
-Além destes pontos, basta apenas enviar o projeto para o App Engine que tudo deve funcionar e qualquer atualização será feita em tempo real sem a necessidade de reimplementação. Consequentemente, não há necessidade de se preocupar em qual plataforma de hardware o serviço está rodando, tanto quanto a versão do sistema operacional e muito menos a configuração de todo o ambiente utilizado.
+Além disso ele permite que a aplicação seja executada em host local, e quando feita alterações, ele atualiza automaticamente em tempo real sem necessidade de reimplementar.
 
   **Requisitos Google App Engine:**
 
@@ -51,7 +40,7 @@ após instalação e configuração execute no terminal:
   
 **Após a instalação, será necessário apenas iniciar a interface executando os seguintes comandos :**
 
-*Instala as dependências para execução local:*
+*Instalar as dependências para execução local:*
 
 ``npm install``
 
@@ -61,7 +50,17 @@ após instalação e configuração execute no terminal:
 
 # Overview da Interface
 
-## 1. Como adicionar novos usuários ao Adinfo
+## 1. Controle de acessos ao Adinfo
+
+### **1.1 Tipos de usuários**
+
+No Adinfo, temos dois tipos dois tipos de usuário:
+
+- **Admin** - Nivel mais alto de permissionamento, destinado aos usuários que estabelecerão os padrões a serem seguidos na parametrização de campanhas. Possui acesso a todos os menus, inclusive abas de Atualizar configuração ou Nova configuração, Dependências e Registro de usuários.
+
+- **Usuário** - Nível mais limitado de acesso, destinado à operação, ou seja, que irão parametrizar e implementar campanhas. Possui acesso apenas às abas de Parametrização, CSV e Template.
+
+### 1.2 Como adicionar novos usuários ao Adinfo
 
 ![](https://lh4.googleusercontent.com/d5WKB29ZulGuVLJ4K4jixKZltp9bvFqT8WwYLvcBLDFvpxkhDnh4cif3n3YnOVEfMOf2DzeXwjYOPLvT4HDy3qM3pKq4gK78VN2Qhy8_Yydcq0fe2PiKGOfWhiVP_za0IiuLMtlZOcKpqCKfjybljSc)
 
@@ -69,23 +68,23 @@ após instalação e configuração execute no terminal:
 
 2. apos registrar usuários preencha os campos em aberto contendo o e-mail do novo usuário e a senha;
 
-3. Ao clicar em criar, você receberá em resposta a senha de acesso. Com ela o novo usuário poderá utilizar a interface do Adinfo com acesso de Operação.
+3. Ao clicar em criar, você receberá em resposta a senha de acesso. Com ela o novo usuário poderá utilizar a interface do Adinfo com acesso de Operação;
 
-4. Logo abaixo na sub aba de Gerenciamento de Usuários também é possível ativar e desativar quais usuários terão acesso a plataforma de um modo bem eficiente.
+4. Logo abaixo, na sub aba de Gerenciamento de Usuários também é possível ativar e desativar quais usuários terão acesso a plataforma.
 
 ## 2. Como parametrizar campanhas
 
 ### 2.1 **Download do arquivo de preenchimento**
 
-O primeiro passo do processo é a consulta e download do arquivo de preenchimento ou template. O template possui todas as informações definidas pelo Administrador como necessárias nos elementos de nomenclatura e URLs, assim como suas opções de preenchimento e dependências, quando relevantes.
+O primeiro passo do processo é a consulta e download do arquivo de preenchimento ou template. O template possui todas as informações definidas pelo Administrador como necessárias nos elementos de nomenclatura e URL, assim como suas opções de preenchimento e dependências, quando relevantes.
 
 ![](https://lh4.googleusercontent.com/63IHzxnijB35AAeFEVIf_IIy-JWaod0WR9C8ra7klCww9Vw1SuOEKok50yJxDNo-Siki8lTpSrKIXWSlTjwe77avvap1nL-rCUze9iu4NxKAZaJdpp19-tcVHsZfivh9vO0nACfvDJNlJWPoSWG-nGs)
 
-1. Para acessar o template configurado, selecione a opção Parametrizar no menu lateral.
+1. Para acessar o template configurado, selecione a opção Parametrizar no menu lateral;
 
-2. selecione a opção Template (1).
+2. Selecione a opção Template (1);
 
-3. clique em Consultar template (2).
+3. clique em Consultar template (2);
 
 4. Após a conferência dos campos, realize o download do template em um dos dois formatos disponíveis, CSV ou Planilha Excel (XLSX). (3).
 
