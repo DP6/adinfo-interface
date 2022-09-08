@@ -11,11 +11,9 @@
 
 - Node versão 16 ou superior;
 
-- Vue.js.
-
 ## Hospedagem
 
-A interface do Adinfo, é baseada em *Vue.js*, *Node.js* e *Html & Css*, atualmente esta sendo hospedada no *App Engine*, tendo as configurações de ambiente feitas por *App.yaml*.
+A interface do Adinfo foi criada utilizando Vue.js, e hospedada no serviço App Engine do Google Cloud Platform. Todas as configurações de deploy da aplicação podem ser encontradas no arquivo App.yaml.
 
 ## Google App Engine
 
@@ -23,8 +21,9 @@ Recomendamos fortemente o **Google App Engine** como ambiente de hospedagem por 
 
 Além disso ele permite que a aplicação seja executada em host local, e quando feita alterações, ele atualiza automaticamente em tempo real sem necessidade de reimplementar.
 
-  **Requisitos Google App Engine:**
+  **Requisitos:**
 
+- Google App Engine;
 - Google Cloud SDK;
 após instalação e configuração execute no terminal:
 ``gcloud app deploy``
@@ -35,16 +34,16 @@ após instalação e configuração execute no terminal:
 
 ``https://github.com/DP6/adinfo-interface.git``
 
-- altere o link de direcionamento da interface para API (caminho:  src > main.js);
+- altere o link de direcionamento da interface para API (caminho:  src/main.js);
 - ``Vue.prototype.$apiRoute = 'Link da API'.``
   
-**Após a instalação, será necessário apenas iniciar a interface executando os seguintes comandos :**
+Após a instalação, será necessário apenas iniciar a interface executando os seguintes comandos :
 
 *Instalar as dependências para execução local:*
 
 ``npm install``
 
-*Executa a aplicação em ambiente local(<http://localhost:8080/>):*
+*Execução da aplicação em ambiente local(<http://localhost:8080/>):*
 
 ``nmp start``
 
@@ -64,9 +63,9 @@ No Adinfo, temos dois tipos dois tipos de usuário:
 
 ![](https://lh4.googleusercontent.com/d5WKB29ZulGuVLJ4K4jixKZltp9bvFqT8WwYLvcBLDFvpxkhDnh4cif3n3YnOVEfMOf2DzeXwjYOPLvT4HDy3qM3pKq4gK78VN2Qhy8_Yydcq0fe2PiKGOfWhiVP_za0IiuLMtlZOcKpqCKfjybljSc)
 
-1. Através de um usuário com permissão de Adimn, visite a aba de Usuários;
+1. Com um usuário com permissão de Admin ou Owner, clique na aba de Usuários;
 
-2. apos registrar usuários preencha os campos em aberto contendo o e-mail do novo usuário e a senha;
+2. Clique em registrar usuário, preencha os campos em aberto;
 
 3. Ao clicar em criar, você receberá em resposta a senha de acesso. Com ela o novo usuário poderá utilizar a interface do Adinfo com acesso de Operação;
 
