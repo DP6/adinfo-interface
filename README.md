@@ -15,17 +15,11 @@
 
 A interface do Adinfo foi criada utilizando Vue.js, e hospedada no serviço App Engine do Google Cloud Platform. Todas as configurações de deploy da aplicação podem ser encontradas no arquivo App.yaml.
 
-## Google App Engine
-
-Recomendamos fortemente o **Google App Engine** como ambiente de hospedagem por ser uma opção com escabilidade autómatica, banco de dados e toda infraestrutura que apenas o Google pode oferecer.
-
-Além disso ele permite que a aplicação seja executada em host local, e quando feita alterações, ele atualiza automaticamente em tempo real sem necessidade de reimplementar.
-
-  **Requisitos:**
+**Requisitos:**
 
 - Google App Engine;
 - Google Cloud SDK;
-após instalação e configuração execute no terminal:
+Após instalação e configuração execute no terminal:
 ``gcloud app deploy``
 
 # Executando a aplicação
@@ -37,7 +31,7 @@ após instalação e configuração execute no terminal:
 - altere o link de direcionamento da interface para API (caminho:  src/main.js);
 - ``Vue.prototype.$apiRoute = 'Link da API'.``
   
-Após a instalação, será necessário apenas iniciar a interface executando os seguintes comandos :
+Após a instalação, será necessário apenas iniciar a interface executando os seguintes comandos:
 
 *Instalar as dependências para execução local:*
 
