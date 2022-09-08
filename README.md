@@ -59,7 +59,7 @@ No Adinfo, temos dois tipos dois tipos de usuário:
 
 1. Com um usuário com permissão de Admin ou Owner, clique na aba de Usuários;
 
-2. Clique em registrar usuário, preencha os campos em aberto;
+2. Clique em registrar usuário e preencha os campos em aberto;
 
 3. Ao clicar em criar, você receberá em resposta a senha de acesso. Com ela o novo usuário poderá utilizar a interface do Adinfo com acesso de Operação;
 
