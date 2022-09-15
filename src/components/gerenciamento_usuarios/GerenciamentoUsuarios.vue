@@ -17,7 +17,7 @@
         </md-list>
         
         <span class="titulo_categoria" v-if="users_deactivates.length > 0">Usuários Desativados</span>
-        <md-list class="lista_usuarios" v-for="adOpsTeam in adOpsTeams_disabled">
+        <md-list class="lista_usuarios" v-for="adOpsTeam in adOpsTeams_deactivate">
             <md-list-item class="lista_adOpsTeam">
                 <div class="name_adOpsTeam">{{adOpsTeam}}</div>
             </md-list-item>
@@ -73,8 +73,8 @@ export default {
             downloadError: false,
             downloadErrorMessage: 'Erro no Download!',
             responseVisibility: false,
-            adOpsTeams_active: [],
-            adOpsTeams_disabled: [],
+            adOpsTeams_active: new Set(),
+            adOpsTeams_deactivate: new Set(),
             allUsers: [],
             adOpsTeam: '',
             users_activates: [],
@@ -103,8 +103,8 @@ export default {
             const allUsers = JSON.parse(response.responseText).filter(user => user.email !== localStorage.getItem('email'));
             this.users_activates = allUsers.filter(user => user.active == true);
             this.users_deactivates = allUsers.filter(user => user.active == false);
-            this.users_activates.forEach(user => {if(this.adOpsTeams_active.indexOf(user.adOpsTeam) === -1){this.adOpsTeams_active.push(user.adOpsTeam)}});
-            this.users_deactivates.forEach(user => {if(this.adOpsTeams_disabled.indexOf(user.adOpsTeam) === -1){this.adOpsTeams_disabled.push(user.adOpsTeam)}});
+            this.users_activates.forEach(user => this.adOpsTeams_active.add(user.adOpsTeam));
+            this.users_deactivates.forEach(user => this.adOpsTeams_deactivate.add(user.adOpsTeam));
         }).catch((err) => {
             this.apiError = true;
             this.apiErrorMessage = err.message;
@@ -122,10 +122,10 @@ export default {
             return false;
         },
         resetAdOpsTeams(){
-            this.adOpsTeams_active = [];
-            this.adOpsTeams_disabled = [];
-            this.users_activates.forEach(user => {if(this.adOpsTeams_active.indexOf(user.adOpsTeam) === -1){this.adOpsTeams_active.push(user.adOpsTeam)}});
-            this.users_deactivates.forEach(user => {if(this.adOpsTeams_disabled.indexOf(user.adOpsTeam) === -1){this.adOpsTeams_disabled.push(user.adOpsTeam)}});
+            this.adOpsTeams_active.clear();
+            this.adOpsTeams_deactivate.clear();
+            this.users_activates.forEach(user => this.adOpsTeams_active.add(user.adOpsTeam));
+            this.users_deactivates.forEach(user => this.adOpsTeams_deactivate.add(user.adOpsTeam));
         },
         gerenciaUsuario(id, opcao) {
             let url;
@@ -178,34 +178,27 @@ export default {
         }
     }
 }
-
 </script>
 
 <style scoped>
-
     .card {
         margin-top: 10px;
         margin-left: 10px;
     }
-
     .load {
         margin-top: 50px;
         text-align: center;
     }
-
     .respostas {
         width: 100%;
     }
-
     p.response {
         margin-left: 60px;
     }
-
     ul {
         margin-left: 15px;
         list-style: none;
     }
-
     .titulo_categoria {
         font-size: 22px;
         margin-left: 60px;
@@ -213,40 +206,32 @@ export default {
         padding-top: 25px;
         display: block;
     }
-
     .lista_usuarios {
         margin-left: 40px!important;
     }
-
     .lista_usuarios_desativados {
         background-color: #ececec;
     }
-
     .usuario:hover {
         background-color: #ecf1fd;
     }
-
     i.ativar_usuario {
         font-size: 20px;
         cursor: pointer;
         color: red!important;
     }
-
     i.desativar_usuario {
         font-size: 20px;
         cursor: pointer;
         color: green!important;
     }
-
     .lista_adOpsTeam {
         margin-left: 8px;
         border-bottom: 1px solid #a8c0ff;
     }
-
     .name_adOpsTeam{
         font-size: 16px;
         font-weight: bold;
         color: #3f2b96;
     }
-
 </style>
