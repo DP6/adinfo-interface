@@ -44,132 +44,20 @@
           <md-button class="md-raised md-accent botao-cancelar" @click="cancelar($event)">Cancelar</md-button>
         </md-list-item>
 
-        <md-list-item 
-          v-for="item in generalConfig.filter(key => typeof(configJson[key]) === 'string')" 
-          :key="item"
-          :id="item"
-        >
-          <md-icon v-if=show_icon class="excluir" @click.native="excluirItem(item)">delete</md-icon>
-          <span class="md-list-item-text">{{item}} : {{ configJson[item] }}</span>
-        </md-list-item>
+        <md-list>
+          <TreeNode 
+            v-for="node in Object.keys(configJson)" 
+            :parentNode="configJson" 
+            :key="node" 
+            :node="configJson[node]" 
+            :parentName="node"
+            :toolsFixedOptions="toolFieldsFixed"
+          />
+        </md-list>
 
-        <md-list-item md-expand 
-          v-for="item in generalConfig.filter(key => typeof(configJson[key]) === 'object')" 
-          :key="item"
-          :id="item"
-        >
-          <md-icon v-if=show_icon class="excluir" @click.native="excluirItem(item)">delete</md-icon>
-          <span class="md-list-item-text">{{ item }}</span>
-
-          <md-list slot="md-expand">
-            <md-list-item v-if="['ga', 'adobe', 'googleads', 'facebookads'].indexOf(item) > -1 && show_icon" class="nivel2">
-              <md-icon v-show="toolFields[item].length !== 0" @click.native="adicionarItem($event, item)" class="adicionar">add</md-icon>
-              <div class="md-layout md-gutter campo-adicionar">
-                <div class="md-layout-item">
-                  <md-field>
-                    <label for="param">Parâmetro</label>
-                    <md-select name="param" class="select-field" v-model="toolConfigValues[item]">
-                      <md-option 
-                        v-for="param in toolFields[item]" 
-                        :key="param"
-                        :value="param"
-                      >{{param}}</md-option>
-                    </md-select>
-                  </md-field>
-                </div>
-              </div>
-              <md-button class="md-primary md-raised botao-adicionar"  @click="confirmar($event, item)">Adicionar</md-button>
-              <md-button class="md-raised md-accent botao-cancelar" @click="cancelar($event)">Cancelar</md-button>
-            </md-list-item>
-
-            <md-list-item v-else-if=show_icon class="nivel2">
-              <md-icon v-if=show_icon @click.native="adicionarItem($event, item)" class="adicionar">add</md-icon>
-              <div class="md-layout md-gutter campo-adicionar">
-                <div class="md-layout-item">
-                  <md-field>
-                    <label for="field">Campo</label>
-                    <md-input name="field" class="input-field" autocomplete="given-name"/>
-                  </md-field>
-                </div>
-              </div>
-              <md-button class="md-primary md-raised botao-adicionar"  @click="confirmar($event, item)">Adicionar</md-button>
-              <md-button class="md-raised md-accent botao-cancelar" @click="cancelar($event)">Cancelar</md-button>
-            </md-list-item>
-
-            <md-list-item 
-              v-for="param in Object.keys(configJson[item]).filter(key => typeof(configJson[item][key]) !== 'object')" 
-              :key="concatId(item, param)"
-              :id="concatId(item, param)" 
-              class="nivel2"
-            >
-              <md-icon v-if=show_icon class="excluir" @click.native="excluirItem(item, param)">delete</md-icon>
-              <span class="md-list-item-text">{{param}} : {{ configJson[item][param] }}</span>
-            </md-list-item>
-
-            <md-list-item 
-              md-expand v-for="param in Object.keys(configJson[item]).filter(key => typeof(configJson[item][key]) === 'object')" 
-              :key="concatId(item, param)"
-              :id="concatId(item, param)" 
-              class="nivel2"
-            >
-              <md-icon v-if=show_icon class="excluir" @click.native="excluirItem(item, param)">delete</md-icon>
-              <span class="md-list-item-text">{{param}}</span>
-
-              <md-list slot="md-expand">
-                <md-list-item v-if="(item === 'columns') && show_icon" class="nivel3">
-                  <md-icon @click.native="adicionarItem($event, item, param)" class="adicionar">add</md-icon>
-                  <div class="md-layout md-gutter campo-adicionar">
-                    <div class="md-layout-item">
-                      <md-field>
-                        <label for="field">Coluna</label>
-                        <md-input name="field" class="input-field" autocomplete="given-name"/>
-                      </md-field>
-                    </div>
-                  </div>
-                  <md-button class="md-primary md-raised botao-adicionar"  @click="confirmar($event, item, param)">Adicionar</md-button>
-                  <md-button class="md-raised md-accent botao-cancelar" @click="cancelar($event)">Cancelar</md-button>
-                </md-list-item>
-                
-                <md-list-item v-else-if=show_icon class="nivel3">
-                  <md-icon v-if="(columns.filter(c => configJson[item][param].indexOf(c) === -1).length > 0)" @click.native="adicionarItem($event, item, param)" class="adicionar">add</md-icon>
-                  <div class="md-layout md-gutter campo-adicionar">
-                    <div class="md-layout-item">
-                      <md-field>
-                        <label for="column">Coluna</label>
-                        <md-select name="column" class="select-field" v-model="column_select">
-                          <md-option 
-                            v-for="column in columns.filter(c => configJson[item][param].indexOf(c) === -1)" 
-                            :key="column"
-                            :value="column"
-                          >{{column}}</md-option>
-                        </md-select>
-                      </md-field>
-                    </div>
-                  </div>
-                  <md-button class="md-primary md-raised botao-adicionar"  @click="confirmar($event, item, param)">Adicionar</md-button>
-                  <md-button class="md-raised md-accent botao-cancelar" @click="cancelar($event)">Cancelar</md-button>
-                </md-list-item>
-
-                <md-list-item 
-                  v-for="t in configJson[item][param]" 
-                  :key="concatId(item, param, t)"
-                  :id="concatId(item, param, t)" 
-                  class="nivel4"
-                >
-                  <md-icon v-if=show_icon class="excluir" @click.native="excluirItem(item, param, t)">delete</md-icon>
-                  <span class="md-list-item-text">{{t}}</span>
-                </md-list-item>
-                
-              </md-list>
-
-            </md-list-item>
-            
-          </md-list>
-
-        </md-list-item>
       </md-list>
       <md-card-actions v-if=show_icon>
-        <botao-submit @botaoAtivado="updateConfig()" nome_do_botao="Atualizar Configuração" :disabled="disable_button"></botao-submit>
+        <botao-submit @botaoAtivado="updateConfig()" nome_do_botao="Atualizar Configuração"></botao-submit>
       </md-card-actions>
     </md-card>
 
@@ -204,15 +92,19 @@
 import TituloAreaPrincipal from '../shared/titulo_area_principal/TituloAreaPrincipal.vue';
 import BotaoSubmitForm from '../shared/botao_submit_form/BotaoSubmitForm.vue';
 import InvalidUserAlert from '../shared/login/InvalidUser.vue';
+import TreeNode from './TreeNode.vue';
+
 import {
     required,
     minLength
 } from 'vuelidate/lib/validators'
+
 export default {
   components: {
     'titulo-principal': TituloAreaPrincipal,
     'botao-submit': BotaoSubmitForm,
-    'usuario-invalido': InvalidUserAlert
+    'usuario-invalido': InvalidUserAlert,
+    'TreeNode': TreeNode
   },
   data() {
     return {
@@ -252,15 +144,14 @@ export default {
       toolFieldsFixed: {
         'adobe': ['cid'],
         'ga': ['utm_medium', 'utm_source', 'utm_campaign', 'utm_content', 'utm_term'],
-        'googleads': ['campanha', 'ad', 'ad-set'],
-        'facebookads': ['ad.id', 'campaign.name', 'ad.name']
+        'columns': []
       },
       toolFields: {
         'adobe': [],
         'ga': [],
         'googleads': [],
         'facebookads': []
-      },
+      }
     }
   },
   validations: {
@@ -295,6 +186,7 @@ export default {
       this.configJson = data;
       this.generalConfig = Object.keys(data);
       this.columns = Object.keys(data.columns);
+      this.toolFieldsFixed['columns'] = Object.keys(data.columns);
       this.updateToolFields();
       if(localStorage.getItem('permission') !== 'user' && localStorage.getItem('permission') !== 'adOpsManager'){
         this.show_icon = true;
@@ -498,22 +390,8 @@ export default {
     display: none;
   }
 
-  .adicionar {
-    color: green;
-    font-size: 20px;
-    cursor: pointer;
-    user-select: none;
-  }
-
   p.response {
     margin-left: 60px;
-  }
-
-  .excluir {
-    color: red;
-    font-size: 20px;
-    cursor: pointer;
-    user-select: none;
   }
 
   .load {
