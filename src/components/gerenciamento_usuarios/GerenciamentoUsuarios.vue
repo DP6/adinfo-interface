@@ -2,27 +2,27 @@
     <div>
         <titulo-principal titulo="Gerenciamento de Usuários"></titulo-principal>
     
-        <span class="titulo_categoria" v-if="users_activates.length > 0">Usuários Ativos</span>
-        <md-list class="lista_usuarios" v-for="adOpsTeam in adOpsTeams_active">
+        <span class="titulo_categoria" v-if="usersActivates.length > 0">Usuários Ativos</span>
+        <md-list class="lista_usuarios" v-for="adOpsTeam in adOpsTeams_active" :key="adOpsTeam">
             <md-list-item class="lista_adOpsTeam">
                 <div class="name_adOpsTeam">{{adOpsTeam}}</div> 
             </md-list-item>
             
             <md-card class="md-layout-item md-larger-size card">
-                <md-list-item v-for="user in users_activates" v-if="user.adOpsTeam === adOpsTeam" :key="user.id" class="usuario">
+                <md-list-item v-for="user in usersActivates.filter(activeUser => activeUser.adOpsTeam === adOpsTeam)" :key="user.id" class="usuario">
                     {{user.email}} ({{user.permission}})
                 <md-icon v-if="user.permission !== 'admin'" class="md-size-2x desativar_usuario" @click.native="gerenciaUsuario(user.id, 'desativa')">toggle_on</md-icon>
                 </md-list-item>
             </md-card>
         </md-list>
         
-        <span class="titulo_categoria" v-if="users_deactivates.length > 0">Usuários Desativados</span>
-        <md-list class="lista_usuarios" v-for="adOpsTeam in adOpsTeams_deactivate">
+        <span class="titulo_categoria" v-if="usersDeactivates.length > 0">Usuários Desativados</span>
+        <md-list class="lista_usuarios" v-for="adOpsTeam in adOpsTeams_deactivate" :key="adOpsTeam">
             <md-list-item class="lista_adOpsTeam">
                 <div class="name_adOpsTeam">{{adOpsTeam}}</div>
             </md-list-item>
             <md-card class="md-layout-item md-larger-size card">
-                    <md-list-item v-for="user in users_deactivates" v-if="user.adOpsTeam === adOpsTeam" :key="user.id" class="usuario">
+                    <md-list-item v-for="user in usersDeactivates.filter(deactivateUser => deactivateUser.adOpsTeam === adOpsTeam)" :key="user.id" class="usuario">
                         {{user.email}} ({{user.permission}})
                     <md-icon v-if="user.permission !== 'admin'" class="md-size-2x ativar_usuario usuario" @click.native="gerenciaUsuario(user.id, 'ativa')">toggle_off</md-icon>
                     </md-list-item>
@@ -77,8 +77,8 @@ export default {
             adOpsTeams_deactivate: new Set(),
             allUsers: [],
             adOpsTeam: '',
-            users_activates: [],
-            users_deactivates: [],
+            usersActivates: [],
+            usersDeactivates: [],
             snackbar_message: '',
             position: 'center',
             showSnackbar: false
@@ -101,10 +101,10 @@ export default {
                 throw new Error(response.responseText || response.errorMessage);
             }
             const allUsers = JSON.parse(response.responseText).filter(user => user.email !== localStorage.getItem('email'));
-            this.users_activates = allUsers.filter(user => user.active == true);
-            this.users_deactivates = allUsers.filter(user => user.active == false);
-            this.users_activates.forEach(user => this.adOpsTeams_active.add(user.adOpsTeam));
-            this.users_deactivates.forEach(user => this.adOpsTeams_deactivate.add(user.adOpsTeam));
+            this.usersActivates = allUsers.filter(user => user.active == true);
+            this.usersDeactivates = allUsers.filter(user => user.active == false);
+            this.usersActivates.forEach(user => this.adOpsTeams_active.add(user.adOpsTeam));
+            this.usersDeactivates.forEach(user => this.adOpsTeams_deactivate.add(user.adOpsTeam));
         }).catch((err) => {
             this.apiError = true;
             this.apiErrorMessage = err.message;
@@ -124,8 +124,8 @@ export default {
         resetAdOpsTeams(){
             this.adOpsTeams_active.clear();
             this.adOpsTeams_deactivate.clear();
-            this.users_activates.forEach(user => this.adOpsTeams_active.add(user.adOpsTeam));
-            this.users_deactivates.forEach(user => this.adOpsTeams_deactivate.add(user.adOpsTeam));
+            this.usersActivates.forEach(user => this.adOpsTeams_active.add(user.adOpsTeam));
+            this.usersDeactivates.forEach(user => this.adOpsTeams_deactivate.add(user.adOpsTeam));
         },
         gerenciaUsuario(id, opcao) {
             let url;
@@ -165,8 +165,8 @@ export default {
                     throw new Error(response.responseText || response.errorMessage);
                 }
                 const allUsers = JSON.parse(response.responseText).filter(user => user.email !== localStorage.getItem('email'));
-                this.users_activates = allUsers.filter(user => user.active == true);
-                this.users_deactivates = allUsers.filter(user => user.active == false);
+                this.usersActivates = allUsers.filter(user => user.active == true);
+                this.usersDeactivates = allUsers.filter(user => user.active == false);
                 this.resetAdOpsTeams();
             }).catch((err) => {
                 this.showAuthAlert = this.isAuthError(this.statusCode);
