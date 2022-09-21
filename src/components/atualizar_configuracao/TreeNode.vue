@@ -1,12 +1,12 @@
 <template>
   <div>
-    <div v-if="!hasChildren">
+    <div v-if="!hasChildren && plotable">
         <md-list-item :id="path + '/' + parentName" :style="nodeMargin">
             <md-icon class="excluir" @click.native="excluirItem(path + '/' + parentName)">delete</md-icon>
             <span class="md-list-item-text">{{this.parentName}}: {{this.node}}</span>
         </md-list-item>
     </div>
-    <div v-else>
+    <div v-else-if="plotable">
         <md-list-item md-expand :id="path + '/' + parentName" :style="nodeMargin">
             <md-icon 
                 class="excluir"   
@@ -14,10 +14,75 @@
             >delete</md-icon>
             <span class="md-list-item-text">{{ this.parentName }}</span>
             <md-icon 
-                @click.native="adicionarItem($event, path + '/' + parentName)"
+                @click.native="adicionarItem($event), $event.stopPropagation()"
                 :id="path + '/' + parentName" 
                 class="adicionar"
+                v-if="(
+                    !!this.toolsFixedOptions[this.parentName] 
+                    && this.toolsFixedOptions[this.parentName].length !== Object.keys(node).length
+                )
+                || !this.toolsFixedOptions[this.parentName]
+                || this.parentName === 'columns'"
             >add</md-icon>
+            <md-list-item 
+                v-if="!!this.toolsFixedOptions[this.parentName] 
+                && this.toolsFixedOptions[this.parentName].length !== Object.keys(node).length"
+                @click="$event.stopPropagation()"
+            >
+                <div class="md-layout md-gutter campo-adicionar">
+                    <div class="md-layout-item">
+                        <md-field>
+                            <label for="field">Campo</label>
+                            <md-select name="field" class="select-field" v-model="inputValue">
+                                <md-option
+                                    v-for="option in this.toolsFixedOptions[this.parentName].filter(el => Object.keys(node).indexOf(el) === -1)"
+                                    :key="option"
+                                    :value="option"
+                                >
+                                    {{option}}
+                                </md-option>
+                            </md-select>
+                        </md-field>
+                    </div>
+                </div>
+                <md-button class="md-primary md-raised botao-adicionar"  @click="confirmar($event)">Adicionar</md-button>
+                <md-button class="md-raised md-accent botao-cancelar" @click="cancelar($event)">Cancelar</md-button>
+            </md-list-item>
+            <md-list-item 
+                v-else-if="!!this.path.match(/(mediaTaxonomy|analyticsTools)\/.+/gi)"
+                @click="$event.stopPropagation()"
+            >
+                <div class="md-layout md-gutter campo-adicionar">
+                    <div class="md-layout-item">
+                        <md-field>
+                            <label for="field">Campo</label>
+                            <md-select name="field" class="select-field" v-model="inputValue">
+                                <md-option
+                                    v-for="option in this.toolsFixedOptions['columns'].filter(el => this.node.indexOf(el) === -1)"
+                                    :key="option"
+                                    :value="option"
+                                >
+                                    {{option}}
+                                </md-option>
+                            </md-select>
+                        </md-field>
+                    </div>
+                </div>
+                <md-button class="md-primary md-raised botao-adicionar"  @click="confirmar($event)">Adicionar</md-button>
+                <md-button class="md-raised md-accent botao-cancelar" @click="cancelar($event)">Cancelar</md-button>
+            </md-list-item>
+            <md-list-item v-else @click="$event.stopPropagation()">
+                <div class="md-layout md-gutter campo-adicionar">
+                    <div class="md-layout-item">
+                        <md-field>
+                            <label for="field">Campo</label>
+                            <md-input name="field" class="input-field" autocomplete="given-name" v-model="inputValue"/>
+                        </md-field>
+                    </div>
+                </div>
+                <md-button class="md-primary md-raised botao-adicionar"  @click="confirmar($event)">Adicionar</md-button>
+                <md-button class="md-raised md-accent botao-cancelar" @click="cancelar($event)">Cancelar</md-button>
+            </md-list-item>
             <md-list slot="md-expand" v-if="!isArray">
                 <TreeNode
                     v-for="child in Object.keys(node)"
@@ -79,9 +144,17 @@ export default {
         required: true
     }
   },
+  data() {
+    return {
+        inputValue: ''
+    }
+  },
   computed: {
         hasChildren() {
-        return typeof this.node === 'object';
+            return typeof this.node === 'object';
+        },
+        plotable() {
+            return this.parentName !== 'version' && this.parentName !== 'dependenciesConfig';
         },
         isString() {
             return typeof this.node === 'string';
@@ -103,15 +176,56 @@ export default {
             const target = path.split('/')[path.split('/').length - 1];
             delete this.parentNode[target];
             document.getElementById(path).remove();
+            this.updateToolFixedOptions(path);
             return;
         },
-        adicionarItem(event, path) {
-            console.log(path);
-            console.log(event);
-            return;
+        updateToolFixedOptions(path) {
+            const pathSplit = path.split('/');
+            const root = pathSplit[1];
+            const target = pathSplit[pathSplit.length - 1];
+            if(!!this.toolsFixedOptions[root]) {
+                this.removeItemFromArray(target, this.toolsFixedOptions[root]);
+            }
+            if(Array.isArray(this.node)) {
+                this.removeItemFromArray(target, this.node);
+            }
+        },
+        removeItemFromArray(item, ar) {
+            const index = ar.indexOf(item);
+            if (index !== -1) {
+                ar.splice(index, 1);
+            }
+        },
+        adicionarItem(event) {
+            event.target.style.display = 'none';
+            event.target.parentNode.querySelector('.campo-adicionar').style.display = 'inline-flex';
+            event.target.parentNode.querySelector('.botao-adicionar').style.display = 'inline-flex';
+            event.target.parentNode.querySelector('.botao-cancelar').style.display = 'inline-flex';
+            this.inputValue = '';
         },
         confirmar(event) {
-            console.log(event)
+            if(Array.isArray(this.node)) {
+                this.node.push(this.inputValue);
+            } else if(Object.keys(this.toolsFixedOptions).indexOf(this.parentName) > -1) {
+                this.node[this.inputValue] = new Array();
+            } else {
+                this.node[this.inputValue] = {};
+            }
+            if(this.parentName === 'columns') {
+                this.toolsFixedOptions['columns'].push(this.inputValue);
+            }
+            event.target.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.querySelector('.adicionar').style.display = 'inline-flex';
+            event.target.parentNode.parentNode.parentNode.querySelector('.campo-adicionar').style.display = 'none';
+            event.target.parentNode.parentNode.parentNode.querySelector('.botao-adicionar').style.display = 'none';
+            event.target.parentNode.parentNode.parentNode.querySelector('.botao-cancelar').style.display = 'none';
+            this.inputValue = '';
+        },
+        cancelar(event) {
+            event.target.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.querySelector('.adicionar').style.display = 'inline-flex';
+            event.target.parentNode.parentNode.parentNode.querySelector('.campo-adicionar').style.display = 'none';
+            event.target.parentNode.parentNode.parentNode.querySelector('.botao-adicionar').style.display = 'none';
+            event.target.parentNode.parentNode.parentNode.querySelector('.botao-cancelar').style.display = 'none';
+            this.inputValue = '';
         }
     }
 }
@@ -133,14 +247,15 @@ export default {
     cursor: pointer;
     user-select: none;
     position: absolute;
-    padding-right: 20px;
+    margin-right: 20px;
+    width: 50px;
     right: 50px;
 }
 
 .botao-adicionar,
 .botao-cancelar,
 .campo-adicionar {
-    /* display: none; */
+    display: none;
 }
 
 </style>

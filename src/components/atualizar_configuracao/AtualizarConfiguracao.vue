@@ -144,7 +144,8 @@ export default {
       toolFieldsFixed: {
         'adobe': ['cid'],
         'ga': ['utm_medium', 'utm_source', 'utm_campaign', 'utm_content', 'utm_term'],
-        'columns': []
+        'columns': [],
+        'analyticsTools': ['ga', 'adobe']
       },
       toolFields: {
         'adobe': [],
