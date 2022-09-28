@@ -1,28 +1,38 @@
 <template>
     <div>
-        <titulo-principal titulo="Gerencimaneto de Usuários"></titulo-principal>
+        <titulo-principal titulo="Gerenciamento de Usuários"></titulo-principal>
+    
+        <span class="titulo_categoria" v-if="usersActivates.length > 0">Usuários Ativos</span>
+        <md-list class="lista_usuarios" v-for="adOpsTeam in adOpsTeams_active" :key="adOpsTeam">
+            <md-list-item class="lista_adOpsTeam">
+                <div class="name_adOpsTeam">{{adOpsTeam}}</div> 
+            </md-list-item>
+            
+            <md-card class="md-layout-item md-larger-size card">
+                <md-list-item v-for="user in usersActivates.filter(activeUser => activeUser.adOpsTeam === adOpsTeam)" :key="user.id" class="usuario">
+                    {{user.email}} ({{user.permission}})
+                <md-icon v-if="user.permission !== 'admin'" class="md-size-2x desativar_usuario" @click.native="gerenciaUsuario(user.id, 'desativa')">toggle_on</md-icon>
+                </md-list-item>
+            </md-card>
+        </md-list>
         
-        <span class="titulo_categoria" v-if="users_activates.length > 0">Usuários Ativos</span>
-        <md-card class="md-layout-item md-larger-size card" v-if="users_activates.length > 0">
-            <md-list class="lista_usuarios">
-                <md-list-item v-for="user in users_activates" :key="user.id" class="usuario">
-                    {{user.email}} ({{user.permission}})
-                <md-icon class="md-size-2x desativar_usuario" @click.native="gerenciaUsuario(user.id, 'desativa')">toggle_on</md-icon>
-                </md-list-item>
-            </md-list>
-        </md-card>
-        <span class="titulo_categoria" v-if="users_deactivates.length > 0">Usuários Desativados</span>
-        <md-card class="md-layout-item md-larger-size card" v-if="users_deactivates.length > 0">
-            <md-list class="lista_usuarios_desativados lista_usuarios">
-                <md-list-item v-for="user in users_deactivates" :key="user.id" class="usuario">
-                    {{user.email}} ({{user.permission}})
-                <md-icon class="md-size-2x ativar_usuario usuario" @click.native="gerenciaUsuario(user.id, 'ativa')">toggle_off</md-icon>
-                </md-list-item>
-            </md-list>
-        </md-card>
+        <span class="titulo_categoria" v-if="usersDeactivates.length > 0">Usuários Desativados</span>
+        <md-list class="lista_usuarios" v-for="adOpsTeam in adOpsTeams_deactivate" :key="adOpsTeam">
+            <md-list-item class="lista_adOpsTeam">
+                <div class="name_adOpsTeam">{{adOpsTeam}}</div>
+            </md-list-item>
+            <md-card class="md-layout-item md-larger-size card">
+                    <md-list-item v-for="user in usersDeactivates.filter(deactivateUser => deactivateUser.adOpsTeam === adOpsTeam)" :key="user.id" class="usuario">
+                        {{user.email}} ({{user.permission}})
+                    <md-icon v-if="user.permission !== 'admin'" class="md-size-2x ativar_usuario usuario" @click.native="gerenciaUsuario(user.id, 'ativa')">toggle_off</md-icon>
+                    </md-list-item>
+            </md-card>
+        </md-list>
 
-        <div class="load" v-show="show_load">
-            <md-progress-spinner md-mode="indeterminate"></md-progress-spinner>
+        <div class="load_block" v-show="show_load">
+            <div class="load" v-show="show_load">
+                <md-progress-spinner md-mode="indeterminate"></md-progress-spinner>
+            </div>
         </div>
 
         <div class="respostas" v-show="responseVisibility">
@@ -41,7 +51,6 @@
 </template>
 
 <script>
-
 import TituloAreaPrincipal from '../shared/titulo_area_principal/TituloAreaPrincipal.vue';
 import InvalidUserAlert from '../shared/login/InvalidUser.vue';
 import { validationMixin } from 'vuelidate'
@@ -66,8 +75,12 @@ export default {
             downloadError: false,
             downloadErrorMessage: 'Erro no Download!',
             responseVisibility: false,
-            users_activates: [],
-            users_deactivates: [],
+            adOpsTeams_active: new Set(),
+            adOpsTeams_deactivate: new Set(),
+            allUsers: [],
+            adOpsTeam: '',
+            usersActivates: [],
+            usersDeactivates: [],
             snackbar_message: '',
             position: 'center',
             showSnackbar: false
@@ -90,8 +103,17 @@ export default {
                 throw new Error(response.responseText || response.errorMessage);
             }
             const allUsers = JSON.parse(response.responseText).filter(user => user.email !== localStorage.getItem('email'));
-            this.users_activates = allUsers.filter(user => user.active == true);
-            this.users_deactivates = allUsers.filter(user => user.active == false);
+            allUsers.forEach(user => {
+                if(user.active === true) {
+                    this.usersActivates.push(user);
+                    this.adOpsTeams_active.add(user.adOpsTeam);
+                } else {
+                    this.usersDeactivates.push(user);
+                    this.adOpsTeams_deactivate.add(user.adOpsTeam);
+                }
+            });
+            this.adOpsTeams_active.sort();
+            console.log(this.adOpsTeams_active);
         }).catch((err) => {
             this.apiError = true;
             this.apiErrorMessage = err.message;
@@ -107,6 +129,12 @@ export default {
                 return true;
             this.apiError = true;
             return false;
+        },
+        resetAdOpsTeams(){
+            this.adOpsTeams_active.clear();
+            this.adOpsTeams_deactivate.clear();
+            this.usersActivates.forEach(user => this.adOpsTeams_active.add(user.adOpsTeam));
+            this.usersDeactivates.forEach(user => this.adOpsTeams_deactivate.add(user.adOpsTeam));
         },
         gerenciaUsuario(id, opcao) {
             let url;
@@ -146,8 +174,9 @@ export default {
                     throw new Error(response.responseText || response.errorMessage);
                 }
                 const allUsers = JSON.parse(response.responseText).filter(user => user.email !== localStorage.getItem('email'));
-                this.users_activates = allUsers.filter(user => user.active == true);
-                this.users_deactivates = allUsers.filter(user => user.active == false);
+                this.usersActivates = allUsers.filter(user => user.active == true);
+                this.usersDeactivates = allUsers.filter(user => user.active == false);
+                this.resetAdOpsTeams();
             }).catch((err) => {
                 this.showAuthAlert = this.isAuthError(this.statusCode);
                 this.snackbar_message = 'Erro ao mudar status do usuário!';
@@ -158,63 +187,71 @@ export default {
         }
     }
 }
-
 </script>
 
 <style scoped>
-
     .card {
-        margin-left: 50px;
+        margin-top: 10px;
+        margin-left: 10px;
     }
-
     .load {
-        margin-top: 50px;
-        text-align: center;
+        position: fixed;
+        left:50%;
+        top:50%;
+        z-index:20;
     }
-
+    .load_block {
+        background-color: rgba(0, 0, 0, 0.295);
+        position: fixed;
+        left:300px;
+        top:0px;
+        z-index:20;
+        width: 100%;
+        height: 100%;
+    }
     .respostas {
         width: 100%;
     }
-
     p.response {
         margin-left: 60px;
     }
-
     ul {
         margin-left: 15px;
         list-style: none;
     }
-
     .titulo_categoria {
-        font-size: 20px;
+        font-size: 22px;
         margin-left: 60px;
         padding-bottom: 20px;
         padding-top: 25px;
         display: block;
     }
-
     .lista_usuarios {
-        margin-left: 0px!important;
+        margin-left: 40px!important;
     }
-
     .lista_usuarios_desativados {
         background-color: #ececec;
     }
-
     .usuario:hover {
         background-color: #ecf1fd;
     }
-
     i.ativar_usuario {
         font-size: 20px;
         cursor: pointer;
         color: red!important;
     }
-
     i.desativar_usuario {
         font-size: 20px;
         cursor: pointer;
         color: green!important;
     }
-
+    .lista_adOpsTeam {
+        margin-left: 8px;
+        border-bottom: 1px solid #a8c0ff;
+    }
+    .name_adOpsTeam{
+        font-size: 16px;
+        font-weight: bold;
+        color: #3f2b96;
+    }
 </style>
