@@ -29,8 +29,10 @@
             </md-card>
         </md-list>
 
-        <div class="load" v-show="show_load">
-            <md-progress-spinner md-mode="indeterminate"></md-progress-spinner>
+        <div class="load_block" v-show="show_load">
+            <div class="load" v-show="show_load">
+                <md-progress-spinner md-mode="indeterminate"></md-progress-spinner>
+            </div>
         </div>
 
         <div class="respostas" v-show="responseVisibility">
@@ -39,7 +41,7 @@
                 {{ apiErrorMessage }}
             </p>
         </div>
-        <md-snackbar :md-position="position" :md-duration="6000" :md-active.sync="showSnackbar" md-persistent>
+        <md-snackbar :md-position="position" :md-duration="isInfinity ? Infinity : duration" :md-active.sync="showSnackbar" md-persistent>
             <span>{{ snackbar_message }}</span>
             <md-button class="md-primary" @click="showSnackbar = false">OK</md-button>
         </md-snackbar>
@@ -101,10 +103,17 @@ export default {
                 throw new Error(response.responseText || response.errorMessage);
             }
             const allUsers = JSON.parse(response.responseText).filter(user => user.email !== localStorage.getItem('email'));
-            this.usersActivates = allUsers.filter(user => user.active == true);
-            this.usersDeactivates = allUsers.filter(user => user.active == false);
-            this.usersActivates.forEach(user => this.adOpsTeams_active.add(user.adOpsTeam));
-            this.usersDeactivates.forEach(user => this.adOpsTeams_deactivate.add(user.adOpsTeam));
+            allUsers.forEach(user => {
+                if(user.active === true) {
+                    this.usersActivates.push(user);
+                    this.adOpsTeams_active.add(user.adOpsTeam);
+                } else {
+                    this.usersDeactivates.push(user);
+                    this.adOpsTeams_deactivate.add(user.adOpsTeam);
+                }
+            });
+            this.adOpsTeams_active.sort();
+            console.log(this.adOpsTeams_active);
         }).catch((err) => {
             this.apiError = true;
             this.apiErrorMessage = err.message;
@@ -186,8 +195,19 @@ export default {
         margin-left: 10px;
     }
     .load {
-        margin-top: 50px;
-        text-align: center;
+        position: fixed;
+        left:50%;
+        top:50%;
+        z-index:20;
+    }
+    .load_block {
+        background-color: rgba(0, 0, 0, 0.295);
+        position: fixed;
+        left:300px;
+        top:0px;
+        z-index:20;
+        width: 100%;
+        height: 100%;
     }
     .respostas {
         width: 100%;
